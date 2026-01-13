@@ -1,0 +1,7 @@
+folder-structure.txt
+build/
+*.o
+*.exe
+*.out
+*.log
+.vscode/
