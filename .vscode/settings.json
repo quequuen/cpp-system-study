@@ -1,0 +1,9 @@
+// 에디터 성격 설정
+
+{
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "files.autoSave": "onFocusChange",
+  "C_Cpp.clang_format_style": "Google"
+}

@@ -1,7 +1,20 @@
-folder-structure.txt
+# build
 build/
+cmake-build-*/
+
+# object files
 *.o
-*.exe
+*.obj
+
+# executables
 *.out
-*.log
-.vscode/
+*.exe
+
+# macOS
+.DS_Store
+
+# vscode
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/settings.json

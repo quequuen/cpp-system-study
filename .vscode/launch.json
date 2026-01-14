@@ -1,0 +1,16 @@
+// 디버거 담당
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug C++",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/pointer_basic",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false
+    }
+  ]
+}

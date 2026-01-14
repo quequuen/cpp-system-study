@@ -1,0 +1,56 @@
+# =========================
+# 1. 기본 줄바꿈 통일
+# =========================
+* text=auto
+
+# =========================
+# 2. C++ 소스 파일
+# =========================
+*.cpp text diff=cpp
+*.cc  text diff=cpp
+*.cxx text diff=cpp
+*.h   text diff=cpp
+*.hpp text diff=cpp
+*.hxx text diff=cpp
+
+# =========================
+# 3. CMake / 설정 파일
+# =========================
+CMakeLists.txt text diff=cmake
+*.cmake text
+
+# =========================
+# 4. 스크립트 파일
+# =========================
+*.sh text eol=lf
+
+# =========================
+# 5. Markdown 문서
+# =========================
+*.md text diff=markdown
+
+# =========================
+# 6. 바이너리 파일 (절대 diff X)
+# =========================
+*.exe binary
+*.out binary
+*.a binary
+*.so binary
+*.dylib binary
+*.dll binary
+*.o binary
+*.obj binary
+
+# =========================
+# 7. 이미지 / 기타 바이너리
+# =========================
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+
+# =========================
+# 8. 빌드 결과물
+# =========================
+build/** linguist-generated=true
