@@ -1,3 +1,4 @@
+#전체 구조
 cpp-system-study/
 ├── README.md
 ├── CMakeLists.txt
@@ -37,3 +38,11 @@ cpp-system-study/
     ├── pointers.md
     ├── memory.md
     └── concurrency.md
+
+#각 폴더 상세 구조
+04_pointers/
+├── src/ (실습 코드)
+│   ├── basic_pointer.cpp
+│   ├── dangling.cpp
+│   └── double_free.cpp
+└── README.md (그 주제 정리 노트)
