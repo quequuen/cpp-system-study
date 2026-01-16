@@ -1,5 +1,8 @@
-[diff "markdown-custom"]
-    textconv = sed '/^<!-- GITIGNORE -->/,/^<!-- \/GITIGNORE -->$/d'
+[filter "markdown-custom"]
+    clean = sed '/^<!-- GITIGNORE -->/,/^<!-- \\/GITIGNORE -->$/d'
+    smudge = cat
 
-[diff "cpp-custom"]
-    textconv = sed '/\\/\\/ GITIGNORE START/,/\\/\\/ GITIGNORE END/d'
+
+[filter "cpp-custom"]
+    clean = sed '/\\/\\/ GITIGNORE START/,/\\/\\/ GITIGNORE END/d'
+    smudge = cat
