@@ -54,3 +54,10 @@ CMakeLists.txt text diff=cmake
 # 8. 빌드 결과물
 # =========================
 build/** linguist-generated=true
+
+
+# =========================
+# 9. .gitignore 무시 구간 제거
+# =========================
+*.md diff=markdown-custom
+*.cpp diff=cpp-custom

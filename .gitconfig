@@ -1,0 +1,5 @@
+[diff "markdown-custom"]
+    textconv = sed '/^<!-- GITIGNORE -->/,/^<!-- \/GITIGNORE -->$/d'
+
+[diff "cpp-custom"]
+    textconv = sed '/\\/\\/ GITIGNORE START/,/\\/\\/ GITIGNORE END/d'
