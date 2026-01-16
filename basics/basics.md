@@ -12,8 +12,3 @@ int main(){
 }
 ```
 
-<!-- GITIGNORE -->
-
-This is a sample markdown file for C++ basics.
-
-<!-- /GITIGNORE -->
