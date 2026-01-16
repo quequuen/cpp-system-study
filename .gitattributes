@@ -6,12 +6,12 @@
 # =========================
 # 2. C++ 소스 파일
 # =========================
-*.cpp text diff=cpp-custom  
-*.cc  text diff=cpp-custom
-*.cxx text diff=cpp-custom
-*.h   text diff=cpp-custom
-*.hpp text diff=cpp-custom
-*.hxx text diff=cpp-custom
+*.cpp text filter=cpp-custom
+*.cc  text filter=cpp-custom
+*.cxx text filter=cpp-custom
+*.h   text filter=cpp-custom
+*.hpp text filter=cpp-custom
+*.hxx text filter=cpp-custom
 
 # =========================
 # 3. CMake / 설정 파일
@@ -27,7 +27,7 @@ CMakeLists.txt text diff=cmake
 # =========================
 # 5. Markdown 문서
 # =========================
-*.md text diff=markdown-custom
+*.md text filter=markdown-custom
 
 # =========================
 # 6. 바이너리 파일 (절대 diff X)
