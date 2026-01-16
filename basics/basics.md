@@ -14,6 +14,4 @@ int main(){
 
 <!-- GITIGNORE -->
 
-테스트
-
 <!-- /GITIGNORE -->
