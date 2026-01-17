@@ -1,5 +1,4 @@
 // 에디터 성격 설정
-
 {
   "editor.tabSize": 4,
   "editor.insertSpaces": true,

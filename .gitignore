@@ -1,20 +1,19 @@
-# build
+# Build
 build/
-cmake-build-*/
 
-# object files
+# Compiled
 *.o
-*.obj
-
-# executables
 *.out
 *.exe
 
 # macOS
 .DS_Store
 
-# vscode
+# VS Code
 .vscode/*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/settings.json
+
+# Debug
+*.dSYM/

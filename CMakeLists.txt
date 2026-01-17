@@ -3,4 +3,9 @@ project(cpp_system_study)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(pointer_basic basics/04_pointers/pointer_basic.cpp)
+# 실행 파일들이 build/bin에 생성되도록
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# 각 학습 프로그램 추가
+add_executable(basic_00 basics/00_basic-of-basics/main_00_basic_of_basics.cpp)
+add_executable(variables_01 basics/01_variables/main_01_variables.cpp)
