@@ -70,3 +70,21 @@ int main(){
     cout << "You entered: " << a << endl;
     return 0;
 ```
+
+### 함수(functions) 기초
+
+함수는 특정 작업을 수행하는 코드 블록으로, 재사용이 가능하고, 코드의 가독성을 높여줌. 함수는 입력 매개변수(parameter 또는 인수 argument)를 받아 작업을 수행하고, 결과를 반환(return) 할 수 있음.
+
+```cpp
+#include <iostream>
+
+int add(int a, int b) {
+    return a + b; // 두 정수를 더한 값을 반환
+}
+
+```
+
+- 함수 선언과 정의
+  - 선언(declaration): 함수의 이름, 반환 타입, 매개변수 타입을 명시.
+  - 정의(definition): 함수의 실제 구현을 포함.
+  - 함수 정의 내에서 다른 함수의 선언은 가능하지만, 정의는 불가능.
