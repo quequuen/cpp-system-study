@@ -123,3 +123,14 @@ int main(){
 }
 
 ```
+
+### 삼항 연산자(ternary operator)
+
+- 조건식 ? 참일 때 값: 거짓일 때 값
+
+```cpp
+int a = 10;
+int b = 20;
+
+int maxVal = (a > b) ? a:b; // a가 b보다 크면 a, 아니면 b를 maxVal에 할당
+```
