@@ -102,3 +102,24 @@ int add(int a, int b) {
   - 선언(declaration): 함수의 이름, 반환 타입, 매개변수 타입을 명시.
   - 정의(definition): 함수의 실제 구현을 포함.
   - 함수 정의 내에서 다른 함수의 선언은 가능하지만, 정의는 불가능.
+
+### 지역 범위(Local Scope)와 전역 범위(Global Scope)
+
+- 지역 범위: 함수나 블록 내에서 선언된 변수는 해당 함수나 블록 내에서만 접근 가능.
+- 전역 범위: 함수 외부에서 선언된 변수는 프로그램 전체에서 접근 가능.
+
+```cpp
+int main(){
+    int localVar = 10; //지역 변수
+
+    std::cout << "Local Variable: " << localVar << std::endl; //접근 가능
+
+    {
+        int innerVar = 20; //inner block 지역 변수
+        std::cout << "Inner Varible: " << innerVar << std::endl; //접근 가능
+    }
+
+    // std::cout << "Inner Varible: " << innerVar << std::endl; //접근 불가능, 컴파일 오류 발생.
+}
+
+```
