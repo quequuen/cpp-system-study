@@ -2,27 +2,39 @@
 
 using namespace std;
 
-int addNumbers(int a, int b){
+int addNumbers(int a, int b)
+{
     int sum = a + b;
 
     return sum;
 }
 
-int multiplyNumbers(int a, int b){
+int subtractNumbers(int a, int b)
+{
+    int difference = a - b;
+
+    return difference;
+}
+
+int multiplyNumbers(int a, int b)
+{
     int product = a * b;
 
     return product;
 }
 
-string printHelloUser(string name){
+string printHelloUser(string name)
+{
     return "Hello, " + name + "!";
 }
 
-void printHelloWorld(){
+void printHelloWorld()
+{
     cout << "Hello, World!" << endl;
 }
 
-int main(){
+int main()
+{
     // 함수 없이 단순 계산
     cout << 1+2 << endl;
     cout << 3+4 << endl;
@@ -45,6 +57,7 @@ int main(){
     cin >> a >> b;
     cout << "Sum: " << addNumbers(a, b) << endl;
     cout << "Product: " << multiplyNumbers(a, b) << endl;
+
 
 
 

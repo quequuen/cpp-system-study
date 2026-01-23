@@ -92,16 +92,43 @@ int main(){
 ```cpp
 #include <iostream>
 
-int add(int a, int b) {
+using namespace std;
+
+int add(int a, int b) { // 함수 정의
     return a + b; // 두 정수를 더한 값을 반환
 }
 
+int main() {
+    cout << "2 + 3 = " << add(2, 3) << endl;
+
+    return 0;
+}
+
+```
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int add (int a, int b); // 함수 선언
+
+int main() {
+    cout << "2 + 3 = " << add(2, 3) << endl;
+
+    return 0;
+}
+
+int add (int a, int b) {
+    return a + b; // 함수 정의
+}
 ```
 
 - 함수 선언과 정의
   - 선언(declaration): 함수의 이름, 반환 타입, 매개변수 타입을 명시.
   - 정의(definition): 함수의 실제 구현을 포함.
   - 함수 정의 내에서 다른 함수의 선언은 가능하지만, 정의는 불가능.
+  - 함수 선언은 보통 함수가 사용되기 전에 이루어져야 함.
 
 ### 지역 범위(Local Scope)와 전역 범위(Global Scope)
 
