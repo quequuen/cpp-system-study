@@ -161,3 +161,43 @@ int b = 20;
 
 int maxVal = (a > b) ? a:b; // a가 b보다 크면 a, 아니면 b를 maxVal에 할당
 ```
+
+### 헤더 파일(Header Files) 기초
+
+헤더 파일은 함수 선언, 클래스 정의, 상수 정의 등을 포함하는 파일로, 코드의 재사용성과 모듈화를 높여줌. 일반적으로 '.h' 확장자를 가짐.
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int addNumbers(int a, int b)
+{
+    return a + b;
+}
+```
+
+```cpp
+// utils.h
+#pragma once
+
+
+int addNumbers(int a, int b);
+```
+
+```cpp
+// main.cpp
+#include "utils.h"
+
+using namespace std;
+
+int main()
+{
+    int sum = addNumbers(5, 10);
+    cout << "Sum: " << sum << endl;
+}
+```
+
+- '#pragma once'는 헤더 파일이 여러 번 포함되는 것을 방지하는 전처리기 지시문.
+- 헤더 파일에는 함수 정의보다는 함수 선언을 포함하는 것이 일반적임.
+- 헤더 파일을 포함할 때는 큰 따옴표("")를 사용하여 로컬 파일을 포함함.
