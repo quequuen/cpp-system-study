@@ -201,3 +201,105 @@ int main()
 - '#pragma once'는 헤더 파일이 여러 번 포함되는 것을 방지하는 전처리기 지시문.
 - 헤더 파일에는 함수 정의보다는 함수 선언을 포함하는 것이 일반적임.
 - 헤더 파일을 포함할 때는 큰 따옴표("")를 사용하여 로컬 파일을 포함함.
+
+### 링킹 에러(Linking Error)
+
+- 컴파일에 성공한 여러 파일 조각(.o)을 하나로 합치는 과정
+- 컴파일은 성공했는데 프로그램 빌드 과정(전처리 → 컴파일 → 링킹)에서 여러 파일을 연결할 때 발생하는 에러.
+
+```cpp
+// 기존 utils.h (헤더 가드 없음)
+struct Point {
+    int x;
+    int y;
+};
+
+int add(int a, int b);
+```
+
+```cpp
+// 기존 main.cpp
+#include "utils.h"
+#include "utils.h"  // 실수로 두 번
+
+int main() {
+    return 0;
+}
+```
+
+```cpp
+// 전처리 후 main.cpp
+struct Point {  // 첫 번째 include
+    int x;
+    int y;
+};
+int add(int a, int b);
+
+struct Point {  // 두 번째 include (중복)
+    int x;
+    int y;
+};
+int add(int a, int b);
+
+int main() {
+    return 0;
+}
+```
+
+**컴파일 에러:**
+
+```
+error: redefinition of 'struct Point'
+```
+
+- 해당 상황 말고도 중복 정의나 잘못된 빌드 등으로도 발생할 수 있음.
+
+### 헤더 가드(Header Gaurd)
+
+- 컴파일 에러(중복 선언∙정의 등)을 방지하며 헤더 파일 상단에 전처리기 지시문을 추가.
+
+- 방법 1: #ifndef(전통적)
+  - 해당 파일이 없으면 포함하라는 의미
+
+```cpp
+// utils.h
+#ifndef UTILS_H      // "UTILS_H가 정의 안 됐으면"
+#define UTILS_H      // "UTILS_H를 정의해"
+
+struct Point {
+    int x;
+    int y;
+};
+
+int add(int a, int b);
+
+#endif               // 종료
+```
+
+```cpp
+// 전처리 후 main.cpp
+struct Point {  // 한 번만 포함
+    int x;
+    int y;
+};
+int add(int a, int b);
+
+int main() {
+    return 0;
+}
+```
+
+- 방법2: #pragma once(현대적)
+  - 파일을 한 번만 포함하라는 의미
+
+```cpp
+// utils.h
+#pragma once
+
+struct Point {
+    int x;
+    int y;
+};
+
+int add(int a, int b);
+```
