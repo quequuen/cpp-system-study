@@ -53,7 +53,41 @@ int main(){
 
 - 파이썬으로 치면 메소드를 함수화 시켜 import 하는 것과 비슷함.
   ex) from math import pi
-  -> math.pi 대신 pi로 바로 사용 가능
+  → math.pi 대신 pi로 바로 사용 가능
+- 네임 스페이스 안에 네임 스페이스 구현 가능함.
+- 네임 스페이스 이름은 다른 파일이든 같은 파일이든 같아도 상관 없지만 같은 네임 스페이스 안에서의 중복 정의는 컴파일 에러를 일으킴 → 컴파일/링크 시 하나의 네임스페이스로 취급되기 때문.
+
+```cpp
+// file1.cpp
+namespace math
+{
+  int add(int a, int b)
+  {
+      return a + b;
+  }
+}
+
+// file2.cpp
+namespace math
+{
+  int sub(int a, int b)
+  {
+      return a - b;
+  }
+}
+```
+
+- 컴파일/링크 시 math 네임스페이스가 합쳐져서 컴파일/링크 시 하나의 네임스페이스로 취급됨. (하지만 동일한 시그니처의 동일한 이름을 가지는 심볼이 생길 시 오류.)
+
+- 시그니처를 달리 한 오버로딩은 가능.
+
+```cpp
+namespace math
+{
+  int add(int a, int b);
+  double add(double a, double b);
+}
+```
 
 ### cout과 cin
 
