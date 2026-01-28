@@ -16,3 +16,5 @@ C++의 기본 자료형(Primitive Data Types)은 데이터를 메모리에 저�
 | short     | 2 bytes        | -32,768 ~ 32,767         | 작은 범위의 정수              |
 | int       | 4 bytes        | -21억 ~ 21억             | 가장 일반적으로 사용되는 정수 |
 | long long | 8 bytes        | $-9.22 \times 10^{18}$ ~ | 매우 큰 정수                  |
+
+- Tip: 부호가 없는 정수를 쓰고 싶다면 앞에 **unsigned**를 붙임. (예: unsigned int). 이 경우 음수는 저장 못 하지만 양수의 범위가 2배로 늘어남.
