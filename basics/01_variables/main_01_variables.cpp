@@ -45,5 +45,6 @@ int main(){
     int max_value = (a > li_x) ? a : li_x; // a와 li_x 중 더 큰 값을 max_value에 저장
 
     
+    
     return 0;
 }
