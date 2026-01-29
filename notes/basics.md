@@ -360,3 +360,15 @@ struct Point {
 
 int add(int a, int b);
 ```
+
+### 삼항 연산자(Conditional Operator)
+
+삼항 연산자는 조건문(If-else)의 축약형. 코드를 짧게 줄여주지만, 남용하면 가독성을 해칠 수 있다는 단점이 있음.
+
+- 문법: 조건식 ? 참일 때 값 : 거짓일 때 값;
+
+```cpp
+int a = 10, b = 20;
+int max = (a > b) ? a : b;
+// a가 크면 a를, 아니면 b를 max에 대입.
+```
