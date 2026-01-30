@@ -70,9 +70,9 @@ int main(){
     cout << decltype_value << endl;
     // decltype_value는 int가 아닌 int&이기 때문에 원본인 type_test_x의 값이 수정되면 수정된 값으로 출력됨.
     
-    int init_a(123); //direct initialization
-    int init_b{123}; //uniform initialization
-
+    int init_a(1); //direct initialization
+    int init_b{2}; //uniform initialization
+    
 
     return 0;
 }

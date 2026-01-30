@@ -9,6 +9,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # 각 학습 프로그램 추가
 add_executable(basic_00 basics/00_basic-of-basics/main_00_basic_of_basics.cpp)
 add_executable(variables_01 basics/01_variables/main_01_variables.cpp)
+add_executable(variables_02 basics/01_variables/main_01_variables_02.cpp)
 add_executable(io_stream_07 basics/07_io_streams/main_07_io.cpp)
 add_executable(functions_03 
     basics/03_functions/main_03_func.cpp
