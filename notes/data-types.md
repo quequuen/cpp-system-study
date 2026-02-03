@@ -161,6 +161,7 @@ cout << a << endl;
      - 형변환: 큰 타입을 작은 타입으로 강제 변환할 때.
 
    - 위험성(보안 이슈)
+
      - 무한 루프: 반복문의 제어 변수가 오버플로우로 인해 조건식을 영원히 만족하게 될 가능성 있음.
      - 메모리 손상: 배열의 인덱스 계산 시 오버플로우가 나면 엉뚱한 메모리 위치를 참조하게 되어 해킹의 경로가 될 수 있음.
 
@@ -185,3 +186,46 @@ int main() {
     return 0;
 }
 ```
+
+### 고정 너비 정수(Fixed-width Integers)
+
+시스템이나 아키텍처(32 비트, 64 비트 등)에 상관없이 변수의 크기를 비트(bit) 단위로 정확하게 고정하고 싶을 때 사용.
+원래 C++의 기본 자료형인 int나 long은 컴파일러나 운영체제에 따라 크기가 달라질 수 있다는 불완전함이 있는데, 이를 해결하기 위해 등장.
+
+- Portability 이슈
+
+  - 컴퓨터나 운영체제에 따라 자료형의 크기가 다름.
+  - 데이터 정밀도: 네트워크 통신이나 파일 저장 시, 정확히 4 바이트 데이터를 보내야 하는데 int 크기가 달라지면 데이터가 깨지게 됨.
+
+- 종류
+  | 자료형(Signed) | 자료형(Unsigned) | 크기(Bit) |크기(Byte) |
+  | --------- | -------------------------- | -------------------------- |-------------------------- |
+  | int8_t | uint8_t | 8 bits | 1 byte |
+  | int16_t | uint16_t | 16 bits | 2 byte |
+  | int32_t | uint32_t | 32 bits | 4 byte |
+  | int64_t | uint64_t | 64 bits | 8 byte |
+
+```cpp
+#include <iostream>
+// #include <cstdint>
+// 고정 너비 정수형을 위한 헤더는 cstdint지만 요즘은 iostream 내에서 cstdint를 include 하고 있음.
+
+int main()
+{
+    using namespace std;
+    // 시스템에 상관없이 무조건 32비트(4바이트)를 차지함.
+    int32_t myFixedInt = 1000;
+
+    // 무조건 64비트(8바이트)
+    uint64_t myHugeInt = 0xFFFFFFFFFFFFFFFF;
+    cout << "size: " << sizeof(myFixedInt) << " bytes" << endl;
+    cout << "size: " << sizeof(myHugeInt) << " bytes" << endl;
+
+    return 0;
+}
+```
+
+- \_fast와 \_least
+  <cstdint>에는 더 정밀한 제어를 위한 변형 타입도 존재.
+  - int_fast32_t: 최소 32비트를 보장하면서, 내 컴퓨터에서 **가장 빠르게 처리되는** 타입을 선택.
+  - Int_least32_t: 최소 32비트를 가질 수 있는 **가장 작은** 타입을 선택.
