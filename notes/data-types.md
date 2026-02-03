@@ -230,4 +230,51 @@ int main()
   - int_fast32_t: 최소 32비트를 보장하면서, 내 컴퓨터에서 **가장 빠르게 처리되는** 타입을 선택.
   - Int_least32_t: 최소 32비트를 가질 수 있는 **가장 작은** 타입을 선택.
 
-### 부동소수점 수(Floating Point Numbers)
+### 부동소수점(Floating Point)
+
+실수형 자료형(float, double)이 사용하는 부동소수점(Floating Point) 방식은 숫자를 아주 정밀하게 저장하는 것이 아니라, **최대한 가깝게 근사치**로 저장하는 방식.
+
+- 부동소수점 사용 시 주의사항
+  - 일치 연산자(==) 사용 금지
+    부동 소수점은 미세한 오차가 발생하기 때문에 두 값이 정확히 같은지 비교하면 안됨.
+  - 오차 누적
+    반복문 안에서 실수를 계속 더하면 오차가 점점 커짐.
+  - 정밀도 손실(Precision Loss)
+    매우 큰 숫자와 매우 작은 숫자를 더할 때, 작은 숫자의 값이 무시되는 현상이 발생할 수 있음.
+
+### isnan과 isinf
+
+실수 계산을 하다 보면 숫자가 아닌 값이 나오거나 무한대로 발산할 수 있는 부분들을 미리 알 수 있는 함수.(cmath 하위 함수)
+
+- std::isnan(Not a Number)
+
+  - "숫자가 아님"을 뜻하며 수학적으로 정의되지 않는 연산을 할 때 발생.
+  - **nan은 자기 자신과 비교해도 false가 나오는 유일한 값**이기 때문에 isnan을 사용해 체크하는 것이 필수적.
+
+- std::isinf(Infinity)
+
+  - "무한대"를 뜻하며 숫자가 해당 자료형이 표현할 수 있는 한계를 넘어설 때 발생.
+  - 오버플로우가 발생했을 때 프로그램이 멈추지 않고 inf 값이 되어 계속 계산될 수 있으므로 사전에 체크 필요.
+
+```cpp
+#include <iostream>
+#include <cmath>    // isnan, isinf 사용
+
+int main() {
+    double zero = 0.0;
+    double pos_inf = 1.0 / zero;
+    double nan_val = std::sqrt(-1.0);
+
+    // isinf 체크
+    if (std::isinf(pos_inf)) {
+        std::cout << "값은 무한대입니다." << std::endl;
+    }
+
+    // isnan 체크
+    if (std::isnan(nan_val)) {
+        std::cout << "값은 숫자가 아닙니다(NaN)." << std::endl;
+    }
+
+    return 0;
+}
+```
