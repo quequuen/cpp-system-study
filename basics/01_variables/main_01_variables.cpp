@@ -2,12 +2,14 @@
 
 using namespace std;
 
-void printSomething(int x){
+void printSomething(int x)
+{
     x = 123;
     cout << x << endl;
 }
 
-int main(){
+int main()
+{
     int a = 123; // int(정수형) 타입의 a라는 이름의 변수를 선언(declaration)하고, 123이라는 숫자 값으로 초기화(initialization)
     a = 456; // a라는 메모리 공간 안에 456이라는 숫자 값을 대입(assignment)
 
@@ -72,7 +74,7 @@ int main(){
     
     int init_a(1); //direct initialization
     int init_b{2}; //uniform initialization
-    
+
 
     return 0;
 }
