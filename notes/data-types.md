@@ -278,3 +278,34 @@ int main() {
     return 0;
 }
 ```
+
+### bool 자료형
+
+bool 자료형은 true(참) 또는 false(거짓) 두 가지 값만 가질 수 있는 논리형 자료형.
+
+- 메모리 크기: bool 자료형은 일반적으로 1 byte(8 bits)를 차지하지만, 실제로는 1 bit만 필요함. 그러나 컴퓨터의 메모리 구조상 최소 단위가 byte이기 때문에 1 byte를 사용.
+- 암시적 변환: bool은 정수형과 암시적으로 변환될 수 있음. 0은 false로, 0이 아닌 모든 값은 true로 간주됨.
+
+```cpp
+#include <iostream>
+
+int main() {
+    using namespace std;
+
+    bool b1 = true; // copy initialization
+    bool b2(false); // direct initialization
+    bool b3 { true }; // uniform initialization
+    b3 = false;
+
+    cout << std::boolalpha;
+
+    cout << "b1: " << b1 << endl;
+    cout << "b2: " << b2 << endl;
+    cout << "b3: " << b3 << endl;
+
+    return 0;
+}
+```
+
+- 기본적으로 cout은 bool 값을 0(false), 1(true)로 출력
+- std::boolalpha 조작자를 사용하면 true, false로 출력 가능(반대로 std::noboolalpha 사용 시 0, 1로 출력)
