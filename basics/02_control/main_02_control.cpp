@@ -5,6 +5,11 @@ bool returnBool(int a, int b)
     return a > b;
 }
 
+bool isEven(int number)
+{
+    return (number % 2) == 0;
+}
+
 
 int main()
 {
@@ -28,4 +33,18 @@ int main()
 
     cout << returnBool(3, 5) << endl;
     cout << returnBool(7, 2) << endl;
+
+    int my_number;
+
+    cin >> my_number;
+    bool even_result = isEven(my_number);
+
+    if(even_result)
+    {
+        cout << my_number << " is even." << endl;
+    }
+    else
+    {
+        cout << my_number << " is odd." << endl;
+    }
 }
