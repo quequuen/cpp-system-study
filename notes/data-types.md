@@ -312,4 +312,51 @@ int main() {
 
 ### 문자형 자료형
 
-문자형 자료형은 단일 문자를 저장하는 데 사용되는 자료형으로, C++에서는 주로 char 자료형이 사용됨.
+문자형 자료형은 단일 문자를 저장하는 데 사용되는 자료형으로, C++에서는 주로 char 자료형이 사용됨. **글자를 담는 바구니**
+
+- 메모리 크기: char 자료형은 일반적으로 1 byte(8 bits)를 차지하며, 이는 ASCII 문자 집합의 128개 문자(0~127)를 표현하는 데 충분함.
+- std::string: C++ 표준 라이브러리에서 제공하는 문자열 클래스. char 배열보다 더 편리하게 문자열을 다룰 수 있음.
+
+```cpp
+#include <iostream>
+#include <string>
+
+int main() {
+    using namespace std;
+
+    string str = "Hello, World!";
+    cout << str << endl;
+
+    return 0;
+}
+```
+
+- std::string_view: C++17에서 도입된 문자열 뷰 클래스. 문자열 데이터를 복사하지 않고도 읽기 전용으로 접근할 수 있어 성능 최적화에 유리함.(메모리 복사 없이 문자열을 효율적으로 **참조**만 하고 싶을 때 사용.)
+- 공백 포함 입력 시에는 getline() 함수 사용 필수.
+- 특수 문자(Escape Sequences)
+  - \n: 줄 바꿈
+  - \t: 탭
+  - \': 작은 따옴표
+  - \": 큰 따옴표
+  - \\: 백슬래시
+
+```cpp
+#include <iostream>
+#include <string>
+#include <string_view>
+
+int main() {
+    std::string name = "GaYeon";
+    std::string_view sv = name; // 복사 없이 name을 바라봄
+
+    std::cout << "이름: " << name << " (길이: " << name.length() << ")" << std::endl;
+
+    // 공백 포함 입력 연습
+    std::string full_name;
+    std::cout << "전체 이름을 입력하세요: ";
+    std::getline(std::cin, full_name);
+    std::cout << "입력된 이름: " << full_name << std::endl;
+
+    return 0;
+}
+```
