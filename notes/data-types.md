@@ -309,3 +309,7 @@ int main() {
 
 - 기본적으로 cout은 bool 값을 0(false), 1(true)로 출력
 - std::boolalpha 조작자를 사용하면 true, false로 출력 가능(반대로 std::noboolalpha 사용 시 0, 1로 출력)
+
+### 문자형 자료형
+
+문자형 자료형은 단일 문자를 저장하는 데 사용되는 자료형으로, C++에서는 주로 char 자료형이 사용됨.
