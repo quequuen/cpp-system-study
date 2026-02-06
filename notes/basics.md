@@ -128,6 +128,11 @@ namespace math
     return 0;
 ```
 
+### endl; 과 \n
+
+- endl: 출력 스트림에 줄 바꿈(newline)을 추가하고, 출력 버퍼를 비우는 역할을 함. 즉시 화면에 출력되도록 보장.
+- \n: 단순히 줄 바꿈(newline) 문자를 추가. 출력 버퍼를 비우지 않음. 따라서 출력이 즉시 화면에 나타나지 않을 수 있음.
+
 ### 키워드(keywords)와 식별자(identifiers) 네이밍 규칙
 
 - 키워드: C++ 언어에서 미리 정의된 예약어로, 특정 기능이나 동작을 나타냄. ex) int, return, if, else, while 등.
