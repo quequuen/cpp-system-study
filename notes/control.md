@@ -104,3 +104,36 @@ if (index < max_size && array[index] == target) {
 | \*=    | 곱셈 후 대입   | a \*= b (a = a \* b) | 21   |
 | /=     | 나눗셈 후 대입 | a /= b (a = a / b)   | 2    |
 | %=     | 나머지 후 대입 | a %= b (a = a % b)   | 1    |
+
+### 증감 연산자(Increment and Decrement Operators)
+
+- ++ : 변수의 값을 1 증가시킴.
+- -- : 변수의 값을 1 감소시킴.
+- 전위 연산자(Pre-increment/Pre-decrement): 대상이 되는 값을 먼저 증가/감소시킨 후, 그 값을 반환함.
+- 후위 연산자(Post-increment/Post-decrement): 대상이 되는 값을 먼저 반환한 후, 그 값을 증가/감소시킴. **줄이 바뀌는 시점에** 값이 변함.
+
+```cpp
+#include <iostream>
+int main()
+{
+    using namespace std;
+
+    int x = 5;
+
+    cout << "Initial x: " << x << endl; // 5
+
+    cout << "Post-increment x++: " << x++ << endl; // 5
+    cout << "After post-increment, x: " << x << endl; // 6
+
+    cout << "Pre-increment ++x: " << ++x << endl; // 7
+    cout << "After pre-increment, x: " << x << endl; // 7
+
+    cout << "Post-decrement x--: " << x-- << endl; // 7
+    cout << "After post-decrement, x: " << x << endl; // 6
+
+    cout << "Pre-decrement --x: " << --x << endl; // 5
+    cout << "After pre-decrement, x: " << x << endl; // 5
+
+    return 0;
+}
+```
