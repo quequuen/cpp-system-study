@@ -46,7 +46,13 @@ int main()
     cout << d << endl;
     cout << e << endl;
 
+    bool flag1 = true;
+    bool flag2 = false;
 
+    const int result = flag1 && flag2 ? 100 : 200;
+    // flag1 && flag2가 true이면 100, false이면 200이 result
+
+    cout << result << endl;
     
     return 0;
 }
