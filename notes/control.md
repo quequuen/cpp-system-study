@@ -137,3 +137,56 @@ int main()
     return 0;
 }
 ```
+
+### 쉼표 연산자(Comma Operator)
+
+쉼표(,) 연산자는 두 개의 표현식을 평가하고, 두 번째 표현식의 결과를 반환함.
+
+```cpp
+#include <iostream>
+int main()
+{
+    using namespace std;
+
+    int a = 5;
+    int b = 10;
+
+    int result = (a += 2, b += 3); // a는 7이 되고, b는 13이 됨. result는 b의 값인 13이 됨.
+    int d = (++a, b--); // a는 8이 되고, b는 12가 됨. d는 b의 값인 12가 됨.
+    int e;
+    e = a, b; // e는 b의 값인 12가 됨.
+
+    cout << "a: " << a << endl;         // 8
+    cout << "b: " << b << endl;         // 12
+    cout << "result: " << result << endl; // 13
+    cout << "d: " << d << endl;         // 12
+    cout << "e: " << e << endl;         // 12
+
+    return 0;
+}
+```
+
+- 주의: 쉼표 연산자는 가독성을 떨어뜨릴 수 있으므로, 복잡한 표현식에서는 사용을 피하는 것이 좋음.
+
+### 조건 연산자(Conditional Operator)
+
+조건 연산자(삼항 연산자)는 세 개의 피연산자를 가지며, 조건에 따라 두 값 중 하나를 선택함.
+
+- 조건식 ? 참일 때 값 : 거짓일 때 값
+
+```cpp
+#include <iostream>
+int main()
+{
+    using namespace std;
+
+    int a = 5;
+    int b = 10;
+
+    int max = (a > b) ? a : b;
+
+    cout << "Max: " << max << endl;
+
+    return 0;
+}
+```
