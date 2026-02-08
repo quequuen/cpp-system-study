@@ -19,10 +19,10 @@ int main()
 
     int x = 10;
     // 해당 표현은 지양해야 함.
-    int y = addNumbers(++x, x);
-    int z = addNumbers(x++, x);
-    cout << y << endl;
-    cout << z << endl;
+    // int y = addNumbers(++x, x);
+    // int z = addNumbers(x++, x);
+    // cout << y << endl;
+    // cout << z << endl;
 
 
     
