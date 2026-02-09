@@ -193,3 +193,62 @@ int main()
     return 0;
 }
 ```
+
+### 관계 연산자(Relational Operators)
+
+관계 연산자는 두 값을 비교하여 참(true) 또는 거짓(false)을 반환함.
+| 연산자 | 기능 | 예시 (int a=5, b=10) | 결과 |
+| ------ | ------------ | --------------------- | ----- |
+| == | 같음 | a == b | false |
+| != | 같지 않음 | a != b | true |
+| > | 큼 | a > b | false |
+| < | 작음 | a < b | true |
+| >= | 크거나 같음 | a >= b | false |
+| <= | 작거나 같음 | a <= b | true |
+
+```cpp
+#include <iostream>
+int main()
+{
+    using namespace std;
+
+    int a = 5;
+    int b = 10;
+
+    cout << "a == b: " << (a == b) << endl; // false
+    cout << "a != b: " << (a != b) << endl; // true
+    cout << "a > b: " << (a > b) << endl;   // false
+    cout << "a < b: " << (a < b) << endl;   // true
+    cout << "a >= b: " << (a >= b) << endl; // false
+    cout << "a <= b: " << (a <= b) << endl; // true
+
+    return 0;
+}
+```
+
+- 주의 사항
+  - 관계 연산자는 피연산자의 타입이 다를 경우 암묵적 형변환이 발생할 수 있으므로, 비교하려는 값들의 타입이 일치하는지 확인하는 것이 좋음.
+  - 부동소수점 타입(float, double 등)을 비교할 때는 오차 문제로 인해 예상치 못한 결과가 나올 수 있으므로, 직접적인 비교보다는 일정 범위 내에서의 비교를 권장함.
+  - NaN(Not a Number) 값은 자기 자신과도 같지 않음. 즉, (nan == nan)은 false를 반환함.
+
+```cpp
+#include <iostream>
+int main()
+{
+    double my_d1 = 0.1 + 0.1 + 0.1;
+    double my_d2 = 0.3;
+
+    const double epsilon = 1e-10; // 허용 오차 범위
+
+    if (std::abs(my_d1 - my_d2) < epsilon)
+    {
+        cout << "my_d1 and my_d2 are considered equal." << endl;
+    }
+    else
+    {
+        cout << "my_d1 and my_d2 are NOT equal." << endl;
+    }
+
+    return 0;
+}
+```

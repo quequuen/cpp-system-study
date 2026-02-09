@@ -53,6 +53,22 @@ int main()
     // flag1 && flag2가 true이면 100, false이면 200이 result
 
     cout << result << endl;
+
+    // 부동 소수점과 관계 연산자 오차 범위 잡기
+
+    double my_d1 = 0.1 + 0.1 + 0.1;
+    double my_d2 = 0.3;
+
+    const double epsilon = 0.00001;
+
+    if (std::abs(my_d1 - my_d2) < epsilon)
+    {
+        cout << "my_d1 and my_d2 are considered equal." << endl;
+    }
+    else
+    {
+        cout << "my_d1 and my_d2 are NOT equal." << endl;
+    }
     
     return 0;
 }
