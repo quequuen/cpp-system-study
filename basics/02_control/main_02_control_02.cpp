@@ -69,6 +69,19 @@ int main()
     {
         cout << "my_d1 and my_d2 are NOT equal." << endl;
     }
+
+    x = 10;
+    int y = 20;
+
+    if (x == 10 || y++ == 20)
+    // 해당 조건문이 true이기 때문에 y가 21로 증가
+    // 해당 조건문이 false였다면 y는 증가하지 않았을 것.
+    {
+        cout << "Inside if block." << endl;
+    }
+
+    cout << "y: " << y << endl;
+
     
     return 0;
 }

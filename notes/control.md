@@ -29,6 +29,35 @@ int main()
 }
 ```
 
+- 증감 연산자와 함께 사용할 경우, 우선순위에 주의해야 함.
+
+```cpp
+#include <iostream>
+
+int main()
+{
+    using namespace std;
+
+    int x = 10;
+    int y = 20;
+
+    if (x == 10 && y++ == 20)
+    // 좌항이 true이기 때문에 y가 21로 증가
+    // 좌항이 false였다면 y는 증가하지 않았을 것.
+    // 해당 조건문이 || 연산자였다면 y는 증가하지 않았을 것. 반대로 좌항이 false인 || 연산자였다면 y는 증가했을 것.
+    {
+        cout << "Inside if block." << endl;
+    }
+
+    cout << "y: " << y << endl;
+
+
+    return 0;
+}
+```
+
+- 주의 사항: Logical And가 Logical Or보다 우선순위가 높음. 복잡한 논리식을 작성할 때는 괄호를 사용하여 명확하게 표현하는 것이 좋음.
+
 ### 단축 평가(Short-Circuit Evaluation)
 
 - **&& (AND) 논리 곱 연산자:** 좌항이 false이면, 우항이 무엇이든 결과는 무조건 false(좌항이 거짓이면 우항은 평가하지 않음).

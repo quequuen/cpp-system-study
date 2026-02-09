@@ -21,6 +21,8 @@ int main()
     cout << (true && false) << endl;
     cout << (false && true) << endl;
     cout << (false && false) << endl;
+    cout << (!true || true) << endl;
+    cout << (!(true || true)) << endl;
     cout << (true || true) << endl;
     cout << (true || false) << endl;
     cout << (false || true) << endl;
@@ -47,4 +49,6 @@ int main()
     {
         cout << my_number << " is odd." << endl;
     }
+
+    return 0;
 }
