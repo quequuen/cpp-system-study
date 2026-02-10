@@ -320,3 +320,73 @@ int main()
   - 비트 연산자는 주로 저수준 프로그래밍, 임베디드 시스템, 성능 최적화 등에 사용됨.
   - 음수에 대한 비트 연산은 2의 보수 표현을 사용하므로 예상치 못한 결과가 나올 수 있음.
   - 비트 시프트 연산자는 부호 있는 정수형에서 사용 시, 부호 비트가 유지되는지 여부에 따라 결과가 달라질 수 있음.
+
+### 비트 플래그(Bit Flags)
+
+비트 플래그는 하나의 정수형 변수 내에서 여러 개의 불리언 상태를 저장하는 방법임. 각 비트는 독립적인 상태를 나타냄.
+
+```cpp
+#include <iostream>
+
+// 각 비트 자리에 의미를 부여 (2의 거듭제곱)
+const unsigned char opt_moving   = 1 << 0; // 0000 0001
+const unsigned char opt_attacking = 1 << 1; // 0000 0010
+const unsigned char opt_jumping   = 1 << 2; // 0000 0100
+
+int main()
+{
+    using namespace std;
+
+    unsigned char my_status = 0; // 초기 상태 (전부 off)
+
+    // 상태 추가 (OR 연산)
+    my_status |= opt_moving;
+    my_status |= opt_jumping;
+
+    // 상태 확인 (AND 연산)
+    if (my_status & opt_moving) std::cout << "이동 중입니다." << std::endl;
+
+    // 상태 제거 (AND + NOT 연산)
+    my_status &= ~opt_jumping;
+
+    return 0;
+}
+```
+
+### 비트 마스크(Bit Masks)
+
+비트 마스크는 특정 비트들을 선택적으로 조작하기 위해 사용되는 값임. 주로 비트 플래그와 함께 사용됨.
+
+```cpp
+#include <iostream>
+#include <iomanip>
+
+int main() {
+    // 32비트 컬러 값 (0xRRGGBBAA)
+    // 예: 주황색 계열 (Red: FF, Green: A5, Blue: 00, Alpha: FF)
+    uint32_t orange_pixel = 0xFFA500FF;
+
+    // 비트 마스크 정의 (각 색상 위치만 1로 채움)
+    uint32_t red_mask   = 0xFF000000;
+    uint32_t green_mask = 0x00FF0000;
+    uint32_t blue_mask  = 0x0000FF00;
+
+    // 마스크를 이용한 색상 추출
+    // 1. AND 연산으로 해당 비트만 남김
+    // 2. 비트 이동(Shift)으로 값을 맨 오른쪽으로 밀어서 정수로 만듦
+    uint32_t r = (orange_pixel & red_mask) >> 24;
+    uint32_t g = (orange_pixel & green_mask) >> 16;
+    uint32_t b = (orange_pixel & blue_mask) >> 8;
+
+    std::cout << "Red: "   << std::hex << r << std::endl; // ff
+    std::cout << "Green: " << std::hex << g << std::endl; // a5
+    std::cout << "Blue: "  << std::hex << b << std::endl; // 00
+
+    return 0;
+}
+```
+
+### 비트 플래그 vs 비트 마스크
+
+- 비트 플래그: "이 비트가 1이야, 0이야?" **개별 스위치 조작**
+- 비트 마스크: "이 큰 값에서 내가 원하는 부분만 잘라낼 거야." **데이터 추출**
