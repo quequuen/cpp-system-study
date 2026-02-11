@@ -4,6 +4,17 @@ extern void printMessage();
 // void printMessage(); // test.cpp에 정의된 함수를 외부에서 사용하겠다는 선언(윗줄과 같은 의미)
 // 이걸 일일이 파일마다 쓸 수 없으니까 이걸 인터페이스화 한 게 헤더 파일임. 
 
+// auto add(auto x, auto y) -> 이건 안됨.
+auto autoAdd(int x, int y)
+{
+    return  x + y;
+}
+// 오버로딩
+auto autoAdd(double x, double y)
+{
+    return x + y;
+}
+
 using namespace std;
 
 
@@ -43,6 +54,11 @@ int main()
     doSomething();
     doSomething();
     doSomething();
+
+    auto auto_a = 10;
+    auto auto_b = 123.0;
+    auto auto_c = 1 +2.3;
+    auto auto_add = autoAdd(1.3, 2.0);
     
 
     return 0;
