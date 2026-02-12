@@ -392,3 +392,55 @@ int main() {
     ```cpp
     enum Color { RED, GREEN, BLUE };
     ```
+
+### 문자열(Strings) 기초
+
+C++에서 문자열은 문자들의 연속된 시퀀스를 나타내며, 다양한 방법으로 다룰 수 있음. C 스타일 문자열과 C++ 표준 라이브러리의 std::string 클래스를 사용하여 문자열을 처리할 수 있음.
+
+- C 스타일 문자열
+
+  - 문자 배열로 표현되며, null 문자('\0')로 종료됨.
+  - 문자열 리터럴은 큰따옴표("")로 감싸서 표현.
+
+  ```cpp
+  char str[] = "Hello, World!";
+  ```
+
+  - 문자열 조작 함수는 <cstring> 헤더 파일에 정의되어 있음. (예: strlen, strcpy, strcat 등)
+
+- C++ std::string 클래스
+
+  - C++ 표준 라이브러리에서 제공하는 문자열 클래스.
+  - 동적 크기 조절, 다양한 멤버 함수 제공 등 편리한 기능을 제공.
+
+  ```cpp
+    #include <string>
+    std::string str = "Hello, World!";
+  ```
+
+  - 문자열 연결, 검색, 부분 문자열 추출 등 다양한 작업을 쉽게 수행할 수 있음. (예: str.length(), str.substr(), str.find() 등)
+
+- 문자열 입출력 시 주의 사항.
+
+  - std::cin을 사용할 때 공백 문자가 포함된 문자열을 입력받으려면 std::getline() 함수를 사용해야 함.
+  - C 스타일 문자열과 std::string 간의 변환이 필요할 수 있음. (예: std::string to C 스타일 문자열: str.c_str(), C 스타일 문자열 to std::string: std::string cstr = "Hello";)
+  - std::cin은 버퍼에 남아있는 개행 문자('\n')를 처리하지 않으므로, std::cin 사용 후, std::getline()을 사용하기 전에 std::cin.ignore()를 호출하여 버퍼를 비워야 함.
+
+    ```cpp
+        #include <iostream>
+        #include <string>
+        #include <limits>
+
+        std::string input;
+        std::cout << "Enter a string1: ";
+        std::cin >> input; // 공백 전까지 문자열 입력받기
+        // 'Hello, World!' 입력 시 'Hello,'까지만 input에 저장됨.
+        // 해당 부분을 해결하려면 getline 사용 필요.
+
+        std::string anotherInput;
+        std::cout << "Enter a string2: ";
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // 버퍼 비우기
+        std::getline(std::cin, anotherInput); // 공백 포함 문자열 입력받기
+    ```
+
+### 열거형(Enumerated types)
