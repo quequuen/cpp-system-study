@@ -484,3 +484,30 @@ int main() {
 - enum의 특징들을 가져가면서 문제점들을 개선.
 - 기본 타입(underlying type)이 int로 고정되어 있어 전방 선언이 자유로움.
 - enum class EnumName : char { A, B, C }; 와 같이 :를 사용해서 기본 자료형을 지정할 수 있음.
+
+### 타입 별칭(Type aliases)
+
+이미 존재하는 데이터 타입에 새로운 이름을 붙여주는 기능.
+
+- using 사용
+
+```cpp
+using identifier_t = int; // 정수형에 '식별자'라는 의미 부여
+using student_list = std::vector<std::string>; // 복잡한 타입을 한 단어로 축약
+
+student_list class_a; // std::vector<std::string> 대신 사용 가능
+```
+
+- typedef 사용
+
+```cpp
+typedef double distance_t;
+distance_t d = 10.5;
+```
+
+- 장점
+  - 가독성 및 의미 전달
+    단순히 double이라고 쓰는 대신, distance_t라고 쓰면 의미를 확실히 전달할 수 있음.
+  - 코드 유지보수
+    프로젝트 전체에서 사용하던 타입을 다른 타입으로 수정해야 할 시, 수천 개의 변수를 고칠 필요 없이 별칭 정의 한 줄만 수정하면 됨.
+  - 복잡한 타입 단순화

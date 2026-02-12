@@ -1,5 +1,7 @@
 #include <iostream>
 #include <typeinfo>
+#include <vector>
+#include <cstdint>
 
 enum Grade
 {
@@ -39,6 +41,8 @@ int main()
 
     if (color1 == color2)
         cout << "Same Color" << endl;
+    
+   
     
     return 0;
 }
