@@ -444,3 +444,43 @@ C++에서 문자열은 문자들의 연속된 시퀀스를 나타내며, 다양�
     ```
 
 ### 열거형(Enumerated types)
+
+서로 연관된 정수형 상수들을 이름으로 묶어서 관리하는 사용자 정의 자료형. 코드의 가독성을 높이고 의미를 명확하게 전달하는 데 아주 효과적. 내부적으로 0부터 시작하는 정수 값을 가짐. (직접 지정도 가능)
+
+```cpp
+enum Color { RED, GREEN, BLUE };
+// int RED = 10; // 에러! 위에서 RED를 이미 사용 중임
+```
+
+- 문제점
+  - **이름 충돌(Name Collision) 문제**
+    상수 이름들이 열거형 밖으로 유출. **전역 범위(Scope)를 오염.** 다른 이름의 열거형에 같은 이름의 요소가 있을 시 에러 발생.
+  - **암시적 형변환(Implicit Conversion) 문제**
+    사실상 **'이름이 붙은 정수(int)'**처럼 동작. Color::RED와 숫자 0을 비교하거나, RED + 10 같은 연산을 해도 컴파일러가 아무런 제지를 하지 않음.
+  - **전방 선언(Foward Declaration)의 어려움**
+    enum 안의 **실제적인 내용을 보고 내부 크기를 결정.** 미리 int인지 double인지를 결정할 수 없음. 실제 정의를 하기 전에 미리 선언(전방 선언) 불가.
+
+### 영역 제한 열거형(Scoped Enum)
+
+C++ 11에서 도입된, 열거형 멤버(열거자)가 정의된 enum 내부에만 스코프가 제한되는 안전한 열거형. enum::멤버 형태로 멤버에 접근 가능. enum과 달리 이름 충돌을 방지하고 자동 암시적 형변환을 막아 타입 안정성을 향상.
+
+```cpp
+enum class Status { Pending, Running, Completed };
+
+int main() {
+    Status s = Status::Pending;
+
+    // if (s == 0) // 타입이 달라 비교 불가
+    if (s == Status::Pending) {
+        // 로직 실행
+    }
+
+    // 꼭 정수로 바꾸고 싶다면 static_cast 사용
+    int value = static_cast<int>(s);
+    return 0;
+}
+```
+
+- enum의 특징들을 가져가면서 문제점들을 개선.
+- 기본 타입(underlying type)이 int로 고정되어 있어 전방 선언이 자유로움.
+- enum class EnumName : char { A, B, C }; 와 같이 :를 사용해서 기본 자료형을 지정할 수 있음.
