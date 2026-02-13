@@ -23,6 +23,7 @@ add_executable(control_01 basics/02_control/main_02_control.cpp)
 add_executable(control_02 basics/02_control/main_02_control_02.cpp)
 add_executable(control_03 basics/02_control/main_02_control_03.cpp)
 add_executable(control_04 basics/02_control/main_02_control_04.cpp)
+add_executable(control_05 basics/02_control/main_02_control_05.cpp)
 add_executable(pointers_01 basics/04_pointers/main_04_pointers.cpp)
 add_executable(io_stream_07 basics/07_io_streams/main_07_io.cpp)
 add_executable(functions_03 
