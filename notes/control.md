@@ -496,10 +496,106 @@ int main() {
 
 - if - else if - else
   가장 기본이 되는 분기문.
+
   ```cpp
   int score = 85;
   if (score >= 90) std::cout << "A";
   else if (score >= 80) std::cout << "B"; // 실행됨
   else std::cout << "C";
   ```
-  - 주의 사항: 조건식 결과는 반드시 bool 타입이어야 함.
+
+  - 조건식 결과는 반드시 bool 타입이어야 함.
+  - 조건식에는 비교 연산자가 아닌 대입 연산자(=)를 쓰게 되면 해당 변수에 값을 대입 후 항상 true 처리.
+
+- switch - case
+  하나의 변수 값을 여러 고정된 상수와 비교할 때 사용.
+
+  ```cpp
+  enum class State { Run, Stop };
+  State s = State::Run;
+  switch (s) {
+    case State::Run: std::cout << "Running..."; break;
+    case State::Stop: std::cout << "Stopped"; break;
+  }
+  ```
+
+  - 각 case 끝에 break를 넣지 않으면 아래쪽 case까지 실행되는 **Fall-through** 현상 발생.
+
+### 반복문(Iteration)
+
+- while
+  조건이 참인 동안 계속 실행.
+
+  ```cpp
+  int i = 0;
+  while (i < 3) {
+    std::cout << i << " "; // 0 1 2
+    i++;
+  }
+  ```
+
+  - 루프 안에서 조건을 변화시키지 않으면 무한 루프(Infinite Loop)에 빠져 프로그램이 응답 없음 상태가 됨.
+
+- do - while
+  조건을 나중에 검사하므로, 최소 1번은 무조건 실행.
+
+  ```cpp
+  int i = 10;
+  do {
+    std::cout << "한 번은 실행됨";
+  } while (i < 5);
+  ```
+
+  - while 문 끝에 세미콜론(;)을 반드시 붙여야 함.
+
+- for
+  반복 횟수가 정해져 있을 때 가장 좋은 선택
+
+  ```cpp
+  for (int i = 0; i < 5; ++i) {
+    std::cout << i; // 01234
+  }
+  ```
+
+  - 루프 변수 i는 for문 안(지역 범위)에서만 유효.
+
+### 점프문(Jump)
+
+- break
+  반복문이나 switch문을 즉시 탈출.
+
+  ```cpp
+  for (int i = 0; i < 10; i++) {
+    if (i == 5) break; // 5가 되면 루프 종료
+    std::cout << i;
+  }
+  ```
+
+- continue
+  현재 반복의 남은 코드를 건너뛰고 다음 반복(증감/조건 검사)으로 즉시 점프.
+
+  ```cpp
+  for (int i = 0; i < 5; i++) {
+    if (i % 2 == 0) continue; // 짝수면 건너뜀
+    std::cout << i; // 1, 3 출력
+  }
+  ```
+
+- goto
+  코드의 실행 흐름을 조건 없이 특정 레이블(Label)이 지정된 위치로 즉시 이동.
+
+  ```cpp
+  for (int i = 0; i < 10; ++i) {
+    for (int j = 0; j < 10; ++j) {
+        if (심각한_에러_발생) {
+            goto error_handler;
+        }
+    }
+  }
+
+  error_handler:
+  std::cerr << "에러를 처리하고 중단합니다." << std::endl;
+  ```
+
+  - 스파게티 코드, 가독성 및 유지보수 저하, 대안 존재(break, return, exception 등), 객체 생성 건너뛰기 금지와 같은 이유로 현재는 사용을 금지하거나 지양함.
+  - 중첩 루프의 일괄 탈출 등 극히 제한적인 상황에서만 사용.
