@@ -85,12 +85,3 @@ udp: UDP 소켓 프로그래밍, 데이터그램 통신
 map: std::map, 정렬된 연관 컨테이너, key-value 쌍
 unordered_map: std::unordered_map, 해시 테이블 기반 컨테이너
 vector: std::vector, 동적 배열, capacity, push_back, iterator
-
-## 각 폴더 상세 구조 예시
-
-04_pointers/
-├── src/ (실습 코드)
-│ ├── basic_pointer.cpp
-│ ├── dangling.cpp
-│ └── double_free.cpp
-└── README.md (그 주제 정리 노트)

@@ -1,13 +1,6 @@
 #include <iostream>
+#include <cstdlib>  // std::radn(), std::srand()
+#include <ctime>    // std::time()
+#include <random>
 
-int main()
-{
-    using namespace std;
-
-    int a;
-    cin >> a;
-
-
-
-    return 0;
-}
+using namespace std;
