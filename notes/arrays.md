@@ -84,3 +84,7 @@
     std::cout << arr[i];
     }
   ```
+
+- 범위 기반 for문을 가장 많이 사용하며 인덱스가 필요한 상황일 시, std::size를 가장 많이 사용한다.
+
+### 정적 다차원 배열(Multi-dimensional Array)
