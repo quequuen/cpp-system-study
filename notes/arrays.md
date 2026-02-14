@@ -2,6 +2,8 @@
 
 같은 타입의 변수들을 메모리에 연속적으로 나열하여 하나의 이름으로 관리.
 
+### 배열 기초
+
 - 타입 이름[크기];
 - 초기화
 
@@ -42,3 +44,43 @@
   ```
 
   - 함수 인자로 넘어온 배열의 주소를 출력하면 원본 배열의 주소와 다름(주소값을 저장하기 위해 함수 내에 생성된 별도의 포인터 변수 공간이기 때문, 집 주소를 적은 쪽지와 같은 개념).
+
+### 배열과 반복문
+
+- std::size 사용(현대 C++의 표준 방식)
+
+  ```cpp
+    #include <iostream>
+    #include <iterator> // std::size를 위해 필요
+
+    int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+
+        // 가장 권장되는 현대적 방식
+        for (int i = 0; i < std::size(arr); ++i) {
+            std::cout << arr[i] << " ";
+        }
+
+    }
+  ```
+
+- 범위 기반 for문(Range-based for loop)
+  인덱스 번호 자체가 필요한 게 아니라 배열의 값만 순서대로 쓰고 싶을 때 사용.
+
+  ```cpp
+    for (int value : arr) {
+    std::cout << value << " "; // 배열의 처음부터 끝까지 알아서 순회함
+  }
+  ```
+
+- std::array 사용
+  객체 지향적으로 사이즈 사용 가능.
+
+  ```cpp
+    #include <array>
+
+    std::array<int, 5> arr = {1, 2, 3, 4, 5};
+    for (int i = 0; i < arr.size(); ++i) { // .size() 멤버 함수 제공
+    std::cout << arr[i];
+    }
+  ```
