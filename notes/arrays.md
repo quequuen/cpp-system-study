@@ -139,3 +139,29 @@
 
 - **스택 오버플로(Stack Overflow)**: 정적 배열은 스택(Stack) 메모리를 사용하는데, 스택은 크기가 제한적이라 너무 큰 다차원 배열을 선언하면 프로그램이 터질 수 있음.
 - 3차원 이상의 배열은 가독성이 떨어지므로 구조체나 클래스로 변환.
+
+### 문자열(C-style String) 배열
+
+- C-style 문자열은 단순한 char 타입의 배열이지만, 일반 배열과는 다르게 **종단 문자(Null Terminator)**가 존재.
+
+```cpp
+char str[] = "Hello";
+// 메모리에는 ['H']['e']['l']['l']['o']['\0'] 순으로 저장됨
+```
+
+- 배열이기 때문에 선언 후 나중에 문자열을 통째로 대입할 수 없음.
+
+```cpp
+char name[10];
+// name = "Gemini"; // 에러: 배열은 대입 연산이 안 됨
+strcpy(name, "Gemini"); // <cstring> 헤더의 함수
+```
+
+- sizeof(str): 배열이 차지하는 전체 메모리 크기(종단 문자 포함).
+- strlen(str): 실제 문자의 개수(종단 문자 제외).
+- std::string 객체에서 C-style 문자열(주소값)을 뽑아낼 때 사용하는 함수가 바로 **.c_str()**
+
+```cpp
+std::string cppStr = "Hello";
+const char* cStr = cppStr.c_str(); // C 스타일 주소값 반환
+```
