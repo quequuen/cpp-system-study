@@ -31,7 +31,6 @@
 - 인덱스 범위 초과 오류 존재(Out of Range): 크기를 초과하는 곳에 접근을 하려고 할 때 오류.
 - 배열 전체를 한 번에 대입 불가: int a[3] = {1, 2, 3}; int b[3]; b = a; 같은 코드는 작동하지 않음. 루프(for문)를 사용해 하나씩 복사해야 함.
 - 배열의 함수 전달(Array Decay)
-
   - 배열을 함수 인자로 전달하면 배열의 첫 번째 요소를 가리키는 **포인터**로 변환됨.
   - 따라서 함수 내부에서 배열 요소를 수정하면 main의 원본 배열도 수정됨.
   - 함수 내에서는 배열의 실제 크기를 sizeof로 구할 수 없으므로, 관례상 배열 크기를 따로 전달함.
@@ -167,3 +166,43 @@ const char* cStr = cppStr.c_str(); // C 스타일 주소값 반환
 ```
 
 ### strcpy와 strcmp
+
+C-style 문자열(char[])은 객체가 아닌 **메모리 덩어리**이기 때문에, 일반적인 대입 연산자(=)나 비교 연산자(==)사용 불가. 대신 <cstring> 헤더에서 제공하는 전용 함수들을 사용해야 함. 그 중 가장 대표적인 두 함수.
+
+- strcpy(String Copy): 문자열 복사
+  배열은 서언된 이후에 str = "Hello";와 같이 값을 통때로 넣을 수 없음. 이때 strcpy를 사용해야 함.
+  - strcpy(dest, src);
+  - 원본 문자열을 대상(목적지) 배열에 복사함. (종단 문자 \\0까지 포함)
+
+  ```cpp
+  #include <cstring>
+
+  char src[] = "Hello";
+  char dest[10];
+
+  strcpy(dest, src); // src의 내용을 dest로 복사
+
+  ```
+
+- 주의 사항: dest의 크기가 src보다 작으면 **버퍼 오버플로우(Buffer Overflow)**가 발생하여 프로그램이 터지거나 보안 취약점이 생김. 그래서 현재는 더 안전한 strncpy나 strcpy_s 사용을 권장.
+
+- strcmp(String Compare): 문자열 비교
+  C-style 문자열에서 str1 == str2 라고 쓰면, 문자열의 내용이 아니라 두 배열이 위치한 '메모리 주소'를 비교하게 됨. 내용물을 비교하려면 strcmp를 써야 함.
+  - int result = strcmp(str1, str2);
+  - 결과값
+    1. 0: 두 문자열이 완벽히 일치함.
+    2. 양수: str1이 사전순으로 더 뒤에 있음.
+    3. 음수: str2이 사전순으로 더 뒤에 있음.
+
+  ```cpp
+  char a[] = "apple";
+  char b[] = "apple";
+
+  if (strcmp(a, b) == 0) {
+  // 내용이 같을 때 실행됨
+  }
+  ```
+
+- 그 외
+  - strlen(s): 문자열의 길이를 반환(\\0 제외).
+  - strcat(dest, src): 문자열 이어붙이기.
