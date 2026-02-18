@@ -165,3 +165,5 @@ strcpy(name, "Gemini"); // <cstring> 헤더의 함수
 std::string cppStr = "Hello";
 const char* cStr = cppStr.c_str(); // C 스타일 주소값 반환
 ```
+
+### strcpy와 strcmp
