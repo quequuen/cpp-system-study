@@ -15,6 +15,9 @@ void printSizeof(ArrayStruct arrStr)
 void printSizeofPtr(ArrayStruct *arrStr)
 {
     cout << sizeof(*arrStr) << endl;
+    // 구조체 원본으로 가서 사이즈 출력
+    cout << sizeof(arrStr) << endl;
+    // 인자로 넘어온 포인터 변수의 사이즈 출력(주소를 담은 크기 출력)
 }
 
 
@@ -25,7 +28,6 @@ int main()
 
     cout << arr << endl;
     // arr의 값이 아닌 arr의 첫번째 칸 주소가 출력
-    // array는 사실 배열이 아니고 포인터임.
 
     char str[] = "hello";
     cout << *str << endl;
