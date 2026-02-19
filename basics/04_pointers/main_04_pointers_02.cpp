@@ -41,7 +41,9 @@ int main()
 
     printSizeofPtr(arrStrPtr);
     // printSizeof든 printSizeofPtr이든 결과는 40으로 동일.
-    // 둘 다 포인터가 아닌 구조체가 그대로 감.
+
+    
+
 
 
     return 0;
