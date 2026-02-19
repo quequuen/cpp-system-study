@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstddef>
 
 int main()
 {
@@ -42,6 +43,17 @@ int main()
     
     char *ptr_a = &a;
     int *ptr_b = &b;
+
+    double *ptr_null = nullptr;
+
+    if (ptr_null != nullptr)
+    {
+        // do something
+    }
+
+    std::nullptr_t nptr;
+    // nullptr만 받아야 하는 파라미터
+    
     
     return 0;
 }
