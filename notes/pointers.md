@@ -15,6 +15,7 @@ int number = 7;
 int *ptr = &number; // ptr에 number의 주소를 저장
 
 cout << ptr;  // 주소값 출력 (예: 0x16fa3e7e8)
+cout << &ptr; // 주소값을 담은 포인터 변수의 주소 출력
 cout << *ptr; // 주소로 찾아가서 7을 출력
 ```
 
@@ -131,4 +132,47 @@ for (char* ptr = str; *ptr != '\0'; ++ptr) {
       // 같은 값을 가진 두 변수는 같은 주소를 가짐
       cout << (uintptr_t)diff_name << endl;
       // 다른 값을 가진 diff_name은 다른 주소를 가짐
+  ```
+
+### 메모리 동적 할당 (Dynamic Memory Allocation)
+
+필요한 만큼만 메모리를 빌려 쓰고, 다 쓰면 돌려주는 개념.
+new와 delete라는 키워드를 사용하며, 이 메모리는 힙(Heap) 영역에 저장됨.
+
+- new: 메모리 빌려오기(할당)
+  프로그램이 실행되는 도중에 메모리를 요청함.
+
+  ```cpp
+    int* ptr = new int;      // int 하나 크기(4바이트)를 힙에 할당
+    int* ptr2 = new int{10}; // 할당과 동시에 10으로 초기화
+    int* arr = new int[5];   // int 5개짜리 배열을 힙에 할당
+  ```
+
+  - 할당된 메모리의 시작 주소를 반환하기 때문에 반드시 포인터 변수로 받아야 함.
+
+- delete: 메모리 돌려주기(해제)
+  빌린 메모리를 다 썼다면 반드시 운영체제에 돌려줘야 함.
+
+  ```cpp
+    delete ptr;       // 단일 객체 해제
+    delete[] arr;     // 배열 형태의 메모리 해제
+  ```
+
+- 메모리 누수(Memory Leak)
+  메모리를 빌려놓고, 반환하지 않은 상태에서 그 주소를 일어버리는 것.
+
+  ```cpp
+    void leakFunction()
+    {
+        int* temp = new int{50};
+        // delete temp; // new로 할당은 했지만 delete를 안할 경우
+    }
+    // temp라는 포인터 변수는 사라졌지만, 힙에 할당된 50은 여전히 남아있음.
+  ```
+
+  이런 현상이 반복되면 프로그램이 사용하는 메모리가 점점 늘어나다가 결국 시스템이 느려지거나 멈춤(Crash). 해당 상황을 방지하기 위해 nullptr 체크를 습관화 하는 것이 좋음.
+
+  ```cpp
+    delete ptr;
+    ptr = nullptr;
   ```
