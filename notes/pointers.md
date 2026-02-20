@@ -253,6 +253,19 @@ arr = nullptr; // 안전을 위한 널 포인터 처리
 - 변경 불가능: 한 번 누구의 별명이 되면, 중간에 다른 변수의 별명으로 수정 불가능.
 - NULL 불가: 참조자는 항상 실제 존재하는 변수만 가리켜야 함.(nullptr 같은 개념이 없음)
 - 리터럴 사용 불가(리터럴은 주소를 가지지 않는 값을 대입하는 방식이기 때문).
+- 깊은 객체 접근에 용이.(Alias Shortcut)
+
+```cpp
+    auto &myWeapon = player.status.equipment.weapon;
+
+    myWeapon.durability -= 1;
+
+    // 읽기 전용 별명
+    const auto &info = world.region[0].town[5].npc[12].basicInfo;
+
+    cout << info.name << endl;
+
+```
 
 | 특징        | 포인터(\*)           | 참조(&)                       |
 | ----------- | -------------------- | ----------------------------- |

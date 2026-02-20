@@ -9,6 +9,13 @@ void changeValue(int &val)
     cout << "Change Value..." << endl << val << endl;
 }
 
+struct Employee
+{
+    int id;
+    double test_score;
+};
+
+
 int main()
 {
 
@@ -65,6 +72,18 @@ int main()
 
     cout << my_int << endl;
     cout << my_ref << endl;
+
+
+    Employee e1;
+    e1.id = 1;
+    e1.test_score = 91.3;
+
+    Employee &ref = e1;
+    e1.id = 2;
+
+    Employee *e_ptr = &e1;
+    e_ptr->id = 3;
+    (*e_ptr).id = 10;
 
 
 
