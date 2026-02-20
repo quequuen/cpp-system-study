@@ -2,6 +2,13 @@
 
 using namespace std;
 
+void changeValue(int &val)
+// 참조 변수를 인자로 주어도 인자 자체가 참조 변수가 아닌 그냥 변수면 복사 개념임.
+{
+    val = 4;
+    cout << "Change Value..." << endl << val << endl;
+}
+
 int main()
 {
 
@@ -40,6 +47,26 @@ int main()
     }
 
     delete[] arr;
+
+    int my_int = 2;
+
+    int &my_ref = my_int;
+    // 리터럴 사용 불가.
+    // 초기화 필수
+    // my_int를 같이 사용하고 있는 것처럼 옴.
+    my_ref = 3;
+
+    cout << my_int << endl;
+    cout << my_ref << endl;
+    cout << &my_int << endl;
+    cout << &my_ref << endl;
+
+    changeValue(my_ref);
+
+    cout << my_int << endl;
+    cout << my_ref << endl;
+
+
 
     return 0;
 }

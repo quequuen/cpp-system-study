@@ -37,6 +37,7 @@ int main()
     // 같은 값을 가진 두 변수는 같은 주소
     cout << (uintptr_t)diff_name << endl;
 
+    
 
     return 0;
 }
