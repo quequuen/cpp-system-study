@@ -39,6 +39,7 @@ add_executable(arrays_01 basics/06_arrays/main_06_arrays.cpp)
 add_executable(arrays_02 basics/06_arrays/main_06_arrays_02.cpp)
 add_executable(arrays_03 basics/06_arrays/main_06_arrays_03.cpp)
 add_executable(arrays_04 basics/06_arrays/main_06_arrays_04.cpp)
+add_executable(arrays_05 basics/06_arrays/main_06_arrays_05.cpp)
 
 add_executable(io_stream_07 basics/07_io_streams/main_07_io.cpp)
 

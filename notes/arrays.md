@@ -206,3 +206,32 @@ C-style 문자열(char[])은 객체가 아닌 **메모리 덩어리**이기 때�
 - 그 외
   - strlen(s): 문자열의 길이를 반환(\\0 제외).
   - strcat(dest, src): 문자열 이어붙이기.
+
+### std::array
+
+C 스타일 배열의 성능과 표준 라이브러리(STL) 컨테이너의 편의성을 합친 현대적인 배열 도구. 정적 배열을 대체할 때 사용.
+
+- 스택(Srack) 메모리 사용 → 매우 빠름.
+- 템플릿 인자로 크기를 넘기기 때문에 컴파일 타임에 크기가 결정되어야 함.
+
+```cpp
+  std::array<int, 3> arr = {10, 20, 30};
+
+  cout << arr[0];      // 속도가 빠르지만 범위 체크 안 함
+  cout << arr.at(1);   // 범위를 벗어나면 예외를 던져줌
+  cout << arr.front(); // 첫 번째 원소 (arr[0])
+  cout << arr.back();  // 마지막 원소 (arr[arr.size() - 1])
+
+  arr.fill(0);         // 모든 원소를 0으로 초기화
+```
+
+```cpp
+  std::array<int, 4> fibo = {0, 1, 1, 2};
+
+  for (const auto &n : fibo) {
+      cout << n << " ";
+  }
+
+  // 내부 데이터를 포인터로 넘겨야 할 때 (C 라이브러리와 호환)
+  int* p = fibo.data();
+```
