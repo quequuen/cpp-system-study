@@ -32,6 +32,8 @@ add_executable(pointers_01 basics/04_pointers/main_04_pointers.cpp)
 add_executable(pointers_02 basics/04_pointers/main_04_pointers_02.cpp)
 add_executable(pointers_03 basics/04_pointers/main_04_pointers_03.cpp)
 add_executable(pointers_04 basics/04_pointers/main_04_pointers_04.cpp)
+add_executable(pointers_05 basics/04_pointers/main_04_pointers_05.cpp)
+add_executable(pointers_06 basics/04_pointers/main_04_pointers_06.cpp)
 
 add_executable(arrays_01 basics/06_arrays/main_06_arrays.cpp)
 add_executable(arrays_02 basics/06_arrays/main_06_arrays_02.cpp)
