@@ -176,3 +176,62 @@ new와 delete라는 키워드를 사용하며, 이 메모리는 힙(Heap) 영역
     delete ptr;
     ptr = nullptr;
   ```
+
+### 동적 할당 배열 (Dynamically Allocating Arrays)
+
+프로그램 실행 중에 사용자가 입력한 크기에 맞춰 메모리를 확보할 수 있음. 일반 배열은 반드시 상수로 크기를 정해야 하지만, 동적 배열은 변수로 크기를 정할 수 있음.
+
+```cpp
+int size;
+cout << "배열 크기를 입력하세요: ";
+cin >> size;
+
+// 할당: heap 영역에 size만큼의 공간을 확보하고 첫 번째 주소를 반환
+int* arr = new int[size];
+
+// 사용: 일반 배열과 똑같이 사용 가능 (arr[i] == *(arr + i))
+for (int i = 0; i < size; i++) {
+    arr[i] = i + 1;
+}
+
+// 해제: 반드시 []를 붙여야 배열 전체가 올바르게 삭제됨
+delete[] arr;
+arr = nullptr; // 안전을 위한 널 포인터 처리
+```
+
+- 기존 배열의 크기 조절 (Resize)
+  이미 할당된 동적 배열의 크기를 바로 늘리거나 줄이는 방법은 없음. 메모리는 연속된 공간이어야 하는데, 기존 배열 바로 뒤에 빈 공간이 있다는 보장이 없기 때문.
+  그래서 Resize는 4단계를 거치며 구현.
+  1. 새로운 크기의 배열을 힙에 새로 만듦.
+  2. 기존 배열의 값을 새 배열로 복사.
+  3. 기존 배열을 메모리에서 해제(delete[]).
+  4. 포인터 변수가 변수가 새 배열의 주소를 가리키도록 업데이트.
+
+  ```cpp
+    int size = 5;
+    int *arr = new int[size] {1, 2, 3, 4, 5};
+
+    // Resize 시작: 크기 5 → 10
+    int newSize = 10;
+    // 1. 새 배열 생성
+    int *newArr = new int[newSize];
+
+    for (int i = 0; i < size; i++) {
+        // 2. 기존 값 복사
+        newArr[i] = arr[i];
+    }
+
+    // 3. 예집 부수기 (기존 메모리 해제)
+    delete[] arr;
+    // 4. 새집으로 명의 변경 (주소 업데이트)
+    arr = newArr;
+    size = newSize;
+  ```
+
+- 현대 배열의 크기 조절은 std::vector를 사용함.
+
+```cpp
+    #include <vector>
+    vector<int> v = {1, 2, 3};
+    v.push_back(4); // 자동 resize 후 4 추가
+```

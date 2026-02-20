@@ -21,5 +21,25 @@ int main()
     cout << &int_ptr << endl;   
     cout << *int_ptr << endl;
 
+    int len;
+
+    cin >> len;
+
+    int *arr = new int[len];
+
+    for (int i = 0; i < len; ++i)
+    {
+        int val = 0;
+        cin >> val;
+        arr[i] = val;
+    }
+
+    for (int i = 0; i <len; ++i)
+    {
+        cout << arr[i] << " ";
+    }
+
+    delete[] arr;
+
     return 0;
 }
