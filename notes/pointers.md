@@ -110,3 +110,25 @@ for (char* ptr = str; *ptr != '\0'; ++ptr) {
 ### 문자열 리터럴 포인터 (Symbolic Constant)
 
 메모리에 고정된 문자열을 포인터로 가리키는 방식.
+
+| 구분           | 배열(char str[])       | 심볼릭 상수(const char \*str)        |
+| -------------- | ---------------------- | ------------------------------------ |
+| 메모리 위치    | 스택 (Stack) 영역      | 상수/데이터 영역 (ReadOnly)          |
+| 수정 가능 여부 | 가능 (str[0] = 'X')    | 불가능 (런타임 에러 발생 가능)       |
+| 복사 여부      | 값을 스택으로 복사해옴 | 복사없이 원본의 주소만 가리킴        |
+| 장점           | 자유로운 수정          | 메모리 절약 (같은 문자열은 재사용됨) |
+
+- const char \*str = "문자열";
+- **문자열 풀링 (String Pooling)**: 심볼릭 상수가 같은 내용의 문자열을 담으면 똑같은 주소를 가리키게 됨.
+
+  ```cpp
+      const char *name = "Hange Zoe";
+      const char *same_name = "Hange Zoe";
+      const char *diff_name = "Levi Ackerman";
+
+      cout << (uintptr_t)name << endl;
+      cout << (uintptr_t)same_name << endl;
+      // 같은 값을 가진 두 변수는 같은 주소를 가짐
+      cout << (uintptr_t)diff_name << endl;
+      // 다른 값을 가진 diff_name은 다른 주소를 가짐
+  ```
