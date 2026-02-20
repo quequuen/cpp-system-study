@@ -28,6 +28,15 @@ int main()
     for (char* ptr = str; *ptr != '\0'; ++ptr) {
         cout << *ptr; 
     }
+    const char *name = "Zoe Han";
+    const char *same_name = "Zoe Han";
+    const char *diff_name = "Zoe Han";
+
+    cout << (uintptr_t)name << endl;
+    cout << (uintptr_t)same_name << endl;
+    // 같은 값을 가진 두 변수는 같은 주소
+    cout << (uintptr_t)diff_name << endl;
+
 
     return 0;
 }
