@@ -44,7 +44,9 @@ add_executable(arrays_06 basics/06_arrays/main_06_arrays_06.cpp)
 
 add_executable(io_stream_07 basics/07_io_streams/main_07_io.cpp)
 
-add_executable(functions_03 
+add_executable(functions_01 
     basics/03_functions/main_03_func.cpp
     basics/03_functions/utils.cpp
 )
+add_executable(functions_02 basics/03_functions/main_03_func_02.cpp)
+
