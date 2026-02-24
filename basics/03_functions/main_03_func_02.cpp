@@ -14,6 +14,7 @@ void printSomething(int x)
 //     cout << x << endl;
 // }
 
+// 함수 오버로딩 시에는 return 값이 아닌 매개변수(개수, 타입, 순서)가 달라야 오버로딩이 가능함.
 void printSomething(int *x)
 {
     *x = 10;
