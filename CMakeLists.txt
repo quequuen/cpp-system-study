@@ -49,4 +49,5 @@ add_executable(functions_01
     basics/03_functions/utils.cpp
 )
 add_executable(functions_02 basics/03_functions/main_03_func_02.cpp)
+add_executable(functions_03 basics/03_functions/main_03_func_03.cpp)
 
