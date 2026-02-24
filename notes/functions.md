@@ -166,3 +166,44 @@ void display(int count) {
     for(int i = 0; i < count; i++) cout << "*";
 }
 ```
+
+### 함수 포인터 (Function Pointers)
+
+함수가 저장된 메모리 주소를 가리키는 포인터. 함수의 시작 주소를 저장했다가 필요할 때 그 주소로 찾아가 함수를 실행함.
+
+- 선언: 반환타입 (\*포인터 이름)(매개변수 타입들);
+- 로직의 추상화 상태로, 함수를 데이터처럼 주고 받을 수 있음.
+- 함수 포인터를 선언할 때는 가리키고자 하는 함수의 반환 타입과 매개변수 타입이 완벽히 일치해야 함.
+
+  ```cpp
+  int add(int a, int b) { return a + b; }
+
+  int main() {
+      // 1. 함수 포인터 선언
+      int (*fptr)(int, int);
+
+      // 2. 함수의 주소를 대입 (함수 이름 자체가 주소)
+      fptr = add;
+
+      // 3. 포인터를 이용해 함수 호출
+      int result = fptr(10, 20); // (*fptr)(10, 20) 도 가능하지만 보통 생략함
+  }
+  ```
+
+- 주로 콜백(Callback)함수를 구현하기 위해 사용.
+
+  ```cpp
+  bool isEven(int n) { return n % 2 == 0; }
+  bool isPositive(int n) { return n > 0; }
+
+  // 함수 포인터를 매개변수로 받는 함수
+  void printIf(int arr[], int size, bool (*condition)(int)) {
+      for(int i = 0; i < size; i++) {
+          if(condition(arr[i])) { // 넘겨받은 '조건' 함수를 실행
+              cout << arr[i] << " ";
+          }
+      }
+  }
+  ```
+
+- 함수 포인터는 가독성이 떨어지므로 typedef 또는 using 키워드를 사용하거나 <functional> 헤더에 들어있는 std::function을 쓰기도 함.
