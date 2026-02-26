@@ -1,6 +1,6 @@
 ## 객체 지향 프로그래밍 (OOP, Object-Oriented Programming)
 
-데이터와 로직을 객체 단위로 묶어 관리하는 패러다임.
+데이터와 로직을 객체 단위로 묶어 관리하는 패러다임. 캡슐화, 상속, 다형성, 추상화라는 4대 원칙을 가짐. 이 원칙들은 코드의 재사용성, 유지 보수성, 확장성을 높이고 복잡성을 낮추기 위해 객체들의 공통 특징을 묶고, 내부 데이터를 보호하며, 유연하게 객체를 다룰 수 있게 함.
 
 ### 클래스 (Class)와 객체 (Object)
 
@@ -30,3 +30,36 @@ int main() {
 - public: 클래스 밖에서도 누구나 접근 가능. (공개 서비스)
 - private: 클래스 내부(멤버 함수)에서만 접근 가능. (내부 비밀)
 - protected: 본인과 자신을 상속받은 자식 클래스까지만 접근 허용.
+
+### 캡슐화 (Encapsulation)
+
+데이터와 그 데이터를 처리하는 함수를 하나로 묶고, 중요한 내부 데이터는 외부로부터 숨기는 것.
+
+- 데이터와 함수의 결합 (Bundling)
+  관련된 변수(속성)와 함수(행동)를 하나의 클래스 안에 모으는 것. 관리가 용이하고 가독성이 좋아짐.
+- 정보 은닉 (Information Hiding)
+  객체 내부의 상세한 구현이나 데이터는 숨기고, 필요한 인터페이스(함수)만 외부로 노출.
+- 주로 getter, setter가 대표적임.
+- 이점
+  - 데이터 무결성 보호: 외부에서 멤버 변수에 직접 접근해 말도 안되는 값을 넣는 것을 막음.
+  - 유지보수성 향상: 클래스 내부 로직을 수정해도, 그 클래스를 사용하는 외부 코드(main 함수 등)는 수정할 필요가 없음. (객체 간 결합도가 낮아짐)
+  - 사용자 편의성: 객체의 내부가 어떻게 돌아가는지 몰라도, 제공된 함수(public 메서드)만 사용하면 됨.
+
+```cpp
+class BankAccount {
+private:
+    int balance = 0; // 내부 데이터는 숨김
+
+public:
+    void deposit(int amount) { // 검증된 통로만 제공
+        if (amount > 0) balance += amount;
+    }
+
+    void withdraw(int amount) {
+        if (amount > 0 && balance >= amount) balance -= amount;
+        else std::cout << "잔액 부족!" << std::endl;
+    }
+
+    int getBalance() const { return balance; }
+};
+```
