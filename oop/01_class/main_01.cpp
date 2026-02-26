@@ -34,6 +34,11 @@ class Date
         _year = y;
     }
 
+    string getDate()
+    {
+        return to_string(_month) + "." + to_string(_day) + "." + to_string(_year);
+    }
+
     int getMonth()
     {
         return _month;
@@ -69,7 +74,8 @@ int main()
 
     today_c.copy(today);
 
-
+    cout << today.getDate() << endl;
+    cout << today_c.getDate() << endl;
 
     return 0;
 }
