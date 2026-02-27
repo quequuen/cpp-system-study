@@ -4,6 +4,7 @@
 #include <format>
 #include <chrono>
 #include <ctime>
+#include <cassert>
 
 using namespace std;
 
@@ -14,17 +15,12 @@ class Date
     int _day;
     int _year;
 
-    std::vector<int> getToday()
-    {
-
-        // 현재 시간 가져옴
+    struct DateValues { int m, d, y; };
+    static DateValues fetchSystemDate() {
         auto now = chrono::system_clock::now();
-        std::time_t now_time = chrono::system_clock::to_time_t(now);
-
-        // 로컬 시간으로 변환
-        tm* local_time = localtime(&now_time);
-
-        return { local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_year + 1900 };
+        time_t now_time = chrono::system_clock::to_time_t(now);
+        tm* lt = localtime(&now_time);
+        return { lt->tm_mon + 1, lt->tm_mday, lt->tm_year + 1900 };
     }
 
     public:
@@ -49,7 +45,7 @@ class Date
 
     // }
 
-    // Date(const int &m, const int &d, const int &y)
+    // Date(int m, int d, int y)
     // {
     //     _month = m;
     //     _day = d;
@@ -58,34 +54,50 @@ class Date
 
     // 초기화 리스트에서 유틸 함수 활용
     // 함수를 3번 호출하게 되므로 비효율적
-    Date() 
-        : _month(getToday()[0]), 
-          _day(getToday()[1]), 
-          _year(getToday()[2]) 
-    {}
+    // Date() 
+    //     : _month(getToday()[0]), 
+    //       _day(getToday()[1]), 
+    //       _year(getToday()[2]) 
+    // {}
 
-    void setDate(const int &m, const int &d, const int &y)
+    // 그래서 위임 생성자
+    Date() : Date(fetchSystemDate().m, fetchSystemDate().d, fetchSystemDate().y) {}
+
+    Date(int m, int d, int y) : _month(m), _day(d), _year(y) 
+    {
+        // 방어적 프로그래밍
+        assert(m >= 1 && m <= 12);
+        assert(d >= 1 && d <= 31);
+    }
+
+    ~Date()
+    {
+        cout << "Destructor" << endl;
+    }
+
+    void setDate(int m, int d, int y)
     {
        _month = m;
        _day = d;
        _year = y; 
     }
 
-    void setMonth(const int &m)
+    void setMonth(int m)
     {
         _month = m;
     }
 
-    void setDay(const int &d)
+    void setDay(int d)
     {
         _day = d;
     }
 
-    void setYear(const int &y)
+    void setYear(int y)
     {
         _year = y;
     }
 
+    // Getter들에는 const를 붙여 안정성 확보
     string getDate() const 
     {
         return to_string(_month) + "." + to_string(_day) + "." + to_string(_year);
@@ -134,6 +146,10 @@ int main()
     Date today2;
 
     cout << today.getDate() << endl;
+
+    Date *date = new Date();
+
+    delete date;
 
     return 0;
 }
