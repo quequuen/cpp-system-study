@@ -14,11 +14,9 @@ class Date
     int _day;
     int _year;
 
-    public:
-
-    // 생성자
-    Date()
+    std::vector<int> getToday()
     {
+
         // 현재 시간 가져옴
         auto now = chrono::system_clock::now();
         std::time_t now_time = chrono::system_clock::to_time_t(now);
@@ -26,22 +24,45 @@ class Date
         // 로컬 시간으로 변환
         tm* local_time = localtime(&now_time);
 
-        int year = local_time->tm_year + 1900;
-        int month = local_time->tm_mon + 1; 
-        int day = local_time->tm_mday;
-
-        _month = month;
-        _day = day;
-        _year = year;
-
+        return { local_time->tm_mon + 1, local_time->tm_mday, local_time->tm_year + 1900 };
     }
 
-    Date(const int &m, const int &d, const int &y)
-    {
-        _month = m;
-        _day = d;
-        _year = y;
-    }
+    public:
+
+    // 생성자
+    // Date()
+    // {
+    //     // 현재 시간 가져옴
+    //     auto now = chrono::system_clock::now();
+    //     std::time_t now_time = chrono::system_clock::to_time_t(now);
+
+    //     // 로컬 시간으로 변환
+    //     tm* local_time = localtime(&now_time);
+
+    //     int year = local_time->tm_year + 1900;
+    //     int month = local_time->tm_mon + 1; 
+    //     int day = local_time->tm_mday;
+
+    //     _month = month;
+    //     _day = day;
+    //     _year = year;
+
+    // }
+
+    // Date(const int &m, const int &d, const int &y)
+    // {
+    //     _month = m;
+    //     _day = d;
+    //     _year = y;
+    // }
+
+    // 초기화 리스트에서 유틸 함수 활용
+    // 함수를 3번 호출하게 되므로 비효율적
+    Date() 
+        : _month(getToday()[0]), 
+          _day(getToday()[1]), 
+          _year(getToday()[2]) 
+    {}
 
     void setDate(const int &m, const int &d, const int &y)
     {
