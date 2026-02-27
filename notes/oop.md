@@ -155,3 +155,50 @@ int main() {
 
 - 실행 순서는 LIFO(Last In First Out)
 - 동적 할당된 메모리 해제, 파일 닫기, 네트워크/DB 연결 종료 등의 목적으로 사용.
+
+### this 포인터 (this Pointers)
+
+현재 코드를 실행하고 있는 객체 자신을 가리키는 특별한 포인터. 모든 멤버 함수 안에는 보이지 않게 this 포인터가 전달됨.
+
+- 포인터 타입: 해당 클래스의 주소를 담는 포인터.
+- 자동 생성: 선언하지 않아도 멤버 함수 내에서 언제든 사용 가능.
+- 정적 함수(static)에선 사용 불가: static 함수는 특정 객체의 소속이 아니라 클래스 자체의 함수이므로 this가 존재하지 않음.
+- this는 상수 포인터이기 때문에 포인터 자체의 주소값을 바꿀 수는 없음. 다만 ->로 멤버의 값을 바꿀 수는 있음. (단, const 멤버 함수 안에서는 this가 가리키는 멤버의 값도 바꾸지 못함.)
+- 사용법
+  - 매개변수 이름과 멤버 변수 이름이 같을 때 주로 this를 사용함.
+    생성자나 Setter에서 인자 이름과 멤버 변수 이름이 똑같으면, 컴퓨터는 가까운 곳에 있는 인자를 우선시함. 이때 멤버 변수를 확실히 지칭하기 위해 this->를 씀.
+
+    ```cpp
+    class Date {
+    private:
+        int day;
+    public:
+        void setDay(int day) {
+            // day = day;      // 에러는 안 나지만, 인자 day에 인자 day를 대입하는 꼴
+            this->day = day;   // 객체의 멤버 변수인 day에 인자 day의 값을 대입하라는 의미.
+        }
+    };
+    ```
+
+  - 객체 자신을 반환하여 **체이닝(Chaining)**을 할 때
+    여러 함수를 마침표(.)로 이어서 한번에 실행하고 싶을 때 \*this를 리턴함.
+
+    ```cpp
+    class Date {
+    public:
+        Date& setYear(int y) { _year = y; return *this; }
+        Date& setMonth(int m) { _month = m; return *this; }
+        Date& setDay(int d) { _day = d; return *this; }
+    };
+
+    // 사용 시 (메서드 체이닝)
+    today.setYear(2026).setMonth(2).setDay(27);
+    ```
+
+  - 멤버 함수 내에서 다른 함수에 나 자신을 넘겨줄 때
+    someFunction(this);와 같이 현재 객체의 주소를 다른 외부 함수로 전달할 때 사용.
+
+- this의 내부 동작 원리 (디버깅 관점)
+  컴파일러는 멤버 함수를 내부적으로 다음과 같이 변형해서 처리함.
+  - 작성한 코드: today.setMonth(5);
+  - 컴파일러가 변경한 코드: Date::setMonth(&today, 5);
