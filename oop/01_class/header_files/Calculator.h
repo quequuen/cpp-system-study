@@ -15,5 +15,8 @@ public:
 
     Calculator &add(int value);
 
+    static int getCount();
+
+
     void print();
 };

@@ -22,5 +22,11 @@ void Calculator::print()
     cout << _value << endl;
 }
 
+int Calculator::getCount()
+{
+    // return _value; // 일반 변수 접근 불가
+    return count;
+}
+
 // 클래스 외부에서 반드시 정의 및 초기화 필요.
 int Calculator::count = 0;

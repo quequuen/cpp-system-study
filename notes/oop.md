@@ -272,3 +272,57 @@ int main() {
 - **공유 메모리**: 객체를 많이 만들어도 정적 멤버 변수는 메모리에 딱 하나만 존재. 모든 객체가 이 하나의 변수를 공유.
 - **생명 주기**: 프로그램이 시작될 때 생성, 프로그램이 종료될 때 소멸. (객체의 생성/소멸과 무관함)
 - **클래스 외부 선언**: 헤더 파일 안에서 static으로 선언만 하고, 반드시 소스 파일(.cpp)에서 초기화(정의)를 해줘야 함. (상수 정적 변수 제외)
+
+```cpp
+// Calculator.h
+class Calculator {
+private:
+    int _value; // 각 객체마다 가짐
+public:
+    static int count; // 모든 객체가 공유 (선언)
+
+    Calculator() {
+        count++; // 객체가 생성될 때마다 공유 변수 증가
+    }
+};
+```
+
+```cpp
+// Calculator.cpp
+#include "Calculator.h"
+
+// 중요: 클래스 외부에서 반드시 정의 및 초기화가 필요.
+int Calculator::count = 0;
+```
+
+```cpp
+// main.cpp
+int main() {
+    Calculator c1;
+    Calculator c2;
+    Calculator c3;
+
+    // 객체 이름이 아닌 클래스 이름(Calculator::)으로 접근하는 것이 정석.
+    std::cout << "현재 생성된 객체 수: " << Calculator::count << std::endl; // 출력: 3
+    return 0;
+}
+```
+
+### 정적 멤버 함수 (Static Member Function)
+
+클래스 수준에서 선언되어 객체 생성 없이 클래스 이름으로 직접 호출할 수 있는 멤버 함수.
+
+- 함수 앞에 static을 붙여 사용.
+- 객체 없이 클래스명::함수명()으로 바로 호출 가능.
+- 정적 함수 안에서는 일반 멤버 변수나 this 포인터 사용 불가능. 오직 정적 멤버 변수만 가능.
+
+```cpp
+static int getCount() {
+    // return _value; // 에러: 일반 변수 접근 불가
+    return count;    // 정적 변수 접근 가능
+}
+```
+
+- **공통 상태 관리**: 모든 객체가 알아랴 하는 공통된 설정값이나 상태를 관리할 때 사용.
+- **메모리 절약**: 모든 객체에 중복해서 저장할 필요가 없는 데이터를 하나만 유지하여 메모리를 아낌.
+- **싱글톤 패턴(Singleton)**: 프로그램 전체에서 단 하나의 객체만 생성되도록 보장하는 디자인 패턴을 만들 때 핵심 역할.
