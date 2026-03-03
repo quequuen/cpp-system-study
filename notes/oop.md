@@ -202,3 +202,65 @@ int main() {
   컴파일러는 멤버 함수를 내부적으로 다음과 같이 변형해서 처리함.
   - 작성한 코드: today.setMonth(5);
   - 컴파일러가 변경한 코드: Date::setMonth(&today, 5);
+
+### 클래스(Class)와 const
+
+데이터의 무결성(안정성)을 지키기 위한 아주 중요한 약속.
+
+1. 상수 멤버 함수 (Const Member Function)
+   함수 선언 뒤에 const를 붙이는 방식. 이 클래스의 멤버 변수를 절대 수정하지 않는다고 선언하는 것.
+   - 멤버 변수의 값을 읽기만 하고 수정은 금지함.
+   - const 객체는 오직 const 멤버 함수만 호출할 수 있음.
+
+   ```cpp
+   class Calculator
+   {
+   private:
+    int _value;
+   public:
+    // const가 뒤에 붙음: _value를 수정할 수 없음.
+    void print() const
+    {
+        // _value = 10; // 컴파일 에러(수정 불가)
+        std::cout << _value << std::endl; // 읽기만 가능.
+    }
+   }
+   ```
+
+2. 상수 객체 (Const Object)
+   클래스 인스턴스를 생성할 때 앞에 const를 붙이는 방식.
+   - 생성된 객체의 상태를 변경할 수 없음.
+   - 이 객체는 상수 멤버 함수(const가 뒤에 붙은 함수)만 호출 가능. 일반 함수에서 호출하려 하면 컴파일러가 막음.
+
+   ```cpp
+   int main()
+   {
+    const Calculator safeCalc(10);
+    safeCalc.print();
+   }
+   ```
+
+3. 상수 멤버 변수 (Const Member Variable)
+   클래스 내부의 변수에 const를 붙이는 방식.
+   - 한 번 값이 정해지면 바꿀 수 없는 고유한 속성을 만듦.
+   - 반드시 **초기화 리스트(Initialization List)**를 통해서만 값을 정해줄 수 있음.
+
+   ```cpp
+   class Calculator
+   {
+   private:
+    const int _id; // 상수 변수
+   public:
+    // 초기화 리스트에서 반드시 초기화해야 함.
+    Calculator(int id): _id(id) {}
+   }
+   ```
+
+| 위치                     | 의미                           | 핵심 효과                   |
+| ------------------------ | ------------------------------ | --------------------------- |
+| 함수 뒤 (void f() const) | 함수 안에서 멤버 변수 안 바꿈  | **읽기 전용** 함수임을 보장 |
+| 객체 앞 (const Calc c)   | 이 객체는 안 바꿈              | 상수 멤버 함수만 호출 허용  |
+| 변수 앞 (const int v)    | 이 값은 한 번 정해지면 안 바꿈 | 초기화 리스트 강제          |
+
+- 현업에서 협업을 할 때 신뢰성과 강제성을 주기 위해 사용.
+- 코드 최적화에도 도움을 주어 더 신속하고 안전한 프로그램을 만들 수 있음.
