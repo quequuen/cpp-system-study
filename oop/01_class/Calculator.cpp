@@ -1,5 +1,10 @@
 #include "header_files/Calculator.h"
 
+Calculator::Calculator()
+{
+    count++;
+}
+
 Calculator::Calculator(int init)
 : _value(init)
 {}
@@ -16,3 +21,6 @@ void Calculator::print()
 
     cout << _value << endl;
 }
+
+// 클래스 외부에서 반드시 정의 및 초기화 필요.
+int Calculator::count = 0;
