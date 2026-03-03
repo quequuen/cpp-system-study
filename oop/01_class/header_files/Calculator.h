@@ -1,27 +1,15 @@
 #pragma once
 #include <iostream>
 
-
 class Calculator
 {
-    private:
-        int _value;
-    
-        public:
-            Calculator(int init)
-            : _value(init)
-            {}
+private:
+    int _value;
 
-            Calculator &add(int value)
-            {
-                _value += value;
-                return *this;
-            }
+public:
+    Calculator(int init);
 
-            void print()
-            {
-                using namespace std;
+    Calculator &add(int value);
 
-                cout << _value << endl;
-            }
+    void print();
 };
