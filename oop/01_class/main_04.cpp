@@ -12,6 +12,11 @@ class Friend2
 
     public:
     void doSomething(Friend& f);
+
+    void printSomething()
+    {
+        cout << "Something" << endl;
+    };
 };
 
 class Friend
@@ -38,6 +43,7 @@ int main()
     Friend f;
     Friend2 f2;
     f2.doSomething(f);
+    Friend2().printSomething();
 
     return 0;
 }
