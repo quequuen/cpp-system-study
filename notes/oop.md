@@ -399,3 +399,42 @@ calc.print();
 // 객체를 만들자마자 add하고 print한 뒤 바로 사라짐
 Calculator(10).add(5).print();
 ```
+
+### 중첩 타입 (Nested Type)
+
+해당 타입이 이 클래스 안에서만 의미가 있음을 명시할 때 사용. 캡슐화를 완성하는 핵심 기법.
+
+- 이름 충돌 방지 (Namespace 역할)
+- 캡슐화와 논리적 그룹화
+  특정 클래스의 세부 구현을 돕는 보조 클래스를 외부에 노출하지 않고 숨길 수 있음. private 영역에 중첩 타입을 선언하면 외부로부터 보호할 수 있음.
+- 접근 제어 (Access Control)
+  외부 클래스의 private 멤버에 접근해야 할 때, 중첩 타입은 외부 클래스의 멤버에 접근하기가 더 수월하거나 논리적으로 긴밀한 관계를 유지하기 좋음.
+
+```cpp
+//데이터 구조의 노드(Node)
+class LinkedList {
+public:
+    // 중첩 타입 선언
+    struct Node {
+        int data;
+        Node* next;
+    };
+private:
+    Node* head;
+};
+
+// 사용 시
+LinkedList::Node myNode;
+```
+
+```cpp
+// 상태값 정의 (Enum)
+class Player {
+public:
+    enum class State { IDLE, RUNNING, ATTACKING }; // Player 전용 상태
+};
+
+Player::State s = Player::State::IDLE;
+```
+
+- 중첩 클래스의 내용이 너무 길어지면 원래 클래스의 가독성이 떨어지므로 이런 상황에서는 선언은 안에서 하고, 구현은 .cpp 파일 밖으로 뺌.
