@@ -326,3 +326,55 @@ static int getCount() {
 - **공통 상태 관리**: 모든 객체가 알아랴 하는 공통된 설정값이나 상태를 관리할 때 사용.
 - **메모리 절약**: 모든 객체에 중복해서 저장할 필요가 없는 데이터를 하나만 유지하여 메모리를 아낌.
 - **싱글톤 패턴(Singleton)**: 프로그램 전체에서 단 하나의 객체만 생성되도록 보장하는 디자인 패턴을 만들 때 핵심 역할.
+
+### 친구 관계 (Friend)
+
+다른 private 요소를 공유할 수 있는 선언.
+
+```cpp
+// Friend2 클래스의 특정함수(doSomething)에게만 Friend 클래스의 private 영역을 열어주는 구조.
+#include <iostream>
+
+using namespace std;
+
+// 전방 선언 (foward declaration)
+class Friend;
+
+// Friend 클래스 안에서 friend void Freind2::doSomething(...)을 선언하려면, 컴파일러가 이미 Friend2 안에 doSomething이 있다는 것을 알고 있어야 함. 그래서 Friend2가 먼저 정의.
+class Friend2
+{
+    private:
+    int _value = 2;
+
+    public:
+    void doSomething(Friend& f);
+};
+
+class Friend
+{
+    private:
+    int _value = 1;
+
+    friend void Friend2::doSomething(Friend& f);
+};
+
+// doSomething 함수 내부에서 f._value에 접근하려면 Friend 클래스의 상세 구조(멤버 변수 등)를 알아야 함. 따라서 함수의 실제 구현은 Friend 클래스 정의가 끝난 뒤에 배치.
+void Friend2::doSomething(Friend& f)
+{
+    cout << f._value << endl;
+
+};
+
+int main()
+{
+
+    Friend f;
+    Friend2 f2;
+    f2.doSomething(f);
+
+    return 0;
+}
+```
+
+- 캡슐화 예외: 원래 private 멤버는 외부에서 접근할 수 없지마, friend로 지정된 함수나 클래스는 예외적으로 접근 권한을 가짐.
+- 단방향성: Friend가 Friend2를 친구로 등록했다고 해서, Friend2가 자동으로 Friend를 친구로 생각하지는 않음.
