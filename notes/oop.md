@@ -379,6 +379,14 @@ int main()
 - 캡슐화 예외: 원래 private 멤버는 외부에서 접근할 수 없지마, friend로 지정된 함수나 클래스는 예외적으로 접근 권한을 가짐.
 - 단방향성: Friend가 Friend2를 친구로 등록했다고 해서, Friend2가 자동으로 Friend를 친구로 생각하지는 않음.
 - 현업에서는 클래스 전체를 friend로 만들기보다, 꼭 필요한 멤버 함수만 friend로 등록하는 것을 권장. 정보 은닉(Information Hiding)이 파괴되기 때문에 두 클래스가 아주 밀접하게 연관되어 있을 때만 사용해야 함.
+- 실질적으로는 전역 함수화 하는 것.
+
+| 구분        | static 멤버 함수                                          | friend 함수                                       |
+| ----------- | --------------------------------------------------------- | ------------------------------------------------- |
+| 소속        | 클래스 내부                                               | 클래스 외부 (전역 범위 소속)                      |
+| 접근 방식   | Calculator::getCount()와 같이 메소드 방식 (클래스의 기능) | operator+(a, b)와 같은 함수 방식 (그냥 전역 함수) |
+| this 포인터 | 없음 (객체 없이 호출)                                     | 없음 (외부 함수)                                  |
+| 목적        | 객체 없이 클래스 기능을 사용할 때                         | 연산자 오버로딩 등 외부와 소통할 때               |
 
 ### 익명 객체 (Anonymous Object)
 
@@ -481,3 +489,61 @@ Calculator Calculator::operator+(const Calculator& other) const {
 
 - \+ 연산은 원래 값을 바꾸는 게 아닌 새로운 결과값을 내놓는 것. 반드시 새로운 객체를 리턴해야 함. (자기자신을 바꾸려면 \+= 사용)
 - 오버로딩 불가 연산자: ., .\*, ::, ?:, sizeof 등.
+
+### 입출력 연산자 오버로딩
+
+작성된 클래스 객체를 std::cout이나 std::cin과 함께 자연스럽게 사용 가능하게 만드는 기능.
+
+- friend 전역 함수가 필수인 이유 (입출력 오버로딩의 가장 중요한 포인트)
+  연산 오버로딩을 멤버 함수로 만들면 왼쪽 피연산자가 자기자신(this)이어야 함.
+  - cout << value; 에서 왼쪽은 std::ostream이고 오른쪽이 Value임.
+  - std::ostream 클래스의 코드를 수정할 권한이 없기 때문에 클래스 외부(전역)에서 두 객체를 이어주는 함수를 만들고, 클래스 내부의 private 멤버에 접근할 수 있도록 friend 권한을 주는 것.
+
+```cpp
+// 출력 연산자 오버로딩
+
+#include <iostream>
+
+class Value {
+private:
+    int _data;
+public:
+    Value(int d) : _data(d) {}
+
+    // friend 선언: 전역 함수지만 private인 _data에 접근 허용
+    friend std::ostream& operator << (std::ostream &out, const Value &v) {
+        out << v._data; // 출력 스트림에 데이터 삽입
+        return out;      // 연쇄 출력(cout << a << b)을 위해 out 반환
+    }
+};
+```
+
+```cpp
+// 입력 연산자 오버로딩
+
+friend std::istream& operator >> (std::istream &in, Value &v) {
+        in >> v._data; // 입력 스트림에서 데이터를 뽑아 멤버 변수에 저장
+        return in;      // 연쇄 입력(cin >> a >> b)을 위해 in 반환
+    }
+```
+
+- 입력 연산자는 객체의 값이 변해야 하므로 인자에 const를 붙이지 않음.
+- 반환 타입은 반드시 스트임의 참조( std::ostream&, std::istream&)을 반환.
+- 매개변수
+  - 첫 번째 인자는 스트림 객체(out 또는 in).
+  - 두 번째 인자는 클래스의 객체(출력은 const&, 입력은 &)
+- 객체 자체를 다시 구현부에 넣으면 무한 루프(재귀)에 빠지므로, 반드시 기본 자료형 멤버 변수(v.data 등)을 대상으로 연산.
+
+```cpp
+// main.cpp
+
+int main() {
+    Value v(0);
+
+    std::cout << "숫자를 입력하세요: ";
+    std::cin >> v;          // operator >> 호출
+
+    std::cout << "입력값은 " << v << "입니다." << std::endl; // operator << 호출
+    return 0;
+}
+```

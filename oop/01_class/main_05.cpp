@@ -21,12 +21,29 @@ class Value
     // {
     //     return Value (this->getValue() + v2.getValue());
     // }
+
+
+    // operator << 의 왼쪽의 피연산자는 std::ostream이지 Value 객체가 아님. 따라서 멤버 함수로 만들 수 없고 반드시 전역 함수로 만들어야 함.
+    friend std::ostream& operator << (std::ostream &out, const Value &v)
+    {
+        out << v._value;
+
+        return out;
+    };
+
+    friend std::istream& operator >> (std::istream &in, Value &v)
+    {
+        in >> v._value;
+
+        return in;
+    }
 };
 
 Value operator + (const Value &v1, const Value &v2)
 {
-    return Value(v1.getValue() + v2.getValue());
+    return Value(v1._value + v2._value);
 }
+
 
 int main ()
 {
@@ -36,6 +53,18 @@ int main ()
     cout << (v + v2 + Value(5)).getValue() << endl;
 
     // 산술 연산자 오버로딩 안되는 것들: ?:, ::, sizeof, ., .*
+
+    Value v3 = v + v2;
+
+    cout << "결과: " << v3 << endl;
+
+    Value v_in(0);
+
+    cout << "Value 객체의 value를 설정해주세요: ";
+    cin >> v_in;
+
+    cout << "입력값: " << v_in << endl;
+
 
     return 0;
 }
