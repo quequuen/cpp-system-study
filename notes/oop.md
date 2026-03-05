@@ -547,3 +547,71 @@ int main() {
     return 0;
 }
 ```
+
+### 단항 연산자 오버로딩 (Unary Operator Overloading)
+
+부호를 바꾸는 -, 논리 반전 !, 증감 연산자(++, --) 등을 클래스 객체에 적용하기 위해 사용.
+
+- 기본 단항 연산자 (-, !)
+
+  ```cpp
+  class Value {
+  private:
+      int _value;
+  public:
+      Value(int v) : _value(v) {}
+
+      // 부호 반전 연산자 (-)
+      Value operator-() const {
+          return Value(-_value); // 새로운 객체를 반환
+      }
+
+      // 논리 반전 연산자 (!)
+      bool operator!() const {
+          return _value == 0; // 0이면 true, 아니면 false
+      }
+  };
+  ```
+
+  - 기본 단항 연산자는 멤버 함수로 만드는 것이 일반적임.
+
+- 증감 연산자 오버로딩 (++, --)
+  - C++ 컴파일러는 전위와 후위를 구분하기 위해 **매개변수 int**라는 독특한 약속을 사용.
+
+  - 전위 증감(++v): 참조(&)를 반환하여 연쇄 작업(++++v)이 가능하게 함.
+  - 후위 증갑(v++): 컴파일러가 전위와 구분할 수 있도록 인자에 **int**를 써줌. (실제 숫자를 넣는 게. ㅏ닌 구분용)
+
+    ```cpp
+    class Value {
+    private:
+    int _value;
+    public:
+    Value(int v) : _value(v) {}
+
+    // 전위 증감 (++v)
+    Value& operator++() {
+        _value++;        // 값을 먼저 증가
+        return *this;    // 바뀐 자기 자신을 반환
+    }
+
+    // 후위 증감 (v++)
+    Value operator++(int) { // 구분용 int 매개변수
+        Value temp(*this); // 1. 현재 상태를 복사해둠
+        _value++;          // 2. 실제 값을 증가시킴
+        return temp;       // 3. 증가 전의 복사본을 반환
+    }
+
+    void print() { std::cout << _value << std::endl; }
+    };
+
+    int main() {
+    Value v(10);
+
+      ++v;      // v는 11이 됨
+      v++;      // v는 12가 되지만, 이 문장의 결과값은 11임
+
+      Value v2 = ++v; // v는 13, v2도 13
+      Value v3 = v++; // v는 14, v3는 13
+
+    }
+    ```

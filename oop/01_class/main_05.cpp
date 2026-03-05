@@ -22,6 +22,8 @@ class Value
     //     return Value (this->getValue() + v2.getValue());
     // }
 
+    Value operator - () const{ return Value(-_value); }
+    bool operator ! () const { return (_value == 0)? true : false; }
 
     // operator << 의 왼쪽의 피연산자는 std::ostream이지 Value 객체가 아님. 따라서 멤버 함수로 만들 수 없고 반드시 전역 함수로 만들어야 함.
     friend std::ostream& operator << (std::ostream &out, const Value &v)
@@ -37,6 +39,7 @@ class Value
 
         return in;
     }
+
 };
 
 Value operator + (const Value &v1, const Value &v2)
