@@ -63,3 +63,4 @@ add_executable(class_03
     oop/01_class/Calculator.cpp
 )
 add_executable(class_04 oop/01_class/main_04.cpp)
+add_executable(class_05 oop/01_class/main_05.cpp)

@@ -438,3 +438,43 @@ Player::State s = Player::State::IDLE;
 ```
 
 - 중첩 클래스의 내용이 너무 길어지면 원래 클래스의 가독성이 떨어지므로 이런 상황에서는 선언은 안에서 하고, 구현은 .cpp 파일 밖으로 뺌.
+
+### 산술 연산자 오버로딩 (Arithmetic Operator Overloading)
+
+새로 작성된 클래스 객체끼리도 +, -, \*, / 같은 기호를 마치 기본 자료형처럼 사용 가능하게 만든 기능.
+
+- 반환타입 operator 연산자기호(매개변수)
+- 연산의 우선순위나 피연산자의 개수를 바꿀 수는 없음.
+
+```cpp
+// Calculator.h
+
+class Calculator {
+private:
+    int _value;
+public:
+    Calculator(int v = 0) : _value(v) {}
+
+    // + 연산자 오버로딩 (멤버 함수 방식)
+    Calculator operator+(const Calculator& other) const;
+
+    void print() const { std::cout << _value << std::endl; }
+};
+```
+
+```cpp
+// Calculator.cpp
+
+// c1 + c2를 하면, c1이 주체가 되어 c2를 인자로 받음.
+Calculator Calculator::operator+(const Calculator& other) const {
+    // 두 값을 더한 새로운 익명 객체를 생성하여 반환
+    return Calculator(this->_value + other._value);
+}
+```
+
+- 연산자 오버로딩은 두 가지 방식으로 구현 가능.
+
+  | 방식               | 특징                                   | 코드 형태           |
+  | ------------------ | -------------------------------------- | ------------------- |
+  | 멤버 함수          | 왼쪽 피연산자가 해당 클래스일 때 사용. | c1.operator+(c2)    |
+  | 전역 함수 (friend) | 왼쪽 피연산자가 클래스가 아닐 때 필수  | operator + (10, c1) |
