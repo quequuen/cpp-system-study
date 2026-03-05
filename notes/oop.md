@@ -615,3 +615,54 @@ int main() {
 
     }
     ```
+
+- 후위 증감은 내부적으로 복사본을 만드는 과정이 추가되기 때문에 객체가 매우 크거나 복잡할 경우, 전위 증감을 쓰는 것이 성능상 더 유리함.
+
+### 비교 연산자 오버로딩
+
+객체와 객체를 비교하거나, 객체와 기본 자료형을 비교할 때 사용. 단순히 값을 비교하는 것을 넘어, 실제 현업엣는 데이터를 정렬(Sorting)하거나 검색(Searching)할 때 반드시 필요한 기능.
+
+- 반환 타입은 비교 결과가 항상 참 아니면 거짓인 관계로 bool.
+- 비교를 한다고 해서 객체의 내부 값이 변하면 안 되므로, 매개변수와 함수 모두 const를 붙이는 것이 철칙.
+
+```cpp
+class Value {
+private:
+    int _value;
+public:
+    Value(int v) : _value(v) {}
+
+    // == 연산자: 두 객체의 값이 같은지 비교
+    bool operator==(const Value& other) const {
+        return _value == other._value;
+    }
+
+    // != 연산자: 위에서 만든 ==를 재사용하는 것이 효율적.
+    bool operator!=(const Value& other) const {
+        return !(*this == other);
+    }
+
+    // < 연산자: 정렬 알고리즘(std::sort)에서 필수.
+    bool operator<(const Value& other) const {
+        return _value < other._value;
+    }
+};
+```
+
+- C++ 표준 라이브러리(STL)의 많은 기능이 < 연산자에 의존.
+  - std::sort: 데이터를 오름차순으로 정렬할 때 내부적으로 < 연산자를 사용.
+  - std::mop, std::set: 데이터를 저장할 때 크기 순서대로 정렬해서 보관하는데, 이때 < 연산자가 없으면 컴파일 에러 발생.
+- 10 == v와 같은 형태도 구현하려면 friend 사용.
+- 우주선 연산자 (<=>)
+  최근 C++에서는 <=>(Three-way comparison) 가능.
+
+  ```cpp
+  #include <compare>
+
+  class Value {
+      int _value;
+  public:
+
+      auto operator<=>(const Value&) const = default;
+  };
+  ```
