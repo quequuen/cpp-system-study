@@ -666,3 +666,52 @@ public:
       auto operator<=>(const Value&) const = default;
   };
   ```
+
+### 첨자 연산자 오버로딩 (Subscript Operator Overloading)
+
+클래스 객체를 마치 배열처럼 다룰 수 있게 해주는 기능. 주로 리스트, 행렬, 문자열 등 '데이터 묶음'을 관리하는 클래스에서 필수적으로 사용됨. 핵심은 L-value(수정 가능)와 R-value(읽기 전용) 두 가지 버전을 세트로 만드는 것.
+
+- [] 연산자는 반드시 멤버 함수로만 오버로딩 가능.(전역 함수/friend 불가)
+- 보통 인덱스 번호인 int를 받지만, 필요에 따라 std::string 등을 받아 맵(Map)처럼 사용 가능.
+- 내부 요소의 참조(&)를 반환해야 값을 직접 수정 가능.
+- **직관적인 데이터 접근**과 **안전한 범위 검사**라는 두 마리 토끼를 잡기 위해 사용.
+
+```cpp
+#include <iostream>
+#include <cassert> // 단언문(assert) 사용을 위해
+
+class IntList {
+private:
+    int _list[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+public:
+    // 일반 버전: 수정이 가능함
+    int& operator[](const int index) {
+        assert(index >= 0 && index < 10); // 인덱스 범위 체크 (안전장치)
+        return _list[index];
+    }
+
+    // Const 버전: 읽기 전용 (const 객체용)
+    const int& operator[](const int index) const {
+        assert(index >= 0 && index < 10);
+        return _list[index];
+    }
+};
+
+int main() {
+    IntList my_list;
+
+    my_list[3] = 100; // 일반 버전 호출 (수정 가능)
+    std::cout << my_list[3] << std::endl; // 100 출력
+
+    const IntList const_list;
+    // const_list[3] = 100; // 에러: const 버전은 수정 불가
+    std::cout << const_list[3] << std::endl; // 읽기는 가능
+
+    return 0;
+}
+```
+
+- 범위 검사 (Bound Checking): 배열의 인덱스를 벗어나는 접근을 막기 위해 assert나 if문을 사용해 범위를 체크해주는 것이 필수.
+- 포인터와의 차이: 일반 배열 포인터는 범위를 체크할 방법이 없지만, 오버로딩된 []는 함수이기 때문에 내부에서 에러 처리 가능.
+- 연쇄 접근: 2차원 matrix[1][2]를 구현하고 싶다면, matrix[1]이 다시 [] 연산자가 구현된 객체를 반환하게 설계하면 됨.
