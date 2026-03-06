@@ -752,3 +752,36 @@ int main() {
 - 인자의 개수나 타입에 제한이 없으며, 여러 개를 오버로딩 하는 것도 가능.
 - 상태가 필요한 계산 뿐만 아니라 STL 알고리즘의 보조 도구, 다차원 인덱싱 등에 사용.
 - 최신 C++에서 자주 쓰이는 람다 식은 컴파일러가 내부적으로 이런 함수 객체(Functor)를 자동으로 생성해 주는 것.
+
+### 형 변환 연산자 오버로딩 (Type Conversion Operator Overloading)
+
+클래스 객체를 기본 자료형이나 다른 클래스 타입으로 자동 혹은 명시적으로 변환할 수 있게 해주는 기능.
+
+- 다른 연산자들과 달리 반환 타입을 적지 않은. 함수 이름 자체가 반환 타입을 의미하기 때문.
+- 의도치 않게 타입이 변해버리는 "암시적 변환"을 방지하기 위해 explicit 키워드 권장.
+
+```cpp
+class Value {
+private:
+    int _value;
+public:
+    Value(int v) : _value(v) {}
+
+    // explicit: 컴파일러가 멋대로 변환하지 못하게 막는 키워드
+    explicit operator int() const {
+        return _value;
+    }
+};
+
+int main() {
+    Value v(42);
+
+    // int n = v;     // 암시적 변환 금지
+    int n = (int)v;   // 직접 형 변환을 써줘야만 가능
+    int m = static_cast<int>(v); // 권장되는 방식
+}
+```
+
+- 현업에서는 반드시 const를 사용. (형 변환을 한다고 원본 객체의 값이 바꾸면 안됨)
+- explicit bool 사용.
+- 사용자가 예측하기 어려운 형 변환은 지양.
