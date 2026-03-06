@@ -715,3 +715,40 @@ int main() {
 - 범위 검사 (Bound Checking): 배열의 인덱스를 벗어나는 접근을 막기 위해 assert나 if문을 사용해 범위를 체크해주는 것이 필수.
 - 포인터와의 차이: 일반 배열 포인터는 범위를 체크할 방법이 없지만, 오버로딩된 []는 함수이기 때문에 내부에서 에러 처리 가능.
 - 연쇄 접근: 2차원 matrix[1][2]를 구현하고 싶다면, matrix[1]이 다시 [] 연산자가 구현된 객체를 반환하게 설계하면 됨.
+
+### 괄호 연산자 오버로딩 (Function Object, Functor)
+
+클래스 객체를 일반 함수처럼 호출할 수 있는 기능. 객체 내부의 멤버 변수를 통해 호출 횟수, 누적 값 등 자신만의 상태를 유지할 수 있음.
+
+```cpp
+#include <iostream>
+
+class Accumulator {
+private:
+    int _total = 0; // 상태 저장
+
+public:
+    // 괄호 연산자 오버로딩
+    int operator()(int value) {
+        _total += value;
+        return _total;
+    }
+
+    int getTotal() const { return _total; }
+};
+
+int main() {
+    Accumulator acc; // 객체 생성
+
+    // 객체를 함수처럼 호출
+    std::cout << acc(10) << std::endl; // 10 출력
+    std::cout << acc(20) << std::endl; // 30 출력
+    std::cout << acc(5) << std::endl;  // 35 출력
+
+    return 0;
+}
+```
+
+- 인자의 개수나 타입에 제한이 없으며, 여러 개를 오버로딩 하는 것도 가능.
+- 상태가 필요한 계산 뿐만 아니라 STL 알고리즘의 보조 도구, 다차원 인덱싱 등에 사용.
+- 최신 C++에서 자주 쓰이는 람다 식은 컴파일러가 내부적으로 이런 함수 객체(Functor)를 자동으로 생성해 주는 것.
