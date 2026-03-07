@@ -12,6 +12,12 @@ class Value
     : _value(v)
     {}
 
+    Value(const Value &v)
+    : _value(v._value)
+    {
+        cout << "Copy" << endl;
+    }
+
     int getValue() const { return _value; }
     int& getValue() { return _value; }
     friend Value operator + (const Value &v1, const Value &v2);
@@ -47,6 +53,14 @@ Value operator + (const Value &v1, const Value &v2)
     return Value(v1._value + v2._value);
 }
 
+Value copyConstructor()
+{
+    Value temp(2);
+
+    cout << &temp << endl;
+
+    return temp;
+}
 
 int main ()
 {
@@ -67,6 +81,10 @@ int main ()
     cin >> v_in;
 
     cout << "입력값: " << v_in << endl;
+
+    Value c_value = copyConstructor();
+    cout << &c_value << endl;
+    cout << c_value << endl;
 
 
     return 0;
