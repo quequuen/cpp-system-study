@@ -18,6 +18,8 @@ class Value
         cout << "Copy" << endl;
     }
 
+    Value(char) = delete;
+
     int getValue() const { return _value; }
     int& getValue() { return _value; }
     friend Value operator + (const Value &v1, const Value &v2);
@@ -85,6 +87,9 @@ int main ()
     Value c_value = copyConstructor();
     cout << &c_value << endl;
     cout << c_value << endl;
+
+    // delete로 막아 컴파일 오류 발생.
+    // Value('c'); 
 
 
     return 0;

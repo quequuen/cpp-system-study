@@ -802,3 +802,61 @@ int main() {
 - 현업에서는 반드시 const를 사용. (형 변환을 한다고 원본 객체의 값이 바꾸면 안됨)
 - explicit bool 사용.
 - 사용자가 예측하기 어려운 형 변환은 지양.
+
+### explicit(암시적 형 변환 금지)과 delete(특정 기능 사용 금지)
+
+- explicit
+  - explicit은 주로 생성자나 형 변환 연산자 앞에 붙여서, 컴파일러가 멋대로 타입을 바꾸는 '암시적 변환'을 막을 때 사용.
+  - 컴파일러는 인자가 하나인 생성자가 있으면, 그 인자 타입의 데이터를 객체로 자동으로 바꿔주려 하는데 당장은 편리하지만 가끔 예기치 못한 버그 발생 가능성 존재.
+
+  ```cpp
+  class MyInt {
+  public:
+      explicit MyInt(int n) { /* ... */ }
+  };
+
+  void doSomething(MyInt obj) { /* ... */ }
+
+  int main() {
+      // explicit이 없을 때
+      // doSomething(10); // 컴파일러가 10을 MyInt(10)으로 몰래 바꿈 (의도치 않은 동작)
+
+      // explicit이 있을 때:
+      // doSomething(10); // 에러: 명시적으로 MyInt(10)을 넘겨야 함
+      doSomething(MyInt(10));
+  }
+  ```
+
+- delete
+  - 컴파일러가 자동으로 만들어주는 함수를 금지하거나, 특정 타입의 인자를 받는 함수를 거부하라고 할 때 사용.
+  - 복사 방지: 객체가 복사되면 안되는 경우 (ex: 파일 관리자, 네트워크 연결 객체 등) 복사 생성자와 복사 대입 연산자를 delete.
+
+    ```cpp
+    class UniqueManager {
+    public:
+        UniqueManager() {}
+
+        // 복사 생성자와 복사 대입 연산자 금지
+        UniqueManager(const UniqueManager& src) = delete;
+        UniqueManager& operator=(const UniqueManager& src) = delete;
+    };
+
+    int main() {
+        UniqueManager a;
+        // UniqueManager b = a; // 에러: 복사 기능을 삭제했기 때문
+    }
+    ```
+
+  - 특정 타입 호출 방지: 특정 타입의 인자가 들어오는 것을 아예 막을 수도 있음.
+
+    ```cpp
+    void printInt(int n) { /* ... */ }
+
+    // double로 호출하는 것은 금지하고 싶을 때
+    void printInt(double d) = delete;
+
+    int main() {
+        printInt(10);   // OK
+        // printInt(3.14); // 에러: double 버전은 삭제됨
+    }
+    ```
