@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 
+
 using namespace std;
 
 class StringClass
@@ -75,7 +76,7 @@ class StringClass
     }
 
     return *this;
-    
+
    }
 
     ~StringClass()
@@ -113,5 +114,7 @@ int main()
     StringClass str = string;
     StringClass str2;
     str2 = string;
+
+    
     return 0;
 }
