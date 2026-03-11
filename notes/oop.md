@@ -10,7 +10,7 @@
 
 - **상속 (Inheritance/ is-a)**: 상위 클래스(기본형)의 특징을 하위 클래스(파생형)가 물려받는 관계. "A는 B이다"라는 관계를 형성.
 - **합성/구성 (Composition/ has-a)**: 한 객체가 다른 객체를 포함하며, 포함된 객체의 수명이 포함하는 객체의 수명과 일치하는 강한 결합 관계. (ex: 집-방)
-- **집합/집합 (Aggregation)**: 구성과 비슷하지만, 포함되는 객체가 포함하는 객체와 독립적으로 존재할 수 있는 더 약한 결합 관계.
+- **집합 (Aggregation)**: 구성과 비슷하지만, 포함되는 객체가 포함하는 객체와 독립적으로 존재할 수 있는 더 약한 결합 관계.
 - **의존 (Dependency)**: 한 객체가 다른 객체를 일시적으로 사용하여 동작하는 관계.
 - **연관(Association)**: 두 객체가 서로 연관되어 상호작용하는 보다 일반적인 관계.
 
@@ -20,7 +20,7 @@
 - 협력 (Collaboration): 객체들은 책임을 수행하고, 메시지를 주고받으며 협력하여 기능(공동체)을 구현.
 - 역할 (Role): 특정 협력 내에서 객체가 수행하는 책임의 집합을 정의하여 유연성을 높임.
 
-### 합성/구성 (Composition / has-a) 관계
+### 합성/구성 관계 (Composition / has-a)
 
 **전체(Whole)**와 **부분(Part)**의 관계. 부분 객체의 생명 주기가 전체 객체의 생명 주기에 완전히 종속됨.
 
@@ -60,4 +60,68 @@ int main() {
 
     return 0;
 }
+```
+
+### 집합 관계 (Aggregation)
+
+구성 관계와 마찬가지로 '전체-부분'의 관계를 나타내지만, 결합력이 훨씬 느슨한 관계.
+
+- 전체 객체(Whole)가 소멸해도 부분 객체(Part)는 사라지지 않고 **독립적으로 존재**함.
+- 하나의 부분 객체가 여러 개의 전체 객체에 속할 수 있음.
+- 전체가 부분을 소유한다기보다는 필요할 때 빌려 쓰거나 잠시 **참조**하는 개념에 가까움.
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Teacher {
+private:
+    std::string _name;
+public:
+    Teacher(std::string name) : _name(name) {}
+    std::string getName() const { return _name; }
+};
+
+class School {
+private:
+    std::string _schoolName;
+    // 여러 명의 교사 주소를 저장하는 vector
+    std::vector<Teacher*> _teachers;
+
+public:
+    School(std::string name) : _schoolName(name) {}
+
+    // 교사를 명단에 추가
+    void addTeacher(Teacher* t) {
+        _teachers.push_back(t);
+    }
+
+    void showTeachers() const {
+        std::cout << "[" << _schoolName << " 교사 명단]" << std::endl;
+        for (const auto& t : _teachers) {
+            std::cout << "- " << t->getName() << std::endl;
+        }
+    }
+
+    ~School() {
+        std::cout << _schoolName << "가 폐교 되었습니다." << std::endl;
+        // School이 사라져도 벡터 안의 포인터들이 가리키는 Teacher 객체는 delete되지 않음.
+    }
+
+    int main() {
+    Teacher* mrKim = new Teacher("김교사"); // 교사 객체 독립 생성
+
+    {
+        School mySchool("진격중");
+        mySchool.addTeacher(mrKim); // 학교에 교사을 배정.
+    } // 여기서 mySchool은 소멸.
+
+    // 학교가 사라져도 김교사 객체는 여전히 존재.
+    std::cout << mrKim->getName() << "님은 여전히 근무 중." << std::endl;
+
+    delete mrKim; // 교사는 나중에 필요 없을 때 따로 해제
+    return 0;
+    }
+};
 ```
