@@ -174,3 +174,44 @@ public:
 - Doctor는 Patient를 알아야 하고, Patient는 Doctor를 알아야 함. 그렇기 때문에 전방 선언을 사용.
 
 ### 의존 관계 (Dependency)
+
+한 객체가 작업을 수행하기 위해 다른 객체의 기능을 빌려 쓰는 관계.
+
+- 일시적인 사용으로 인해 클래스의 멤버 변수로 상대방을 들고 있지 않음.
+- 상대방 객체의 생명 주기를 책임지지 않으며, 함수 호출이 끝나면 관계도 종료됨.
+
+```cpp
+#include <iostream>
+#include <string>
+
+class GasStation {
+public:
+    void fillUp() {
+        std::cout << "기름을 가득 채웁니다." << std::endl;
+    }
+};
+
+class Driver {
+public:
+    // 의존 관계: GasStation 객체를 인자로 받아서 잠깐 사용함
+    void visit(GasStation* station) {
+        if (station) {
+            station->fillUp();
+        }
+    }
+};
+
+int main() {
+    Driver me;
+    GasStation gs;
+
+    // 운전자가 주유소를 방문할 때만 일시적인 관계가 형성됨
+    me.visit(&gs);
+
+    return 0;
+}
+```
+
+- 평생 단 하나의 주유소만 이용하는 것이 아니기 때문에 멤버 변수로 두지 않음.
+- **유연성**: 의존 관계로 설계하면, visit 함수의 인자로 SK주유소, GS주유소 등 어떤 주유소 객체든 유연하게 넘겨줄 수 있음.
+- **결합도 감소**: 클래스 간의 연결 고리를 최소화하여, 나중에 한쪽 코드가 수정되어도 다른 쪽에 미치는 영향을 줄임.
