@@ -65,3 +65,5 @@ add_executable(class_03
 add_executable(class_04 oop/01_class/main_04.cpp)
 add_executable(class_05 oop/01_class/main_05.cpp)
 add_executable(class_06 oop/01_class/main_06.cpp)
+
+add_executable(inharitance_00 oop/02_inheritance/main_00.cpp)
