@@ -12,7 +12,7 @@
 - **합성/구성 (Composition/ has-a)**: 한 객체가 다른 객체를 포함하며, 포함된 객체의 수명이 포함하는 객체의 수명과 일치하는 강한 결합 관계. (ex: 집-방)
 - **집합 (Aggregation)**: 구성과 비슷하지만, 포함되는 객체가 포함하는 객체와 독립적으로 존재할 수 있는 더 약한 결합 관계.
 - **의존 (Dependency)**: 한 객체가 다른 객체를 일시적으로 사용하여 동작하는 관계.
-- **연관(Association)**: 두 객체가 서로 연관되어 상호작용하는 보다 일반적인 관계.
+- **연관 (Association)**: 두 객체가 서로 연관되어 상호작용하는 보다 일반적인 관계.
 
 ### 객체 간 상호작용
 
@@ -125,3 +125,52 @@ public:
     }
 };
 ```
+
+### 연관 관계 (Association)
+
+객체들이 서로의 존재를 알고 메시지를 주고받는 관계. 두 클래스가 서로 독립적이지만, 업무를 수행하기 위해 서로를 이용하는 관계.
+
+- '전체-부분' 같은 소유권 개념이 약해 **느슨한 연결**.
+- 한쪽이 다른 쪽을 완전히 포함하거나 생명 주기를 책임지지 않음.
+- 방향성
+  - 단방향(Uni-directional): 한 클래스만 상대방을 알고 있는 상태.
+  - 양방향(Bi-directional): 서로가 서로를 알고 있는 상태.
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Patient; // 전방 선언
+
+class Doctor {
+private:
+    std::string _name;
+    std::vector<Patient*> _patients; // 의사가 담당하는 환자들
+
+public:
+    Doctor(std::string name) : _name(name) {}
+    void addPatient(Patient* p) { _patients.push_back(p); }
+    std::string getName() const { return _name; }
+};
+
+class Patient {
+private:
+    std::string _name;
+    std::vector<Doctor*> _doctors; // 환자가 만나는 의사들
+
+public:
+    Patient(std::string name) : _name(name) {}
+
+    // 제휴 관계 형성: 서로의 명단에 이름을 올림
+    void meetDoctor(Doctor* d) {
+        _doctors.push_back(d);
+        d->addPatient(this);
+    }
+    std::string getName() const { return _name; }
+};
+```
+
+- Doctor는 Patient를 알아야 하고, Patient는 Doctor를 알아야 함. 그렇기 때문에 전방 선언을 사용.
+
+### 의존 관계 (Dependency)
