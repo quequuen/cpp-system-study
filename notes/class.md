@@ -931,3 +931,60 @@ MyString(const MyString& src) {
   - std::vector: 크기가 변하는 동적 배열.
   - std::list: 노드들이 연결된 연결 리스트.
   - std::map: 키(Key)와 값(Value)의 쌍으로 저장하는 사전 형태.
+
+### 싱글톤 패턴 (Singleton)
+
+어떤 클래스의 인스턴스가 딱 하나만 존재하도록 보장하는 디자인 패턴. → 해당 객체는 여기저기서 여러 개 만들 필요가 없고, 오직 하나만 만들어서 모두가 공유하려 할 때 사용. **관리자 (Manager)**와 같은 역할. 프로그램 내에서 중심을 잡고 자원을 관리하는 객체를 만들 때 아주 유용.
+
+- C++에서는 static, private, delete 사용.
+- 생성자를 private으로 숨기고 static으로 정적 상태를 유지하며 외부에서 이 객체를 호출할 수 있도록 get~() 같은 함수를 만듦.
+
+```cpp
+class Manager {
+private:
+    // 외부에서 생성 못하게 막음
+    Manager() { std::cout << "매니저 생성됨!" << std::endl; }
+
+public:
+    // 복사와 대입 금지 (딱 하나만 존재해야 함.)
+    Manager(const Manager&) = delete;
+    Manager& operator=(const Manager&) = delete;
+
+    // 단 하나의 인스턴스를 반환하는 static 함수
+    static Manager& getInstance() {
+        // 지역 정적 변수는 함수가 처음 호출될 때 딱 한 번만 초기화됨
+        static Manager instance;
+        return instance;
+    }
+
+    void doSomething() { std::cout << "열심히 일하는 중..." << std::endl; }
+};
+
+int main() {
+    // Manager m1; // 에러: 생성자가 private임
+
+    // 어디서든 getInstance()를 통해 동일한 객체에 접근
+    Manager& m1 = Manager::getInstance();
+    Manager& m2 = Manager::getInstance();
+
+    m1.doSomething();
+
+    // m1과 m2는 주소값이 같음. (static 키워드로 인한 같은 객체)
+    std::cout << &m1 << " == " << &m2 << std::endl;
+}
+```
+
+- 위에서 사용된 delete는 메모리 해제 연산자 delete와 다름. 기능 삭제를 의미하는 키워드 delete임.
+
+  ```cpp
+  // 메모리 해제 연산자 delete
+  delete prt;
+
+  // 기능 삭제 키워드 delete
+  void func() = felete;
+  ```
+
+- 주요 목적
+  - **자원 공유**: 데이터베이스 연결 객체, 설정 파일 관리자, 로그 기록기(Logger)처럼 시스템 전체에서 하나만 있어도 충분하고, 오히려 여러 개면 데이터가 꼬일 수 있는 경우에 사용함.
+  - **메모리 절약**: 인스턴스를 매번 new로 생성하지 않고 이미 만들어진 것을 재사용하므로 메모리 낭비를 줄임.
+  - 전역 접근: 어디서든 이 객체레 접근할 수 있는 통로 제공.
