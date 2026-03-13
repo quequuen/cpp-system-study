@@ -66,4 +66,11 @@ add_executable(class_04 oop/01_class/main_04.cpp)
 add_executable(class_05 oop/01_class/main_05.cpp)
 add_executable(class_06 oop/01_class/main_06.cpp)
 
-add_executable(inharitance_00 oop/02_inheritance/main_00.cpp)
+include_directories(oop/02_inheritance/headers)
+
+add_executable(inheritance_00 oop/02_inheritance/main_00.cpp)
+add_executable(inheritance_01
+    oop/02_inheritance/main_01.cpp
+    oop/02_inheritance/Person.cpp
+
+ )

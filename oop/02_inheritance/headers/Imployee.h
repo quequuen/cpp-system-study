@@ -5,19 +5,18 @@
 class Imployee: public Person
 {
     private:
-    int id;
+    int i_id;
+
     public:
     Imployee(const std::string& name_in = "-")
-    : _name(name_in)
+    : Person(name_in)
     {}
 
-    void setName(const std::string& name_in)
+    friend std::ostream& operator << (std::ostream& out, const Imployee& imployee )
     {
-        _name = name_in;
+        out << imployee.getName() << " " << imployee.i_id;
+        return out;
     }
 
-    std::string getName()
-    {
-        return _name;
-    }
+    
 };
