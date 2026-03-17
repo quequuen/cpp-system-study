@@ -72,3 +72,22 @@ int main() {
     c.access(); // 내부 함수를 통해서만 확인 가능
 }
 ```
+
+### 상속 받은 멤버 숨기기
+
+- 상속 접근 지정자 사용(private 상속)
+  상속을 받을 때 public 대신 private이나 protected 사용.
+- using 키워드로 접근 데어 (부분 숨기기)
+  public 상속을 유지하면서 특정 함수만 골라서 숨기고 싶을 때 유용. 부모의 함수를 자식의 private 영역으로 강제로 끌어내리는 방식.
+
+  ```cpp
+  class Child : public Parent {
+  private:
+      using Parent::display; // 부모의 public 함수를 자식의 private 영역으로 배치.
+  };
+
+  int main() {
+      Child c;
+      // c.display(); // 에러: 이제 자식 객체를 통해서는 접근할 수 없음.
+  }
+  ```
