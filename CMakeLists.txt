@@ -70,7 +70,8 @@ include_directories(oop/02_inheritance/headers)
 
 add_executable(inheritance_00 oop/02_inheritance/main_00.cpp)
 add_executable(inheritance_01
-    oop/02_inheritance/main_01.cpp
-    oop/02_inheritance/Person.cpp
+oop/02_inheritance/main_01.cpp
+oop/02_inheritance/Person.cpp
 
- )
+)
+add_executable(inheritance_02 oop/02_inheritance/main_02.cpp)

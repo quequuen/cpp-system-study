@@ -68,7 +68,7 @@ public:
 
 int main() {
     Child c;
-    // c.protectedValue; // 에러: 외부에서도 당연히 접근 불가
+    // c.protectedValue; // 에러: 외부에서도 당연히 접근 불가(main 포함)
     c.access(); // 내부 함수를 통해서만 확인 가능
 }
 ```
