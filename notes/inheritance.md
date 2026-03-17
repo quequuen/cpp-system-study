@@ -100,6 +100,8 @@ int main() {
 - 네임 하이딩(Name Hiding)
   부모에게 void move()와 void move(int x) 두 개가 있을 때, 자식에서 void move()만 오버라이딩하면 매개변수가 있는 move(int x)는 **자식 객체에서 숨겨져서 호출할 수 없게 됨.**
 
+- final 키워드로 더 이상 오버라이딩 되지 못하도록 막을 수 있음.
+
 ### 상속 받은 멤버 숨기기
 
 - 상속 접근 지정자 사용(private 상속)
@@ -118,3 +120,56 @@ int main() {
       // c.display(); // 에러: 이제 자식 객체를 통해서는 접근할 수 없음.
   }
   ```
+
+### 다중 상속 (Multiple Inheritance)
+
+    두 개 이상의 부모 클래스로부터 기능을 물려받는 것. 콤마(,)를 이용해 상속받을 부모 클래스들을 나열.
+
+```cpp
+class Scanner {
+public:
+    void scan() { cout << "스캔 중..." << endl; }
+};
+
+class Printer {
+public:
+    void print() { cout << "출력 중..." << endl; }
+};
+
+// 다중 상속: 두 클래스의 기능을 모두 가짐
+class Copier : public Scanner, public Printer {
+};
+
+int main() {
+    Copier cp;
+    cp.scan();
+    cp.print();
+}
+```
+
+- 다중 상속의 치명적인 문제: **죽음의 다이아몬드 (The Diamond of Death)**
+  다중 상속은 강력해 보이지만, 설계상 매우 위험한 **모호성** 문제를 일으킬 수 있음.
+
+  ```cpp
+  class PoweredDevice { /* ... */ };
+  class Scanner : public PoweredDevice { /* ... */ };
+  class Printer : public PoweredDevice { /* ... */ };
+
+  // Copier는 PoweredDevice를 두 번 상속받게 됨.
+  class Copier : public Scanner, public Printer { /* ... */ };
+  ```
+
+  - 가상 상속(virtual)을 통해 최상위 부모의 인스턴스를 단 하나만 생성하여 공유하도록 강제.
+
+    ```cpp
+    class PoweredDevice { /* ... */ };
+
+    // 가상 상속 선언
+    class Scanner : virtual public PoweredDevice { /* ... */ };
+    class Printer : virtual public PoweredDevice { /* ... */ };
+
+    // 이제 Copier 내부에는 PoweredDevice가 단 하나만 존재하게 됨
+    class Copier : public Scanner, public Printer { /* ... */ };
+    ```
+
+  - 복잡도 증가, 이름 충돌 등으로 인한 문제로 인해 **인터페이스(Interface, 추상 클래스)**를 상속받거나, **합성 (Composition, 클래스 내부에 다른 클래스 객체를 포함하는 것)**을 사용하는 방식이 권장됨.
