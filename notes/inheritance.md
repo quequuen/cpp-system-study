@@ -73,6 +73,33 @@ int main() {
 }
 ```
 
+### 상속 오버라이딩 (Overriding)
+
+부모 클래스의 멤버 함수를 자식 클래스에서 재정의하는 것.
+
+- 함수의 시그니처(이름, 매개변수, 반환형)가 완벽히 일치해야 함.
+- 가상 함수(virtual)의 존재
+  - virtual이 없을 시: 부모 포인터로 자식을 가리킬 때 부모 함수가 호출됨.
+  - virtual이 있을 시: 부모 포인터로 자식을 가리켜도 자식의 함수(오버라이딩된 함수)가 호출됨.(다형성)
+- override 키워드 (방어적 프로그래밍)
+  자바나 C++에서는 자식 함수 뒤에 override라고 명시하는 것을 강력히 권장함.
+
+  ```cpp
+  class Parent {
+  public:
+      virtual void attack() { cout << "부모 공격" << endl; }
+  };
+
+  class Child : public Parent {
+  public:
+      // override를 붙이면 부모에 똑같은 함수가 있는지 검사해줌.
+      void attack() override { cout << "자식 필살기" << endl; }
+  };
+  ```
+
+- 네임 하이딩(Name Hiding)
+  부모에게 void move()와 void move(int x) 두 개가 있을 때, 자식에서 void move()만 오버라이딩하면 매개변수가 있는 move(int x)는 **자식 객체에서 숨겨져서 호출할 수 없게 됨.**
+
 ### 상속 받은 멤버 숨기기
 
 - 상속 접근 지정자 사용(private 상속)
