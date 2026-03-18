@@ -60,3 +60,49 @@ int main()
 
 - vtable(가상 함수 테이블)
   컴파일러는 virtual 함수가 포함된 클래스마다 vtable(Virtual Method Table)이라는 지도를 만듦. 객체는 내부적으로 이 지도를 가리키는 포인터를 가지고 있어서, 함수 호출 시 지도를 보고 어떤 경로로 갈 지를 판단. 때문에 아주 미세한 성능 비용 발생.
+
+### 공변 반환값 (Covariant Return Type)
+
+    상속 관계에서 오버라이딩을 할 때, 부모 클래스의 함수가 반환하는 타입의 '자식 타입'으로 반환형을 바꿀 수 있게 허용하는 예외 규칙.
+    보통 오버라이딩의 경우, 함수의 이름, 매개변수, 반환형이 모두 일치해야 하지만, 반환형이 포인터나 참조자일 경우, 더 구체적인 자식 타입을 반환하는 것이 논리적으로 안전하기 때문에 C++에서 특별히 허용해 주는 것.
+
+- 부모 클래스로부터 자식 클래스에서 override 하는 메서드가 있을 시, 반환형이 부모 클래스가 되어 버리면 필수적으로 형변환을 해야 함.
+
+  ```cpp
+  class Parent {
+  public:
+      virtual Parent* clone() { return new Parent(); }
+  };
+
+  class Child : public Parent {
+  public:
+      // 반환형을 Parent*로 유지해야 함.
+      Parent* clone() override { return new Child(); }
+  };
+
+  int main() {
+      Child* c1 = new Child();
+      // clone()이 Parent*를 반환하므로 Child*에 담으려면 캐스팅이 필요함.
+      Child* c2 = static_cast<Child*>(c1->clone());
+  }
+  ```
+
+- 공변 반환값을 사용한다면 이러한 형 변환 없이 메서드 사용 가능.
+
+  ```cpp
+  class Child : public Parent {
+  public:
+      // 부모의 반환형(Parent*)의 자식 타입(Child*)으로 반환형 변경 가능. (공변 반환값 사용)
+      Child* clone() override { return new Child(); }
+  };
+
+  int main() {
+      Child* c1 = new Child();
+      // 형변환 없이 바로 Child* 타입으로 받을 수 있음
+      Child* c2 = c1->clone();
+  }
+  ```
+
+- 반환값이 포인터나 참조자여야 사용 가능.
+- 상속 관계이면서 부모 함수가 virtual이어야 함.
+- 주로 **프로토타입 패턴 (Prototype Pattern)**처럼 자기 자신과 똑같은 객체를 생성해서 반환해야 하는 경우에 필수적으로 사용됨. 사용자가 자식 객체임을 알고 쓰는 상황에서 불필요한 다운 캐스팅 코드를 줄여주어 가독성과 안정성을 높여줌.
