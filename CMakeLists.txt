@@ -75,3 +75,5 @@ oop/02_inheritance/Person.cpp
 
 )
 add_executable(inheritance_02 oop/02_inheritance/main_02.cpp)
+
+add_executable(polymorphism_00 oop/03_polymorphism/main_00.cpp)
