@@ -106,3 +106,47 @@ int main()
 - 반환값이 포인터나 참조자여야 사용 가능.
 - 상속 관계이면서 부모 함수가 virtual이어야 함.
 - 주로 **프로토타입 패턴 (Prototype Pattern)**처럼 자기 자신과 똑같은 객체를 생성해서 반환해야 하는 경우에 필수적으로 사용됨. 사용자가 자식 객체임을 알고 쓰는 상황에서 불필요한 다운 캐스팅 코드를 줄여주어 가독성과 안정성을 높여줌.
+
+### 가상 소멸자 (Virtual Destructor)
+
+상속 관계에 있는 객체를 다룰 때 메모리 누수(Memory Leak)를 방지하기 위한 필수 장치. 다형성을 이용해 부모 클래스의 포인터로 자식 객체를 가리킬 때, 소멸자에 virtual이 자식 클래스의 메모리가 소멸되지 붙어있지 않으면 문제 발생.
+
+```cpp
+class Parent {
+public:
+    Parent() { cout << "Parent 생성" << endl; }
+    ~Parent() { cout << "Parent 소멸" << endl; } // 일반 소멸자
+};
+
+class Child : public Parent {
+private:
+    int* _data;
+public:
+    Child() {
+        _data = new int[100]; // 자식만 가진 동적 할당 자원
+        cout << "Child 생성" << endl;
+    }
+    ~Child() {
+        delete[] _data;
+        cout << "Child 소멸 (자원 해제)" << endl;
+    }
+};
+
+int main() {
+    Parent* p = new Child(); // 다형성 활용
+    delete p; // 문제 발생: 자식의 동적 자원 해제 안됨. → 메모리 누수 발생.
+    return 0;
+}
+```
+
+위 상항에서 부모 클래스의 소멸자 앞에 virtual 키워드를 붙여주면 컴파일러는 부모 클래스를 해제 할 때, 실제 객체의 소멸자 (자식 클래스 소멸자)를 찾아감.
+
+```cpp
+class Parent {
+public:
+    virtual ~Parent() { cout << "Parent 소멸" << endl; } // 가상 소멸자 선언
+};
+```
+
+- virtual 키워드를 사용했을 때 순서: Child 소멸자 → Parent 소멸자 순으로 호출.
+- 상속을 염두에 둔 클래스라면 무조건 가상 소멸자를 써야 하며 가상 함수가 하나라도 있는 클래스는 소멸자도 virtual로 만드는 것이 안전함.
