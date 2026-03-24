@@ -8,10 +8,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # 각 학습 프로그램 추가
 
+# basics
 add_executable(basic_01 basics/00_basic-of-basics/main_00_basic_of_basics.cpp)
 add_executable(basic_02 basics/00_basic-of-basics/main_00_basic_of_basics_02.cpp)
 add_executable(basic_03 basics/00_basic-of-basics/main_00_basic_of_basics_03.cpp)
 
+# basics/01_variables
 add_executable(variables_01 basics/01_variables/main_01_variables.cpp)
 add_executable(variables_02 basics/01_variables/main_01_variables_02.cpp)
 add_executable(variables_03 basics/01_variables/main_01_variables_03.cpp)
@@ -22,28 +24,14 @@ add_executable(variables_07 basics/01_variables/main_01_variables_07.cpp)
 add_executable(variables_08 basics/01_variables/main_01_variables_08.cpp)
 add_executable(variables_09 basics/01_variables/main_01_variables_09.cpp)
 
+# basics/02_control
 add_executable(control_01 basics/02_control/main_02_control.cpp)
 add_executable(control_02 basics/02_control/main_02_control_02.cpp)
 add_executable(control_03 basics/02_control/main_02_control_03.cpp)
 add_executable(control_04 basics/02_control/main_02_control_04.cpp)
 add_executable(control_05 basics/02_control/main_02_control_05.cpp)
 
-add_executable(pointers_01 basics/04_pointers/main_04_pointers.cpp)
-add_executable(pointers_02 basics/04_pointers/main_04_pointers_02.cpp)
-add_executable(pointers_03 basics/04_pointers/main_04_pointers_03.cpp)
-add_executable(pointers_04 basics/04_pointers/main_04_pointers_04.cpp)
-add_executable(pointers_05 basics/04_pointers/main_04_pointers_05.cpp)
-add_executable(pointers_06 basics/04_pointers/main_04_pointers_06.cpp)
-
-add_executable(arrays_01 basics/06_arrays/main_06_arrays.cpp)
-add_executable(arrays_02 basics/06_arrays/main_06_arrays_02.cpp)
-add_executable(arrays_03 basics/06_arrays/main_06_arrays_03.cpp)
-add_executable(arrays_04 basics/06_arrays/main_06_arrays_04.cpp)
-add_executable(arrays_05 basics/06_arrays/main_06_arrays_05.cpp)
-add_executable(arrays_06 basics/06_arrays/main_06_arrays_06.cpp)
-
-add_executable(io_stream_07 basics/07_io_streams/main_07_io.cpp)
-
+# basics/03_functions
 add_executable(functions_01 
     basics/03_functions/main_03_func.cpp
     basics/03_functions/utils.cpp
@@ -54,6 +42,29 @@ add_executable(functions_04 basics/03_functions/main_03_func_04.cpp)
 add_executable(functions_05 basics/03_functions/main_03_func_05.cpp)
 add_executable(functions_06 basics/03_functions/main_03_func_06.cpp)
 
+# basics/04_pointers
+add_executable(pointers_01 basics/04_pointers/main_04_pointers.cpp)
+add_executable(pointers_02 basics/04_pointers/main_04_pointers_02.cpp)
+add_executable(pointers_03 basics/04_pointers/main_04_pointers_03.cpp)
+add_executable(pointers_04 basics/04_pointers/main_04_pointers_04.cpp)
+add_executable(pointers_05 basics/04_pointers/main_04_pointers_05.cpp)
+add_executable(pointers_06 basics/04_pointers/main_04_pointers_06.cpp)
+
+# basics/06_arrays
+add_executable(arrays_01 basics/06_arrays/main_06_arrays.cpp)
+add_executable(arrays_02 basics/06_arrays/main_06_arrays_02.cpp)
+add_executable(arrays_03 basics/06_arrays/main_06_arrays_03.cpp)
+add_executable(arrays_04 basics/06_arrays/main_06_arrays_04.cpp)
+add_executable(arrays_05 basics/06_arrays/main_06_arrays_05.cpp)
+add_executable(arrays_06 basics/06_arrays/main_06_arrays_06.cpp)
+
+# basics/07_io_streams
+add_executable(io_stream_07 basics/07_io_streams/main_07_io.cpp)
+
+# basics/08_templates
+add_executable(templates_00 basics/08_templates/main.cpp)
+
+# oop/01_class
 add_executable(class_00 oop/01_class/main_00.cpp)
 add_executable(class_01 oop/01_class/main_01.cpp)
 add_executable(class_02 oop/01_class/main_02.cpp)
@@ -66,8 +77,8 @@ add_executable(class_04 oop/01_class/main_04.cpp)
 add_executable(class_05 oop/01_class/main_05.cpp)
 add_executable(class_06 oop/01_class/main_06.cpp)
 
+# oop/02_inheritance
 include_directories(oop/02_inheritance/headers)
-
 add_executable(inheritance_00 oop/02_inheritance/main_00.cpp)
 add_executable(inheritance_01
 oop/02_inheritance/main_01.cpp
@@ -76,6 +87,7 @@ oop/02_inheritance/Person.cpp
 )
 add_executable(inheritance_02 oop/02_inheritance/main_02.cpp)
 
+# oop/03_polymorphism
 add_executable(polymorphism_00 oop/03_polymorphism/main_00.cpp)
 add_executable(polymorphism_01 oop/03_polymorphism/main_01.cpp)
 add_executable(polymorphism_02 oop/03_polymorphism/main_02.cpp)
