@@ -48,7 +48,10 @@ int main()
     // 부득이하게 p를 다시 c1 형으로 바꿔야 할 때.
     auto *parent_to_c1 = dynamic_cast<Child*>(p);
 
-    cout << parent_to_c1->_j << endl;
+    if (parent_to_c1 != nullptr)
+        cout << parent_to_c1->_j << endl;
+    else
+        cout << "Failed" << endl;
 
     // 특별한 경우가 아니라면 복잡하기 때문에 잘 사용하지 않음.
 
