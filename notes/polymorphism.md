@@ -233,3 +233,69 @@ int main() {
     delete myPet;
 }
 ```
+
+### 객체 잘림 (Object Slicing)
+
+자식 클래스 객체를 부모 클래스 타입의 변수(값)에 대입할 때, 자식 클래스만이 가진 정보(추가 멤버 변수, 가상 함수 테이블 포인터 등)가 잘려 나가는 현상.
+C++에서 객체를 값으로 전달하면 복사가 일어나게 되는데 이 때, 부모 객체 타입은 자식 객체 타입의 내용물을 다 담을 만큼 크지 않기 때문에, 부모 부분만 복사되고 버려지는 것.
+
+```cpp
+class Parent {
+public:
+    int p_val;
+    virtual void print() { cout << "Parent" << endl; }
+};
+
+class Child : public Parent {
+public:
+    int c_val; // 해당 부분은 잘려 나감
+    void print() override { cout << "Child" << endl; }
+};
+
+int main() {
+    Child c;
+    Parent p = c; // 객체 잘림 발생: p는 Parent 크기만큼만 가짐
+
+    p.print(); // "Child"가 아닌 "Parent" 출력 (다형성 상실)
+}
+```
+
+- 객체 잘림 현상을 피하려면 데이터를 값이 아닌 **주소(포인터나 참조)**로 다뤄야 함. 주소값은 크기가 일정하므로 자식 객체의 전체 모습을 그대로 유지하며 가리킬 수 있기 때문.
+  - `Parent* p = &c;` (포인터 사용)
+  - `Parent& p = c;` (참조자 사용)
+
+### std::reference_wrapper
+
+객체 잘림 현상 때문에 포인터나 참조자를 컨테이너(예: std::vector)에 담으려고 하면 문제 발생.
+
+- vector<Parent&>: 불가능. C++ 참조자는 객체가 아니므로 컨테이너에 담을 수 없음.
+- vector<Parent\*>: 가능하지만 nullptr 체크가 필요하고 메모리 관리 책임이 생겨 번거로움.
+  해당 경우, **std::reference_wrapper** 사용
+
+- 내부적으로 포인터를 가지고 있지만, 겉으로는 참조자처럼 동작을 함.
+- 일반 참조자는 한 번 대상을 정하면 바꿀 수 없지만, reference_wrapper는 다른 객체를 가리키도록 바꿀 수 있음.
+- 객체이므로 vector 등에 담을 수 있어 객체 잘림 없이 다형성을 유지하는 리스트를 만들기 최적임.
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <functional> // reference_wrapper
+
+int main() {
+    Child c1, c2;
+    Parent p1;
+
+    // 객체 잘림 없이 부모/자식을 모두 담는 리스트
+    std::vector<std::reference_wrapper<Parent>> v;
+
+    v.push_back(c1);
+    v.push_back(p1);
+    v.push_back(c2);
+
+    for (Parent& ref : v) {
+        ref.print(); // 각자 자신의 타입에 맞는 함수 호출 (다형성 유지)
+    }
+
+    return 0;
+}
+```
