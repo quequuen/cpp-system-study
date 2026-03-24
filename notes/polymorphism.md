@@ -272,6 +272,7 @@ int main() {
 - vector<Parent\*>: 가능하지만 nullptr 체크가 필요하고 메모리 관리 책임이 생겨 번거로움.
   해당 경우, **std::reference_wrapper** 사용
 
+- #include <functional>
 - 내부적으로 포인터를 가지고 있지만, 겉으로는 참조자처럼 동작을 함.
 - 일반 참조자는 한 번 대상을 정하면 바꿀 수 없지만, reference_wrapper는 다른 객체를 가리키도록 바꿀 수 있음.
 - 객체이므로 vector 등에 담을 수 있어 객체 잘림 없이 다형성을 유지하는 리스트를 만들기 최적임.
@@ -299,3 +300,65 @@ int main() {
     return 0;
 }
 ```
+
+### 동적 형변환 (dynamic_cast)
+
+상속 관계에 있는 클래스 간에 안전하게 형변환을 수행하기 위해 사용되는 연산자. **부모 클래스의 포인터를 자식 클래스의 포인터로 변환(다운캐스팅)**할 때, 그 변환이 정말 가능한지 실행 시점(Runtime)에 확인하는 역할을 함.
+
+다형성을 사용하다 보면 부모 객체 포인터 타입의 포인터가 실제로는 어떤 자식 객체를 가리키고 있는지 확인하고, 자식만이 가진 기능을 써야 함. 이 때, static_cast를 사용하게 되면 컴파일 시점에 형변환을 해버려 부모 포인터가 실제로는 자식들 중 정확히 어떤 객체를 가지고 있는지 알기 어려워 강제 변환을 잘못하게 될 시, 프로그램이 죽거나(Crash) 이상하게 작동함.
+
+- dynamic_cast: 실행 중에 부모 포인터에 담긴 자식 객체의 존재가 정확한 지를 묻고 맞으면 주소를, 아니면 nullptr를 반환.
+- 부모 클래스에 최소한 하나 이상의 가상 함수(virtual)가 있어야 함.
+
+```cpp
+#include <iostream>
+
+class Animal {
+public:
+    virtual void speak() { std::cout << "동물이 소리를 냅니다." << std::endl; }
+    virtual ~Animal() {} // 가상 소멸자 필수
+};
+
+class Dog : public Animal {
+public:
+    void speak() override { std::cout << "멍멍!" << std::endl; }
+    void wagTail() { std::cout << "꼬리를 흔듭니다." << std::endl; }
+};
+
+class Cat : public Animal {
+public:
+    void speak() override { std::cout << "야옹~" << std::endl; }
+};
+
+void checkAnimal(Animal* ptr) {
+    // dynamic_cast로 안전하게 형변환 시도
+    Dog* dogPtr = dynamic_cast<Dog*>(ptr);
+
+    if (dogPtr != nullptr) {
+        // 실제 Dog 객체인 경우에만 자식의 기능을 수행
+        std::cout << "이 동물은 강아지입니다."
+        dogPtr->wagTail();
+    } else {
+        std::cout << "이 동물은 강아지가 아닙니다." << std::endl;
+    }
+}
+
+int main() {
+    Animal* myDog = new Dog();
+    Animal* myCat = new Cat();
+
+    checkAnimal(myDog); // 이 동물은 강아지입니다. 꼬리를 흔듭니다.
+    checkAnimal(myCat); // 이 동물은 강아지가 아닙니다.
+
+    delete myDog;
+    delete myCat;
+    return 0;
+}
+
+```
+
+- 포인터 변환일 때는 변환에 실패하면 nullptr을 반환. if문으로 결과값을 확인하는 것이 일반적.
+- 참조자는 nullptr이 될 수 없음. 변환에 실패하면 std::bad_cast 예외를 던져 try-catch문으로 처리해야 함.
+- 잘못된 다운캐스팅으로 인한 런타임 에러를 방지해 **안정성**이 좋음.
+- 실행 시점에 vtable과 타입 정보를 조회해야 하므로 다른 형변환(static_cast 등)에 비해 속도가 느림.
+- 업캐스팅(자식→부모)은 일반적으로 안전하므로 dynamic_cast를 쓸 필요 없음.
