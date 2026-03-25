@@ -63,6 +63,10 @@ add_executable(io_stream_07 basics/07_io_streams/main_07_io.cpp)
 
 # basics/08_templates
 add_executable(templates_00 basics/08_templates/main.cpp)
+add_executable(templates_01 
+    basics/08_templates/main_01.cpp
+    basics/08_templates/headers/Box.h
+)
 
 # oop/01_class
 add_executable(class_00 oop/01_class/main_00.cpp)
