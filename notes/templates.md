@@ -104,3 +104,54 @@ void Box<T>::setData(T value) {
 ```
 
 - 템플릿에는 T에 해당하는 기본 자료형뿐만 아니라 숫자(상수)도 전달 가능함. 이러한 특성으로 std::array<int, 5>와 같은 라이브러리 사용 가능.
+
+### 템플릿 특수화 (Templates Specialization)
+
+모든 타입에 대해 공통적인 템플릿을 사용하되, 특정 타입에 대해서만 별도의 특별한 템플릿을 사용하는 기법.
+
+1. 전체 특수화 (Full Specialization)
+
+모든 템플릿 인자를 구체적인 타입으로 확정하는 것.
+
+```cpp
+// 일반적인 템플릿 (기본 설계도)
+template <typename T>
+class Formatter {
+public:
+    void print(T data) { cout << "일반 데이터: " << data << endl; }
+};
+
+// 전체 특수화 (char* 타입 전용 설계도)
+// template 뒤의 꺽쇠를 비워두고, 클래스 이름 뒤에 타입을 명시합니다.
+template <>
+class Formatter<const char*> {
+public:
+    void print(const char* data) {
+        cout << "문자열 전용 출력: [" << data << "]" << endl;
+    }
+};
+```
+
+2. 부분 특수화 (Partial)
+
+템플릿 인자가 여러 개일 때 일부만 확정하거나, 포인터(\*)나 참조(&) 같은 특정 형태에 대해서만 따로 정의하는 것.
+
+```cpp
+// 일반 템플릿
+template <typename T, typename U>
+class DualData { };
+
+// 부분 특수화: 두 번째 인자 U를 int로 고정
+template <typename T>
+class DualData<T, int> { };
+
+// 부분 특수화: 모든 포인터 타입(*)에 대해 따로 처리
+template <typename T>
+class DualData<T*, T*> { };
+```
+
+- 컴파일러는 가장 구체적으로 매칭되는 특수화 버전을 먼저 선택함.
+- 특정 타입일 때만 컴파일이 되게 하거나 다른 기능을 제공하고 싶을 때도 유용함.
+- 특수화는 완전히 새로운 클래스를 정의하는 것.**(상속이 아님)**
+- 기본 템플릿 내부의 인터페이스는 똑같이 맞춰줘야 함.
+- 함수 템플릿은 부분 특수화 불가능.
