@@ -109,7 +109,7 @@ void Box<T>::setData(T value) {
 
 모든 타입에 대해 공통적인 템플릿을 사용하되, 특정 타입에 대해서만 별도의 특별한 템플릿을 사용하는 기법.
 
-1. 전체 특수화 (Full Specialization)
+- 전체 특수화 (Full Specialization)
 
 모든 템플릿 인자를 구체적인 타입으로 확정하는 것.
 
@@ -132,7 +132,7 @@ public:
 };
 ```
 
-2. 부분 특수화 (Partial)
+- 부분 특수화 (Partial)
 
 템플릿 인자가 여러 개일 때 일부만 확정하거나, 포인터(\*)나 참조(&) 같은 특정 형태에 대해서만 따로 정의하는 것.
 
@@ -155,3 +155,54 @@ class DualData<T*, T*> { };
 - 특수화는 완전히 새로운 클래스를 정의하는 것.**(상속이 아님)**
 - 기본 템플릿 내부의 인터페이스는 똑같이 맞춰줘야 함.
 - 함수 템플릿은 부분 특수화 불가능.
+
+### 중첩 및 템플릿 템플릿 인자
+
+템플릿 클래스의 멤버로 템플릿을 가지는 경우와 템플릿 자체를 인자로 전달받는 경우.
+
+- 중첩 템플릿 (Member Template)
+  클래스 템플릿 내부에 또 다른 템플릿 함수나 클래스를 정의하는 방식. 부모 클래스의 타입 T와는 별개로, 특전 멤버 함수만 다른 타입 U를 받아들이고 싶을 때 사용.
+
+  ```cpp
+  template <typename T>
+  class Outer {
+  public:
+      T data;
+
+      // 멤버 함수 자체가 템플릿 (중첩 템플릿)
+      template <typename U>
+      void printConvert(U value) {
+          cout << "Outer T: " << data << ", Input U: " << value << endl;
+      }
+  };
+
+  int main() {
+      Outer<int> outer;
+      outer.data = 10;
+      outer.printConvert("Hello"); // T는 int, U는 const char*
+      outer.printConvert(3.14);    // T는 int, U는 double
+  }
+  ```
+
+- 템플릿 템플릿 인자 (Template Template Parameter)
+
+또 다른 템플릿을 인자로 받는 템플릿. 구체적인 타입 뿐만 아니라 **데이터 구조(컨테이너)** 자체를 추상화할 때 사용. 단순한 기본 자료형보단 vector나 list 같은 틀과 같은 자료형을 통째로 넘겨받고 싶을 때 사용.
+
+```cpp
+// Container가 템플릿 틀 자체를 인자로 받음
+template <typename T, template <typename> class Container>
+class Wrapper {
+    Container<T> contents; // 넘겨받은 틀(Container)에 타입(T)을 입힘
+public:
+    void add(T item) { /* contents에 추가 로직 */ }
+};
+
+int main() {
+    // vector라는 '틀'과 int라는 '타입'을 전달
+    Wrapper<int, std::vector> myVecWrapper;
+    Wrapper<double, std::list> myListWrapper;
+}
+```
+
+- 특정 데이터를 저장하는데, vector에 담을지 list에 담을지 직접 컨테이너 종류를 선택하게 하고 싶을 때 유틸리티 클래스 설계용으로 많이 씀.
+- 템플릿이 중첩되면 안쪽부터 해석하는 게 보기 쉬움.
