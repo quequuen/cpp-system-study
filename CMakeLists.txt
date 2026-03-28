@@ -68,6 +68,9 @@ add_executable(templates_01
     basics/08_templates/headers/Box.h
 )
 
+# basics/09_exception_handling
+add_executable(exception_00 basics/09_exception_handling/main.cpp)
+
 # oop/01_class
 add_executable(class_00 oop/01_class/main_00.cpp)
 add_executable(class_01 oop/01_class/main_01.cpp)
