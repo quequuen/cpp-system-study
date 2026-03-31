@@ -34,3 +34,80 @@ int main() {
     return 0;
 }
 ```
+
+### 예외 안전성 (Exception Safety)
+
+예외가 발생했을 때 프로그램이 안정적으로 동작하도록 보장하는 수준. C++에서는 다음과 같은 수준이 있음.
+
+- **기본 예외 안전성**: 예외가 발생해도 프로그램이 일관된 상태를 유지하지만, 자원 누수 가능성 있음.
+- **강력한 예외 안전성**: 예외가 발생하면 프로그램이 이전
+  상태로 롤백되어 자원 누수 없음.
+- **노예 예외 안전성**: 예외가 발생해도 프로그램이 계속 실행되지만, 상태가 일관되지 않을 수 있음.
+
+### 스택 되감기 (Stack Unwinding)
+
+예외가 발생하면 현재 함수의 스택 프레임이 제거되고, 소멸자들이 호출되어 자원이 해제됨. 이 과정에서 RAII(Resource Acquisition Is Initialization) 패턴이 매우 유용하게 작동하여 자원 누수를 방지함.
+
+**예외가 던져진 지점부터 이를 잡는 catch 블록 사이의 모든 함수 호출 스택을 정리하고, 그 과정에서 생성된 지역 객체들의 소멸자를 자동으로 호출해 주는 과정.**
+
+```cpp
+class Resource {
+public:
+    Resource() { std::cout << "자원 획득\n"; }
+    ~Resource() { std::cout << "자원 자동 해제(소멸자)\n"; }
+};
+
+void func3() {
+    Resource r; // 지역 객체 생성
+    throw std::runtime_error("에러 발생"); // 예외 던짐
+    std::cout << "이 코드는 실행되지 않음\n";
+}
+
+void func2() { func3(); }
+void func1() { func2(); }
+
+int main() {
+    try {
+        func1();
+    } catch (const std::exception& e) {
+        std::cout << "예외 처리: " << e.what() << "\n";
+    }
+    return 0;
+}
+```
+
+- `func3`에서 예외 발생.
+- 프로그램은 `func3`을 즉시 중단하고 스택을 되감기 시작.
+- 이때 `func3` 안에 있던 Resource r의 소멸자가 호출(자원 유출 방지).
+- `func2`, `func1`도 차례로 종료되며 스택에서 사라짐.
+- 마지막으로 main의 catch문에 도달하여 예외를 처리함.
+
+### RAII (Resource Acquisition Is Initialization)
+
+자원 관리 기법으로, 객체의 수명과 자원의 수명을 일치시킴. 생성자에서 자원을 획득하고, 소멸자에서 자원을 해제하여 예외가 발생해도 자원 누수를 방지함. 스마트 포인터(std::unique_ptr, std::shared_ptr) 등이 RAII를 활용한 예시임.
+
+```cpp
+#include <iostream>
+#include <memory>
+
+void example() {
+    // 스마트 포인터를 사용하여 동적 메모리 관리
+    std::unique_ptr<int> ptr(new int(10)); // RAII로 메모리 관리
+
+    std::cout << "값: " << *ptr << std::endl;
+
+    // 예외가 발생해도 ptr이 소멸될 때 자동으로 메모리가 해제됨
+    throw std::runtime_error("예외 발생");
+}
+
+int main() {
+    try {
+        example();
+    } catch (const std::exception& e) {
+        std::cerr << "에러: " << e.what() << std::endl;
+    }
+
+    std::cout << "프로그램이 안전하게 종료됨." << std::endl;
+    return 0;
+}
+```
