@@ -94,6 +94,90 @@ void safeFunction() noexcept {
 }
 ```
 
+### 사용자 정의 예외 클래스와 상속
+
+예외 클래스를 직접 구현 할 때에는 std::exception이나 std::runtime_error를 상속받는 것이 표준적인 방법.
+
+- 다형성으로 인해 부모 전용 처리기에 먼저 도달 후 처리가 될 수 있으므로, 자식 전용 처리기를 반드시 더 먼저 둬야 함.
+- e.what()은 어떤 catch에서 잡히든, 실제 객체인 자식이 부모 생성자에 넘겨준 메시지가 정상적으로 출력됨.
+
+```cpp
+#include <stdexcept>
+
+// 표준 예외를 상속받아 나만의 예외 클래스 정의
+class NetworkException : public std::runtime_error {
+public:
+    // 부모 생성자에 에러 메시지 전달
+    NetworkException(const std::string& msg) : std::runtime_error(msg) {}
+};
+
+void connectServer() {
+    throw NetworkException("서버 응답 시간이 초과되었습니다.");
+}
+
+int main() {
+    try {
+        connectServer();
+    } catch (const NetworkException& e) {
+        // 특정 네트워크 에러만 따로 처리
+    } catch (const std::exception& e) {
+        // 그 외의 모든 표준 에러 처리
+    }
+}
+```
+
+- connectServer() 호출 후 함수 내부에서 throw NetworkException(...) 실행으로 "서버 응답 시간이 초과되었습니다." 라는 메시지를 품은 NetworkException 객체가 메모리에 만들어지고 던져짐.
+- catch에서 탐색 후, 자식 예외 클래스에 맞는 catch 도달.
+- catch 블록의 실행이 끝나면 프로그램은 종료되지 않고 그 다음 코드를 계속 실행.
+
+### Rethrowing
+
+catch 블록 안에서 `throw;`를 사용하는 것. 방금 잡았던 예외 객체를 그대로 stack 내 다음 순서가 되는 대상에 던짐.
+
+```cpp
+#include <iostream>
+#include <stdexcept>
+#include <string>
+
+class NetworkException : public std::runtime_error {
+public:
+    NetworkException(const std::string& msg) : std::runtime_error(msg) {}
+};
+
+void connectServer() {
+    // 예외 발생
+    throw NetworkException("서버 연결 실패 (Timeout)");
+}
+
+void processNetwork() {
+    try {
+        connectServer();
+    }
+    catch (const NetworkException& e) {
+        // 1차 처리: 여기서 간단한 로그만 남김.
+        std::cout << "[로그 기록]: 내부 함수에서 에러 감지 -> " << e.what() << std::endl;
+
+        // rethrow: 내부 함수에서 잡았으나 호출한 곳에 다시 던짐.
+        throw;
+    }
+}
+
+int main() {
+    try {
+        processNetwork();
+    }
+    catch (const NetworkException& e) {
+        // 2차 처리: 최종적으로 사용자에게 에러를 알립니다.
+        std::cerr << "[최종 에러 메시지]: " << e.what() << std::endl;
+        std::cerr << "서버 상태를 확인하고 다시 시도해 주세요." << std::endl;
+    }
+
+    return 0;
+}
+```
+
+- `throw e;`를 하게 되면 예외 객체를 복사해서 새로 던지기 때문에 이 과정에서 자식 객체를 부모 타입으로 잡고 있었다면 객체 잘림(Slicing) 현상 발생. → `throw;`로 현재 발생한 예외 객체를 그대로 위로 전달. 다형성을 완벽하게 유지하는 가장 안전한 방법.
+
 ### RAII (Resource Acquisition Is Initialization)
 
 자원 관리 기법으로, 객체의 수명과 자원의 수명을 일치시킴. 생성자에서 자원을 획득하고, 소멸자에서 자원을 해제하여 예외가 발생해도 자원 누수를 방지함. 스마트 포인터(std::unique_ptr, std::shared_ptr) 등이 RAII를 활용한 예시임.
