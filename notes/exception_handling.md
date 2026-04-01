@@ -35,6 +35,8 @@ int main() {
 }
 ```
 
+- catch(...)처럼 catch 목록의 마지막에 엘립시스(Ellipsis)를 사용하면 모든 예외를 잡을 수 있지만, 구체적인 예외 타입을 명시하는 것이 좋음.
+
 ### 예외 안전성 (Exception Safety)
 
 예외가 발생했을 때 프로그램이 안정적으로 동작하도록 보장하는 수준. C++에서는 다음과 같은 수준이 있음.
@@ -81,6 +83,16 @@ int main() {
 - 이때 `func3` 안에 있던 Resource r의 소멸자가 호출(자원 유출 방지).
 - `func2`, `func1`도 차례로 종료되며 스택에서 사라짐.
 - 마지막으로 main의 catch문에 도달하여 예외를 처리함.
+
+### noexcept
+
+함수 선언에 `noexcept`를 사용하면 해당 함수가 예외를 던지지 않을 것임을 명시적으로 나타냄. 컴파일러는 이를 최적화할 수 있으며, 예외가 발생할 경우 프로그램이 즉시 종료됨.
+
+```cpp
+void safeFunction() noexcept {
+    // 이 함수는 예외를 던지지 않음
+}
+```
 
 ### RAII (Resource Acquisition Is Initialization)
 

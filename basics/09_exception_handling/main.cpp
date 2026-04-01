@@ -3,24 +3,33 @@
 
 using namespace std;
 
+void throwTest()
+{
+    throw -1;
+}
+
 double divide(double a, double b)
 {
     if (b == 0)
     {
         throw std::string("0으로 나눌 수 없습니다.");
     }
-    
+
+    throwTest();
+
     return a / b;
 }
+
 
 int main()
 {
     // try, catch, throw
 
     double x = 10;
-    double y = 0;
+    // double y = 0;
+    double y = 3;
 
-    std::cin >> y;
+    // std::cin >> y;
 
     try
     {
@@ -30,6 +39,10 @@ int main()
     catch (const std::string& errorMsg)
     {
         std::cerr << "에러 발생: " << errorMsg << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "아무 에러나 다 잡습니다." << std::endl;
     }
 
     std::cout << "프로그램이 죽지 않고 계속 실행됩니다..." << std::endl;
