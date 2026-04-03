@@ -385,3 +385,27 @@ arr = nullptr; // 안전을 위한 널 포인터 처리
 
     delete[] flatMatrix; // 한 번에 해제 가능
   ```
+
+### 원시 포인터(Raw Pointer)의 위험성
+
+일반 포인터를 **원시 포인터**라고 부름. 포인터 자체로도 굉장히 효율적인 도구지만 아래의 위험성이 존재.
+
+- **메모리 누수 (Memory Leak)**: `delete`를 깜빡하거나, `delete`가 호출되기 전 예외(Exception)가 발생하면 메모리가 해제되지 않고 영구적으로 낭비됨.
+- **댕글링 포인터 (Dangling Pointer)**: `delete`로 메모리를 해제했는데, 여전히 그 주소를 가리키고 있는 포인터를 사용하면 프로그램이 터짐.
+- **이중 해제 (Double Free)**: 이미 해제된 메모리를 실수로 또 `delete` 하면 런타임 에러가 발생.
+- **소유권 불분명**: 이 포인터가 가리키는 객체를 누가 지워야 하는지(나인가? 나를 호출한 쪽인가?) 코드만 봐서는 알기 어려움.
+
+```cpp
+int* createNumber() {
+    int* p = new int(100);
+    return p;
+}
+
+int main() {
+    int* myPtr = createNumber();
+
+    // 해당 주소에 대한 메모리를 main에서 delete 해야 하는 건지, 아니면 함수 안에서 처리가 되는 건지가 불분명
+}
+```
+
+- 이런 이유들로 인해 현대 C++에서는 **[스마트 포인터](/notes/smart_pointers.md)** 사용.
