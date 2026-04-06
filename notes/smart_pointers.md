@@ -16,6 +16,33 @@
 - 우항값 참조(&&)와 std::move 사용.
   - 우항값 참조 (rvalue reference, &&)
     임시 객체만 받을 수 있는 특별한 참조자.
+
     ```cpp
     void func(int&& x); // 임시 숫자만 받을 수 있음.
     ```
+
+  - std::move()
+    해당 객체를 더 이상 쓰지 않으니 이동 시켜도 된다는 함수. 실제로 이동시키는 것이 아닌, 이동이 가능하도록 타입을 바꿔주는 역할.
+
+    ```cpp
+    #include <vector>
+    #include <string>
+
+    int main()
+    {
+        std::string str1 = "문자열1";
+
+        // copy: str1의 내용을 str2의 메모리에 복사.
+        std::string str2 = str1;
+
+        // move: str1이 가진 문자열 메모리 주소를 str3에게 넘겨줌.
+        std::string str3 = std::move(str1);
+
+        // 해당 작업 후 str1의 내용은 비게 되고 이후로 str3가 str1의 내용을 갖게 됨.
+
+        return 0;
+    }
+    ```
+
+- `std::unique_ptr`은 **독점 소유권**을 갖기 때문에 복사가 불가능하지만 `std::move()`를 이용한 이동은 가능함.
+- 또는 대용량 컨테이너의 리턴값 반환 등에서 이용됨.
