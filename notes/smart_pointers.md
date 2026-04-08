@@ -55,10 +55,122 @@
 int&& five = 5;
 ```
 
-### 이동 생성자 & 이동 대입
+### 이동 생성자 & 이동 대입 (Move Constructor & Move Assignment)
 
 동적 할당된 자원의 소유권을 효율적으로 이전하는 것이 목적인 생성자.
 
 - 상대방의 포인터를 내 포인터에 복사(얕은 복사).
 - 상대방의 포인터를 `nullptr`로 초기화 (자원 탈취 완료).
 - 이동 대입 시에는 반드시 '자기 자신 대입'이지 확인 후, 기존 자원을 먼저 해제해야 함.
+
+```cpp
+// Resource.h
+
+#pragma once
+
+#include <iostream>
+
+class Resource
+{
+    private:
+    int* data;
+    size_t size;
+
+    public:
+    Resource(size_t n);
+    ~Resource();
+
+    // 이동 생성자 (Move Constructor)
+    Resource(Resource&& other) noexcept;
+
+    // 이동 대입 연산자 (Move Assignment Operator)
+    Resource& operator = (Resource&& other) noexcept;
+
+    void printStatus() const;
+};
+```
+
+```cpp
+// Resource.cpp
+
+#include "headers/Resource.h"
+
+Resource::Resource(size_t n): size(n){
+    data = new int[n];
+    std::cout << "자원 생성 (크기: " << size << ")\n";
+}
+
+Resource::~Resource()
+{
+    delete[] data;
+    std::cout << "자원 소멸\n";
+}
+
+// 이동 생성자: 얕은 복사 후 상대방 연결 끊음
+Resource::Resource(Resource&& other) noexcept
+// 특히 std::vector 재할당 시 중요
+: data(other.data), size(other.size)
+{
+    other.data = nullptr;
+    other.size = 0;
+    std::cout << "이동 생성 완료\n";
+
+};
+
+Resource& Resource::operator = (Resource&& other) noexcept
+{
+    if (this != &other) // 자기 자신 대입 방지
+    {
+        delete[] data;  // 기존 자원 해제
+
+        data = other.data;  // 상대 자원 대입
+        size = other.size;
+
+        other.data = nullptr;   // 상대 연결 끊음
+        other.size = 0;
+        std::cout << "이동 대입 완료\n";
+    }
+    return *this;
+};
+
+void Resource::printStatus() const
+{
+    if (data) std::cout << "데이터 존재함\n";
+    else std::cout << "데이터 없음\n";
+}
+```
+
+- noexcept를 쓰는 이유: 이동 중에 예외가 발생하면 시스템이 불안정해지므로, 예외를 절대 던지지 않는 것을 보장하며 컴파일러가 신뢰하고 이동을 수행할 수 있게 함. 특히 std::vector 재할당 시 중요.
+- nullptr로 other을 초기화 해주는 이유: 상대방이 소멸될 때 내 데이터를 안 지우게 함. 해당 부분이 없으면 other가 소멸될 때 우리가 뺏어온 메모리까지 delete 해버림. (이중 해제 에러 발생)
+
+```cpp
+// main.cpp
+
+#include <iostream>
+#include "headers/Resource.h"
+#include <vector>
+
+int main()
+{
+    Resource res1(100);
+
+    std::cout << "res1 상태: "; res1.printStatus();
+
+    // 이동 생성자 호출 (res1의 소유권이 res2로 이동, res1은 이제 빈 값)
+    Resource res2 = std::move(res1);
+
+    std::cout << "res1 상태: "; res1.printStatus();
+    std::cout << "res2 상태: "; res2.printStatus();
+
+    Resource res3(50);
+    // 이동 대입 연산자 호출 (res3가 원래 가졌던 자원은 해제되고, res2의 자원을 뺏어옴)
+    res3 = std::move(res2);
+
+    std::cout << "res1 상태: "; res1.printStatus();
+    std::cout << "res2 상태: "; res2.printStatus();
+    std::cout << "res3 상태: "; res3.printStatus();
+
+
+    return 0;
+}
+```
