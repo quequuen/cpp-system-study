@@ -174,3 +174,42 @@ int main()
     return 0;
 }
 ```
+
+### `std::shared_ptr`
+
+공동 소유권을 관리하는 스마트 포인터. 내부적으로 이 메모리를 몇이나 가리키고 있는지를 나타내는 **참조 횟수(Reference Count)**를 관리함.
+
+- 새로운 `shared_ptr`가 같은 메모리를 가리킬 때마다 카운트 + 1
+- `shared_ptr`가 소멸되거나 다른 곳을 가리킬 때 카운트 - 1
+- 마지막으로 참조하던 변수가 더 이상 그 메모리를 가리키지 않거나 해제 될 때, 더 이상 아무도 쓰지 않는 것을 판단하고 메모리를 자동으로 해제. 카운트 = 0.
+
+```cpp
+#include <iostream>
+#include <memory>
+
+class Monster {
+public:
+    Monster() { std::cout << "몬스터 등장!\n"; }
+    ~Monster() { std::cout << "몬스터 퇴장...\n"; }
+};
+
+int main() {
+    // 공유 포인터 생성 (카운트: 1)
+    std::shared_ptr<Monster> p1 = std::make_shared<Monster>();
+
+    {
+        // 복사 (카운트: 2)
+        std::shared_ptr<Monster> p2 = p1;
+        std::cout << "현재 공유 인원: " << p1.use_count() << "\n";
+    } // p2가 여기서 소멸됨 (카운트: 1)
+
+    std::cout << "p2 소멸 후 인원: " << p1.use_count() << "\n";
+
+    return 0;
+} // p1이 소멸되면서 카운트가 0이 되어 몬스터 사라짐.
+```
+
+- `std::make_shared`로 사용 가능함.
+- `use_count()`로 현재 소유자 수 확인이 가능함.
+- `unique_ptr`보다 오버
+- `shared_ptr`을 가리키다 보면 서로가 서로를 가리킬 때가 발생함. **(숨환 참조 발생)** → `std::weak_ptr` 사용.
