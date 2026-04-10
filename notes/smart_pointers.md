@@ -213,3 +213,60 @@ int main() {
 - `use_count()`로 현재 소유자 수 확인이 가능함.
 - `unique_ptr`보다 오버
 - `shared_ptr`을 가리키다 보면 서로가 서로를 가리킬 때가 발생함. **(숨환 참조 발생)** → `std::weak_ptr` 사용.
+
+### `std::weak_ptr`
+
+`shared_ptr`와 함께 사용되지만, 자원을 소유할 권한이 없는 포인터. 참조 횟수 (Reference Count)를 올리지 않으면서 `shared_ptr`가 가리키는 대상을 가리킬 수 있는 포인터. `shared_ptr`로 서로가 서로를 가리키면, 프로그램이 끝날 때까지 카운트가 0이 되지 않아 메모리가 영원히 해제되지 않음. 서로가 서로의 손목을 잡고 먼저 놓으면 놓겠다며 버티는 상황. 이러한 문제(`shared_ptr`의 순환 참조)를 해결함.
+
+- **소유권 없음**: 자원을 직접 소유하지 않으므로, `weak_ptr`가 아무리 많아도 `shared_ptr`가 사라지면 자원은 해제됨.
+- **참조 카운트 불변**: user_count를 증가시키지 않음.
+- **직접 접근 불가**: 자원을 소유하지 않기 때문에 `->`나 `*`연산자를 직접 쓸 수 없어서 `lock()`을 통해 `shared_ptr`로 변환 후 사용.
+- **유효성 확인**: `expired()`로 대상 객체의 존재 유무 확인 가능.
+
+```cpp
+#include <iostream>
+#include <memory>
+
+class Child;
+
+class Parent {
+public:
+    std::shared_ptr<Child> son; // 부모는 자식을 강하게 소유
+    ~Parent() { std::cout << "부모 소멸\n"; }
+};
+
+class Child {
+public:
+    // 만약 여기가 shared_ptr였다면 순환 참조 발생
+    std::weak_ptr<Parent> mom; // 자식은 부모를 약하게 참조
+    ~Child() { std::cout << "자식 소멸\n"; }
+};
+
+int main() {
+    auto c = std::make_shared<Child>();
+
+    {
+        auto p = std::make_shared<Parent>();
+        p->son = c;
+
+        std::cout << "부모 카운트: " << p->son.use_count() << std::endl;
+        // auto c와 그걸 참조하는 p->son: 2
+        c->mom = p;
+
+        std::cout << "자식 카운트: " << c->mom.use_count() << std::endl;
+        // c->mom은 weak_ptr이기 때문에 카운트 x, auto p가 Parent를 가리킴.: 2
+
+        if (auto locked = c->mom.lock()) {
+            std::cout << "부모 객체 존재 (lock)\n";
+        }
+
+    } // 여기서 p가 소멸. Parent의 참조 횟수가 0이 됨.
+
+    // Parent는 소멸됐으므로 expired()가 true가 됨.
+    if(c->mom.expired()) {
+        std::cout << "객체가 이미 만료(소멸) 되었음.\n";
+    }
+
+    return 0;
+} // 순환 참조가 없으므로 정상적으로 부모, 자식 모두 소멸됨
+```

@@ -109,3 +109,4 @@ add_executable(smart_pointers_00
 )
 add_executable(smart_pointers_01 memory/smart_pointers/main_01.cpp)
 add_executable(smart_pointers_02 memory/smart_pointers/main_02.cpp)
+add_executable(smart_pointers_03 memory/smart_pointers/main_03.cpp)
