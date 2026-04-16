@@ -113,3 +113,4 @@ add_executable(smart_pointers_03 memory/smart_pointers/main_03.cpp)
 
 # stl/vector
 add_executable(vector_00 stl/vector/main.cpp)
+add_executable(deque_00 stl/vector/deque.cpp)
