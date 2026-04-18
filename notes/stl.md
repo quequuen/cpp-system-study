@@ -212,3 +212,45 @@ int main() {
 - `l.unique()`: 인접한 중복 원소를 제거함.
 - `l.splice()`: 다른 리스트의 요소를 툭 떼어서 내 리스트에 추가. (데이터 복사 없이 연결만 바꿈)
 - `l.begin()`: 단순한 숫자가 아니라, 내부적으로 첫 번째 노드의 메모리 주소값을 반환.
+
+### `std::map`
+
+키(Key)와 값(Value)을 한 쌍으로 묶어서 관리하는 자료형.
+
+- Key(키): 데이터를 찾기 위한 고유한 식별자
+- Value(값): 키에 연결된 실제 데이터
+
+- 내부 구조: 균형 이진 트리 (Red-Black Tree)
+  map은 내부적으로 노드들이 트리(Tree) 구조로 연결되어 있음.
+  - 자동 정렬: 데이터를 넣기만 하면 키(Key)를 기준으로 알아서 오름차순 정렬.
+  - 검색 속도: 처음부터 끝까지 다 찾는 게 아니라, 트리 줄기를 타고 내려가기 때문에 데이터가 100만 개 있어도 약 20번의 비교($O(\log N)$)면 원하는 데이터를 찾음.
+
+```cpp
+#include <iostream>
+#include <map>
+#include <string>
+
+int main() {
+    // 선언: <키 타입, 값 타입>
+    std::map<std::string, int> inventory;
+
+    // 데이터 추가
+    inventory["Sword"] = 1;
+    inventory.insert({"Shield", 5});
+
+    // 데이터 찾기
+    std::cout << "Sword 개수: " << inventory["Sword"] << "\n";
+
+    // 반복자로 순회
+    // it->first는 Key, it->second는 Value를 의미함
+    for (auto it = inventory.begin(); it != inventory.end(); ++it) {
+        std::cout << "아이템: " << it->first << ", 수량: " << it->second << "\n";
+    }
+
+    return 0;
+}
+```
+
+- **중복 키 불가**: 똑같은 키로 값을 넣으면 기존 데이터가 덮어씌워짐. (중복이 필요할 경우 `multimap` 사용)
+- `[]` **연산자 주의점**: `operator[key]`이라고 조회를 할 시 키가 존재하지 않는 경우에, `map`은 기본값으로 해당 키에 대한 데이터를 새로 생성해 버리기 때문에 데이터가 있는지 확인만 할 때에는 `find()` 함수를 쓰는 것이 안전함.
+- **반복자 이동**: `it++`를 하면 트리 구조를 타고 정렬된 다음 순서의 노드로 이동함.
