@@ -118,3 +118,6 @@ add_executable(list_00 stl/vector/list.cpp)
 
 # stl/map
 add_executable(map_00 stl/map/main.cpp)
+
+# stl/unordered_map
+add_executable(unordered_map_00 stl/unordered_map/main.cpp)

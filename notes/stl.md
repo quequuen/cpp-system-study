@@ -271,3 +271,41 @@ struct pair {
 
 - `map`에 데이터 하나를 넣는다는 건, 내부적으로 `pair<Key, Value>` 타입의 노드를 하나 만드는 것과 같음.
 - 첫 번째 멤버의 이름이 first, 두 번째 멤버의 이름이 second이기 때문에 `map`에서 반복자로 순회할 때 각각 `it->first`, `it->second`로 순회함.
+
+### `std::unordered_map`
+
+`std::map`이 **정렬된 사전**이라면 `std::unordered_map`은 **정렬없는 빠른 보관함**. 정렬이 꼭 필요한 게 아닐 경우 `std::map` 대신 `std::unordered_map`을 사용하는 게 성능 면에서 압도적으로 좋음.
+
+- 내부 구조: Hash Table 구조. 해시 함수에 키 값을 넣으면 해당하는 값을 저장한 주소를 알려주기 때문에 빠름. ($O(1)$)
+- `map`은 도서관의 책, `ordered_map`은 개인 사물함 느낌.
+- <unordered_map> 헤더 파일 사용.
+
+```cpp
+#include <iostream>
+#include <unordered_map>
+#include <string>
+
+int main() {
+    std::unordered_map<std::string, int> scores;
+
+    // 데이터 삽입
+    scores["Gemini"] = 100;
+    scores["User"] = 95;
+    scores["Alpha"] = 80;
+
+    // 출력 시 순서 상관없이 나옴.
+    for (const auto& pair : scores) {
+        std::cout << pair.first << ": " << pair.second << "\n";
+    }
+
+    if (scores.find("Gemini") != scores.end()) {
+        std::cout << "찾았다!\n";
+    }
+
+    return 0;
+}
+```
+
+- **해시 충돌 (Collision)**: 아주 가끔씩 서로 다른 키가 해시 함수를 통과할 때, 같은 주소의 데이터가 나올 때가 있음. `unordered_map`은 이럴 때 해당 칸에 데이터를 연결(Separate Chaining)해서 보관하기 때문에 충돌이 너무 많아지면 속도가 $O(N)$까지 느려질 수 있음. 하지만 이 부분도 C++ 라이브러리가 관리.
+- 속도를 단축하기 위해 메모리를 `map`보다 더 많이 씀. 해시 충돌을 줄이기 위해 넉넉하게 빈 메모리(bucket, 버킷)들을 점유해 놓기 때문.
+- **로드 팩터(Load Factor) 관리**: 버킷이 꽉 찰 경우(75% 이상) 검색 속도가 느려지기 때문에, 더 큰 배열을 새로 만들어서 통째로 이사함. (Rehash)
