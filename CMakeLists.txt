@@ -116,8 +116,14 @@ add_executable(vector_00 stl/vector/main.cpp)
 add_executable(deque_00 stl/vector/deque.cpp)
 add_executable(list_00 stl/vector/list.cpp)
 
+# stl/set
+add_executable(set_00 stl/set/main.cpp)
+
 # stl/map
 add_executable(map_00 stl/map/main.cpp)
 
 # stl/unordered_map
 add_executable(unordered_map_00 stl/unordered_map/main.cpp)
+
+# stl
+add_executable(iterator stl/iterator.cpp)
