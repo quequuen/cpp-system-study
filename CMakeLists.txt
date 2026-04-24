@@ -12,6 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_executable(basic_01 basics/00_basic-of-basics/main_00_basic_of_basics.cpp)
 add_executable(basic_02 basics/00_basic-of-basics/main_00_basic_of_basics_02.cpp)
 add_executable(basic_03 basics/00_basic-of-basics/main_00_basic_of_basics_03.cpp)
+add_executable(basic_04 basics/00_basic-of-basics/string.cpp)
 
 # basics/01_variables
 add_executable(variables_01 basics/01_variables/main_01_variables.cpp)

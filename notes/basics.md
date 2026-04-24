@@ -512,3 +512,63 @@ void swap(T& a, T& b) {
 | 조건 종류 | 변수 값 등 실행 중에 바뀌는 조건 | sizeof, constexpr 등 고정된 조건   |
 | 실패 시   | 프로그램이 비정상 종료 (Abort)   | 컴파일 에러 발생 (빌드 불가)       |
 | 배포 시   | 사라짐 (성능 영향 없음)          | 영향 없음 (이미 컴파일 때 검사 끝) |
+
+### `std::string`
+
+`char*`나 `char[]` 대신 문자열을 관리하는 컨테이너.
+
+- **메모리 자동 관리**: 문자열 길이에 맞춰 메모리를 알아서 늘리고 줄임.
+- **직관적인 연산**: `+`기호로 문자열을 합칠 수 있음.
+- **안정성**: 버퍼 오버플로우(데이터가 넘쳐서 프로그램이 터지는 현상) 같은 보안 취약점을 막아줌.
+- **반복자 지원**: `begin()`, `end()`를 지원하므로 STL 알고리즘(`sort`, `reverse` 등)을 그대로 쓸 수 있음.
+
+```cpp
+#include <iostream>
+#include <string>
+#include <cstddef>
+#include <locale>
+
+int main (){
+
+
+    wchar_t wc;
+    std::wstring wstring;
+    // 국제어를 표현할 때 사용. 국가별 설정 맞추는 게 번거로움.
+    // 여러 나라에 서비스를 할 때 사용.
+
+    std::string s1 = "Hello";
+    std::string s2 = "World";
+
+    // 문자열 합치기
+    std::string s3 = s1 + " " + s2; // "Hello World"
+
+    // 길이 확인
+    std::cout << "길이: " << s3.length() << std::endl; // 혹은 s3.size()
+
+    // 특정 위치 문자 접근
+    std::cout << "첫 글자: " << s3[0] << std::endl;
+
+    // 문자열 비교 (==, !=, <, > 모두 가능)
+    if (s1 == "Hello") {
+        std::cout << "안녕" << std::endl;
+    }
+
+    // 부분 문자열 추출 (인덱스 6부터 5글자)
+    std::string sub = s3.substr(6, 5); // "World"
+
+    // 찾기
+    size_t pos = s3.find("World");
+    if (pos != std::string::npos) { // npos는 "못 찾음"을 뜻함
+        std::cout << "World 발견 위치: " << pos << std::endl;
+    }
+
+    return 0;
+}
+```
+
+- 내부 구조: SBO (Small String Optimization)
+  - **짧은 문자열**: 힙(Heap) 메모리를 빌리지 않고 객체 내부의 작은 배열(보통 15~23바이트)에 바로 저장함. (메모리 할당 속도가 비약적으로 빠름)
+  - **긴 문자열**: 데이터가 커지면 그때서야 힙 메모리에 할당 후 저장.
+- `std::string_view`
+  - `std::string`을 함수 인자로 넘길 때 복사가 일어나면 성능이 떨어짐.
+  - `string_view`는 원본 데이터를 복사하지 않고 주소를 가리키기만 해서 매우 가볍고 빠름.
