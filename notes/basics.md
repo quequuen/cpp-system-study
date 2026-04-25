@@ -572,3 +572,35 @@ int main (){
 - `std::string_view`
   - `std::string`을 함수 인자로 넘길 때 복사가 일어나면 성능이 떨어짐.
   - `string_view`는 원본 데이터를 복사하지 않고 주소를 가리키기만 해서 매우 가볍고 빠름.
+
+### 람다식 (Lambda Expression)
+
+이름 없는 일회용 함수임. 선언 없이 코드 중간에 즉석에서 함수를 만들 수 있음.
+
+- $$[캡처](매개변수) \{ 함수 \ 내용 \}$$
+  - `[]`(Capture): 함수 밖의 변수를 함수 안으로 가져올 때 사용.
+  - `()`(Parameters): 일반 함수의 매개변수와 똑같음.
+  - `{}`(Body): 실제 실행될 코드.
+
+```cpp
+int limit = 50;
+std::vector<int> scores = {40, 60, 30, 80};
+
+// limit보다 큰 점수가 몇 개인지 세고 싶을 때
+int count = std::count_if(scores.begin(), scores.end(), [limit](int s) {
+    return s > limit; // 밖에 있는 limit을 안으로 가져와서 사용
+});
+```
+
+- [limit]: limit 변수를 값으로 복사해서 가져옴.
+- [&limit]: limit 변수를 참조(주소)로 가져옴.
+- [=]: 주변의 모든 지역 변수를 값으로 캡처.
+- [&]: 주변의 모든 지역 변수를 참조로 캡처.
+- 반환 타입을 알아서 추론해주만 명시하고 싶을 때는 `->`를 사용.
+
+```cpp
+auto divide = [](double a, double b) -> double {
+    if (b == 0) return 0;
+    return a / b;
+};
+```
