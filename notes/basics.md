@@ -513,6 +513,38 @@ void swap(T& a, T& b) {
 | 실패 시   | 프로그램이 비정상 종료 (Abort)   | 컴파일 에러 발생 (빌드 불가)       |
 | 배포 시   | 사라짐 (성능 영향 없음)          | 영향 없음 (이미 컴파일 때 검사 끝) |
 
+### 람다식 (Lambda Expression)
+
+이름 없는 일회용 함수임. 선언 없이 코드 중간에 즉석에서 함수를 만들 수 있음.
+
+- $$[캡처](매개변수) \{ 함수 \ 내용 \}$$
+  - `[]`(Capture): 함수 밖의 변수를 함수 안으로 가져올 때 사용.
+  - `()`(Parameters): 일반 함수의 매개변수와 똑같음.
+  - `{}`(Body): 실제 실행될 코드.
+
+```cpp
+int limit = 50;
+std::vector<int> scores = {40, 60, 30, 80};
+
+// limit보다 큰 점수가 몇 개인지 세고 싶을 때
+int count = std::count_if(scores.begin(), scores.end(), [limit](int s) {
+    return s > limit; // 밖에 있는 limit을 안으로 가져와서 사용
+});
+```
+
+- [limit]: limit 변수를 값으로 복사해서 가져옴.
+- [&limit]: limit 변수를 참조(주소)로 가져옴.
+- [=]: 주변의 모든 지역 변수를 값으로 캡처.
+- [&]: 주변의 모든 지역 변수를 참조로 캡처.
+- 반환 타입을 알아서 추론해주만 명시하고 싶을 때는 `->`를 사용.
+
+```cpp
+auto divide = [](double a, double b) -> double {
+    if (b == 0) return 0;
+    return a / b;
+};
+```
+
 ### `std::string`
 
 `char*`나 `char[]` 대신 문자열을 관리하는 컨테이너.
@@ -573,34 +605,53 @@ int main (){
   - `std::string`을 함수 인자로 넘길 때 복사가 일어나면 성능이 떨어짐.
   - `string_view`는 원본 데이터를 복사하지 않고 주소를 가리키기만 해서 매우 가볍고 빠름.
 
-### 람다식 (Lambda Expression)
-
-이름 없는 일회용 함수임. 선언 없이 코드 중간에 즉석에서 함수를 만들 수 있음.
-
-- $$[캡처](매개변수) \{ 함수 \ 내용 \}$$
-  - `[]`(Capture): 함수 밖의 변수를 함수 안으로 가져올 때 사용.
-  - `()`(Parameters): 일반 함수의 매개변수와 똑같음.
-  - `{}`(Body): 실제 실행될 코드.
-
 ```cpp
-int limit = 50;
-std::vector<int> scores = {40, 60, 30, 80};
+#include <string>
+#include <vector>
 
-// limit보다 큰 점수가 몇 개인지 세고 싶을 때
-int count = std::count_if(scores.begin(), scores.end(), [limit](int s) {
-    return s > limit; // 밖에 있는 limit을 안으로 가져와서 사용
-});
+// 기본 생성자: 빈 문자열 생성
+std::string s1;
+
+// 문자열 리터럴로부터 생성 (가장 흔함)
+std::string s2 = "Hello";
+
+// 복사 생성자: 다른 string을 복사해서 생성
+std::string s3(s2);
+
+// 특정 문자를 N번 반복해서 생성
+std::string s4(10, 'a'); // "aaaaaaaaaa"
+
+// 문자열의 일부분만 가져와서 생성
+std::string s5("Hello World", 5); // 앞의 5글자: "Hello"
+std::string s6(s2, 1, 3);         // s2의 1번 인덱스부터 3글자: "ell"
+
+// 반복자(Iterator)를 이용한 생성 (범위 지정)
+std::vector<char> v = {'A', 'B', 'C'};
+std::string s7(v.begin(), v.end()); // "ABC"
 ```
 
-- [limit]: limit 변수를 값으로 복사해서 가져옴.
-- [&limit]: limit 변수를 참조(주소)로 가져옴.
-- [=]: 주변의 모든 지역 변수를 값으로 캡처.
-- [&]: 주변의 모든 지역 변수를 참조로 캡처.
-- 반환 타입을 알아서 추론해주만 명시하고 싶을 때는 `->`를 사용.
+- 형변환
+  `string`을 숫자로 바꾸거나, 숫자를 `string`으로 바꿀 때
+  - 숫자 → `string`
 
-```cpp
-auto divide = [](double a, double b) -> double {
-    if (b == 0) return 0;
-    return a / b;
-};
-```
+    ```cpp
+    int num = 42;
+    double pi = 3.14159;
+
+    std::string s_num = std::to_string(num);
+    std::string s_pi = std::to_string(pi);
+    ```
+
+  - `string` → 숫자 (stoi)
+
+    ```cpp
+    std::string s = "123.45";
+
+    int i = std::stoi(s);    // 123 (소수점 버림)
+    double d = std::stod(s); // 123.45
+    ```
+
+    - `stoi`: String to Int
+    - `stol`: String to Long
+    - `stod`: String to Double
+    - `stof`: String to Float
