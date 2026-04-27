@@ -2,6 +2,27 @@
 #include <string>
 #include <cstddef>
 #include <locale>
+#include <vector>
+#include <sstream>
+#include <iomanip>
+
+// 어떤 타입이 들어오든 string 타입으로 바꾸어서 반환
+template <typename T>
+std::string ToString(T x)
+{
+    std::ostringstream osstream;
+    osstream << std::setprecision(10);
+    osstream << x;
+    return osstream.str();
+}
+
+// x 타입으로 변환이 가능한지를 판별 후 bool 타입 반환
+template <typename T>
+bool FromString(const std::string & str, T &x)
+{
+    std::istringstream isstream(str);
+    return (isstream >> x) ? true : false; 
+}
 
 int main (){
     
@@ -35,6 +56,39 @@ int main (){
     if (pos != std::string::npos) { // npos는 "못 찾음"을 뜻함
         std::cout << "World 발견 위치: " << pos << std::endl;
     }
+
+    std::vector<char> vec_str;
+
+    for(auto a: "Hello, World!") vec_str.push_back(a);
+
+    // 이건 얕은 복사인지 깊은 복사인지 확인해보기
+    // 아마 둘 다 참조형이라서 얕은 복사일 것 같다!
+    std::string s4(vec_str.begin(), vec_str.end());
+    std::string s5(vec_str.begin(), std::find(vec_str.begin(), vec_str.end(), ','));;
+
+    std::cout << s4 << std::endl;
+    std::cout << s5 << std::endl;
+
+    std::string s6(std::to_string(4));
+
+    std::cout << s6 << std::endl;
+
+    float f = std::stof(s6);
+
+    std::cout << f << std::endl;
+
+    std::string s7(ToString(200006.30));
+
+    std::cout << s7 << std::endl;
+
+    double d;
+    if (FromString(s7, d)) std::cout << d << std::endl;
+    else std::cout << "double 변환 실패" << std::endl;
+    
+    // 문자열은 double로 변환 안됨
+    if (FromString(s5, d)) std::cout << d << std::endl;
+    else std::cout << "double 변환 실패" << std::endl;
+
 
     return 0;
 }
