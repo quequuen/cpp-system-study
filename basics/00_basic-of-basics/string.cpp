@@ -60,12 +60,29 @@ int main (){
     std::vector<char> vec_str;
 
     for(auto a: "Hello, World!") vec_str.push_back(a);
+    
+    // std::cout << vec_str << std::endl;
+    // vector는 배열이기 때문에 << 가 정의 되어있지 않으면 출력 안됨. for문 돌려야 함.
 
-    // 이건 얕은 복사인지 깊은 복사인지 확인해보기
-    // 아마 둘 다 참조형이라서 얕은 복사일 것 같다!
+    
+    for (auto a: vec_str) std::cout << a;
+
+    std::cout << std::endl;
+
+    // 생성자를 이용한 copy는 깊은 복사!
     std::string s4(vec_str.begin(), vec_str.end());
     std::string s5(vec_str.begin(), std::find(vec_str.begin(), vec_str.end(), ','));;
 
+    std::cout << "원본 주소: " << &vec_str << std::endl;
+    std::cout << "복본 주소: " << &s4 << std::endl;
+
+    vec_str[2] = 'L' ;
+
+    for (auto a: vec_str) std::cout << a;
+
+    std::cout << std::endl;
+
+    
     std::cout << s4 << std::endl;
     std::cout << s5 << std::endl;
 
