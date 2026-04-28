@@ -126,5 +126,32 @@ int main (){
     // 시스템 (OS/컴파일러)에서 이론적으로 가질 수 있는 문자열의 최대 길이
     std::cout << s8.max_size() << std::endl;
 
+    std::ostringstream oss;
+int age = 27;
+std::string name = "Han GaYeon";
+
+// cout처럼 << 연산자를 사용함
+oss << "이름: " << name << ", 나이: " << age;
+
+// 문자열로 변신
+std::string result = oss.str();
+std::cout << result << std::endl; // "이름: Han GaYeon, 나이: 27"
+
+std::string data = "222 3.14 Hello";
+std::istringstream iss(data); // 문자열을 스트림에 넣음
+
+int n;
+double d2;
+std::string s;
+
+// cin처럼 >> 연산자를 사용하여 데이터를 뽑아냄
+iss >> n >> d2 >> s;
+// 데이터를 넣을 때 순서를 지켜야 함.
+
+std::cout << n << " / " << d2 << " / " << s << std::endl;
+// 출력: 222 / 3.14 / Hello
+
+// std::cout << typeid(s).name() << std::endl;
+
     return 0;
 }

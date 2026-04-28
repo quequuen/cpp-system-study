@@ -2,7 +2,7 @@
 
 C++ 기초 문서입니다. C++ 언어의 기본 문법과 개념들을 다룹니다.
 
-## Compiler vs Interpreter
+### Compiler vs Interpreter
 
 컴파일러(Compiler)와 인터프리터(Interpreter)는 프로그래밍 언어를 실행하는 두 가지 주요 방법입니다. 이 둘의 차이점은 코드가 실행되는 방식과 시점에 있습니다.
 
@@ -655,3 +655,51 @@ std::string s7(v.begin(), v.end()); // "ABC"
     - `stol`: String to Long
     - `stod`: String to Double
     - `stof`: String to Float
+
+### `std::ostringstream` (Output String Stream)
+
+데이터를 문자열로 조립(출력)할 때 사용. `std::cout`으로 화면에 출력하는 대신, 그 내용을 메모리 버퍼에 차곡차곡 쌓음.
+
+- 여러 타입(int, double, string 등)을 하나로 합쳐서 문자열로 만들 때 사용.
+- `.str()` : 지금까지 메모리 버퍼에 쌓은 내용을 `std::string`으로 반환.
+
+```cpp
+#include <sstream>
+#include <iostream>
+
+std::ostringstream oss;
+int age = 27;
+std::string name = "Han GaYeon";
+
+// cout처럼 << 연산자를 사용함
+oss << "이름: " << name << ", 나이: " << age;
+
+// 문자열로 변신
+std::string result = oss.str();
+std::cout << result << std::endl; // "이름: Han GaYeon, 나이: 27"
+```
+
+### `std::istringstream` (Input String Stream)
+
+이미 존재하는 문자열에서 데이터를 추출(입력)할 때 사용. `std::cin`으로 키보드 입력을 받는 대신, 문자열로부터 데이터를 하나씩 꺼내옴.
+
+- 문자열 파싱, 즉 "222 3.14 Hello" 같은 문자열에서 숫자와 단어를 분리해낼 때 사용.
+- 공백(Space)나 줄바꿈을 기준으로 데이터를 알아서 잘라줌.
+
+```cpp
+#include <sstream>
+#include <iostream>
+
+std::string data = "222 3.14 Hello";
+std::istringstream iss(data); // 문자열을 스트림에 넣음
+
+int n;
+double d;
+std::string s;
+
+// cin처럼 >> 연산자를 사용하여 데이터를 뽑아냄
+iss >> n >> d >> s;
+
+std::cout << n << " / " << d << " / " << s << std::endl;
+// 출력: 222 / 3.14 / Hello
+```
