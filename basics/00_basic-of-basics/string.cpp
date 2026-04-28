@@ -64,7 +64,7 @@ int main (){
     // std::cout << vec_str << std::endl;
     // vector는 배열이기 때문에 << 가 정의 되어있지 않으면 출력 안됨. for문 돌려야 함.
 
-    
+
     for (auto a: vec_str) std::cout << a;
 
     std::cout << std::endl;
@@ -106,6 +106,25 @@ int main (){
     if (FromString(s5, d)) std::cout << d << std::endl;
     else std::cout << "double 변환 실패" << std::endl;
 
+    std::string s8("012345678");
+    s8.reserve(1000);
+
+    // bool 값 true/false로 출력하게 설정
+    std::cout << std::boolalpha;
+    
+    // 현재 문자열의 실제 길이를 반환
+    std::cout << s8.length() << std::endl;
+
+    // length()와 완전히 동일함 
+    // STL 컨테이너들과의 일관성을 위해 존재
+    std::cout << s8.size() << std::endl;
+
+    // 새로 메모리를 할당하지 않고도 담을 수 있는 최대 용량 
+    // 실제 글자 수보다 크거나 같음. 여유 공간을 포함함
+    std::cout << s8.capacity() << std::endl;
+
+    // 시스템 (OS/컴파일러)에서 이론적으로 가질 수 있는 문자열의 최대 길이
+    std::cout << s8.max_size() << std::endl;
 
     return 0;
 }
