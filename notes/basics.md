@@ -703,3 +703,51 @@ iss >> n >> d >> s;
 std::cout << n << " / " << d << " / " << s << std::endl;
 // 출력: 222 / 3.14 / Hello
 ```
+
+### `std::stringstream`
+
+`istringstream`(입력 전용)과 `ostringstream`(출력 전용)의 기능을 모두 가짐. 데이터의 양방향 통행 가능.
+
+- 입력(`>>`): 문자열에서 데이터를 뽑아냄.
+- 출력(`<<`): 문자열에 데이터를 집어넣음.
+
+- 복합적인 데이터 처리
+  문자열을 조립한 직후에 바로 다시 분석해야 할 때 유용.
+
+  ```cpp
+  #include <iostream>
+  #include <sstream>
+
+  int main() {
+      std::stringstream ss;
+
+      // 여러 데이터를 입력 (Output 모드)
+      ss << "100" << " " << "3.14" << " " << "C++";
+
+      // 변수에 데이터 각각 저장 (Input 모드)
+      int n; double d; std::string s;
+      ss >> n >> d >> s;
+
+      std::cout << n << ", " << d << ", " << s << std::endl;
+      return 0;
+  }
+  ```
+
+- 데이터 포맷 변경 및 변환
+  `string` 안이 공백을 기준으로 데이터를 파싱하고 싶을 때 사용.
+
+  ```cpp
+  std::string raw_data = "Apple 1500 Banana 2000";
+  std::stringstream ss(raw_data);
+
+  std::string name;
+  int price;
+
+  while (ss >> name >> price) {
+      std::cout << name << "의 가격은 " << price << "원입니다.\n";
+  }
+  ```
+
+- `.str()`: 현재 버퍼 내용을 string으로 반환.
+- `str("문자열")`: 버퍼 내용을 문자열로 변경.
+- `.str(""); .clear();`: 실제 내용을 비우고 커서 위치 및 상태 비트를 초기화 해야 함. 이게 재사용 할 때 필수 루틴임.
