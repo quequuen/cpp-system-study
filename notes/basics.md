@@ -751,3 +751,56 @@ std::cout << n << " / " << d << " / " << s << std::endl;
 - `.str()`: 현재 버퍼 내용을 string으로 반환.
 - `str("문자열")`: 버퍼 내용을 문자열로 변경.
 - `.str(""); .clear();`: 실제 내용을 비우고 커서 위치 및 상태 비트를 초기화 해야 함. 이게 재사용 할 때 필수 루틴임.
+
+### `char` 배열 (C-style string)과 `std::string` 접근(Access)과 변환(Conversion)
+
+- 문자 접근 방법 (Access)
+  둘 다 인덱스(`[]`)를 사용하는 것은 공통적이지만, `std::string`은 객체이기 때문에 추가적인 안전 장치 존재.
+
+  | 방식          | `char` 배열 (`char[]`)                                         | `std::string`                                |
+  | ------------- | -------------------------------------------------------------- | -------------------------------------------- |
+  | 인덱스 접근   | `str[i]` (프로그램이 죽는 걸 방지하기 위해 `string.at()` 사용) | `str[i]`                                     |
+  | 안전한 접근   | 불가 (직접 범위 체크 필요)                                     | `str.at(i)` (범위 초과 시 예외 발생)         |
+  | 포인터/반복자 | `*(str + i)`                                                   | `*str.begiin()`, `str.front()`, `str.back()` |
+
+- 배열로의 변환 (Conversion)
+  - `std::string` → `char` 배열로 변환
+    C언어 기반의 함수에 문자열을 전달할 때 씀.
+    - `c_str()`: `const char*` 타입을 반환. 읽기 전용으로 쓸 때 효율이 좋음.
+    - `data()`: `char*`를 반환할 수 있어 수정 가능.
+    - `copy()`: 실제 `char` 배열(버퍼)에 내용을 물리적으로 복사.
+
+    ```cpp
+    std::string s = "Hello";
+
+    // 읽기 전용 포인터 획득
+    const char* c_ptr = s.c_str();
+
+    // 실제 char 배열로 복사
+    char buffer[10];
+    s.copy(buffer, 5); // 5글자 복사
+    buffer[5] = '\0';  // C 스타일은 끝에 NULL 문자를 직접 넣어줘야 함
+    ```
+
+  - `char` 배열 → `std::string`으로 변환
+
+    ```cpp
+    char c_arr[] = "World";
+
+    // 생성자 이용
+    std::string s1(c_arr);
+
+    // 대입 연산자 이용
+    std::string s2 = c_arr;char c_arr[] = "World";
+
+    // 생성자 이용
+    std::string s1(c_arr);
+
+    // 대입 연산자 이용
+    std::string s2 = c_arr;
+    ```
+
+- 끝문자 `\0` (Null Terminator)
+  - `char` 배열: 문자열의 끝을 알리기 위해 반드시 마지막에 `\0`(Null) 문자가 있어야 함. 없으면 출력을 할 때 메모리가 엉뚱한 곳까지 계속 읽어버림.
+  - `std::string`; 내부적으로 길이를 저장하므로 `\0`에 의존하지 않음. 하지만 `c_str()`을 호출할 때는 C언어와의 호환성을 위해 끝에 `\0`을 붙여서 보여줌.
+- `char` 배열을 직접 다룰 때는 항상 배열의 크기를 넘어서지 않도록(Buffer Overflow) 주의해야 함.
