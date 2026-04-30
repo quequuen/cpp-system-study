@@ -12,7 +12,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_executable(basic_01 basics/00_basic-of-basics/main_00_basic_of_basics.cpp)
 add_executable(basic_02 basics/00_basic-of-basics/main_00_basic_of_basics_02.cpp)
 add_executable(basic_03 basics/00_basic-of-basics/main_00_basic_of_basics_03.cpp)
-add_executable(basic_04 basics/00_basic-of-basics/string.cpp)
+
+# basic-string
+add_executable(string_00 basics/00_basic-of-basics/string.cpp)
+add_executable(string_01 basics/00_basic-of-basics/string2.cpp)
+
 
 # basics/01_variables
 add_executable(variables_01 basics/01_variables/main_01_variables.cpp)
@@ -63,68 +67,68 @@ add_executable(arrays_06 basics/06_arrays/main_06_arrays_06.cpp)
 add_executable(io_stream_07 basics/07_io_streams/main_07_io.cpp)
 
 # basics/08_templates
-add_executable(templates_00 basics/08_templates/main.cpp)
-add_executable(templates_01 
+add_executable(templates_01 basics/08_templates/main.cpp)
+add_executable(templates_02 
     basics/08_templates/main_01.cpp
     basics/08_templates/headers/Box.h
 )
 
 # basics/09_exception_handling
-add_executable(exception_00 basics/09_exception_handling/main.cpp)
-add_executable(exception_01 basics/09_exception_handling/main_01.cpp)
-add_executable(exception_02 basics/09_exception_handling/main_02.cpp)
+add_executable(exception_01 basics/09_exception_handling/main.cpp)
+add_executable(exception_02 basics/09_exception_handling/main_01.cpp)
+add_executable(exception_03 basics/09_exception_handling/main_02.cpp)
 
 # oop/01_class
-add_executable(class_00 oop/01_class/main_00.cpp)
-add_executable(class_01 oop/01_class/main_01.cpp)
-add_executable(class_02 oop/01_class/main_02.cpp)
-add_executable(class_03 
+add_executable(class_01 oop/01_class/main_00.cpp)
+add_executable(class_02 oop/01_class/main_01.cpp)
+add_executable(class_03 oop/01_class/main_02.cpp)
+add_executable(class_04 
     oop/01_class/main_03.cpp
     oop/01_class/header_files/Calculator.h
     oop/01_class/Calculator.cpp
 )
-add_executable(class_04 oop/01_class/main_04.cpp)
-add_executable(class_05 oop/01_class/main_05.cpp)
-add_executable(class_06 oop/01_class/main_06.cpp)
+add_executable(class_05 oop/01_class/main_04.cpp)
+add_executable(class_06 oop/01_class/main_05.cpp)
+add_executable(class_07 oop/01_class/main_06.cpp)
 
 # oop/02_inheritance
 include_directories(oop/02_inheritance/headers)
-add_executable(inheritance_00 oop/02_inheritance/main_00.cpp)
-add_executable(inheritance_01
+add_executable(inheritance_01 oop/02_inheritance/main_00.cpp)
+add_executable(inheritance_02
     oop/02_inheritance/main_01.cpp
     oop/02_inheritance/Person.cpp
 )
-add_executable(inheritance_02 oop/02_inheritance/main_02.cpp)
+add_executable(inheritance_03 oop/02_inheritance/main_02.cpp)
 
 # oop/03_polymorphism
-add_executable(polymorphism_00 oop/03_polymorphism/main_00.cpp)
-add_executable(polymorphism_01 oop/03_polymorphism/main_01.cpp)
-add_executable(polymorphism_02 oop/03_polymorphism/main_02.cpp)
-add_executable(polymorphism_03 oop/03_polymorphism/main_03.cpp)
+add_executable(polymorphism_01 oop/03_polymorphism/main_00.cpp)
+add_executable(polymorphism_02 oop/03_polymorphism/main_01.cpp)
+add_executable(polymorphism_03 oop/03_polymorphism/main_02.cpp)
+add_executable(polymorphism_04 oop/03_polymorphism/main_03.cpp)
 
 # memory/smart_pointers
-add_executable(smart_pointers_00
+add_executable(smart_pointers_01
     memory/smart_pointers/headers/Resource.h
     memory/smart_pointers/main.cpp
     memory/smart_pointers/Resource.cpp
 )
-add_executable(smart_pointers_01 memory/smart_pointers/main_01.cpp)
-add_executable(smart_pointers_02 memory/smart_pointers/main_02.cpp)
-add_executable(smart_pointers_03 memory/smart_pointers/main_03.cpp)
+add_executable(smart_pointers_02 memory/smart_pointers/main_01.cpp)
+add_executable(smart_pointers_03 memory/smart_pointers/main_02.cpp)
+add_executable(smart_pointers_04 memory/smart_pointers/main_03.cpp)
 
 # stl/vector
-add_executable(vector_00 stl/vector/main.cpp)
-add_executable(deque_00 stl/vector/deque.cpp)
-add_executable(list_00 stl/vector/list.cpp)
+add_executable(vector_01 stl/vector/main.cpp)
+add_executable(deque_01 stl/vector/deque.cpp)
+add_executable(list_01 stl/vector/list.cpp)
 
 # stl/set
-add_executable(set_00 stl/set/main.cpp)
+add_executable(set_01 stl/set/main.cpp)
 
 # stl/map
-add_executable(map_00 stl/map/main.cpp)
+add_executable(map_01 stl/map/main.cpp)
 
 # stl/unordered_map
-add_executable(unordered_map_00 stl/unordered_map/main.cpp)
+add_executable(unordered_map_01 stl/unordered_map/main.cpp)
 
 # stl
-add_executable(iterator stl/iterator.cpp)
+add_executable(iterator_01 stl/iterator.cpp)
