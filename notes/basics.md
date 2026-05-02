@@ -656,6 +656,32 @@ std::string s7(v.begin(), v.end()); // "ABC"
     - `stod`: String to Double
     - `stof`: String to Float
 
+- 대입 (Assign)
+  변수에 새로운 값을 넣는 방법. `=` 연산자를 가장 많이 쓰지만, 특정 부분을 골라 넣고 싶을 때는 `assign()` 함수가 유용함.
+
+      - `operator =`: 가장 일반적인 대입.
+      - `assign()`: 어디서부터 어디까지, 몇 번 반복해서 넣을지를 정할 수 있음.
+
+      ```cpp
+      std::string s1 = "Apple";
+      std::string s2;
+
+      s2 = s1;               // "Apple" / 깊은 복사
+      s2.assign("Banana");   // "Banana" (기존 내용 지워짐)
+      s2.assign(s1, 0, 3);   // s1의 0번 인덱스부터 3글자: "App"
+      s2.assign(5, 'A');     // "AAAAA"
+      ```
+
+- 교환 (Swap)
+  두 문자열의 내용을 통째로 바꿈. `swap()`은 실제 데이터를 하나하나 복사하는 게 아니라, 내부적으로 메모리 주소(포인터)만 바꾸는 개념임. 그렇기 때문에 빠른 처리로 효율성이 좋음.
+
+  ```cpp
+  std::string s1 = "Left";
+  std::string s2 = "Right";
+
+  s1.swap(s2); // s1은 "Right", s2는 "Left"가 됨
+  ```
+
 ### `std::ostringstream` (Output String Stream)
 
 데이터를 문자열로 조립(출력)할 때 사용. `std::cout`으로 화면에 출력하는 대신, 그 내용을 메모리 버퍼에 차곡차곡 쌓음.

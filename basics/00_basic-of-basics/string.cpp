@@ -127,31 +127,61 @@ int main (){
     std::cout << s8.max_size() << std::endl;
 
     std::ostringstream oss;
-int age = 27;
-std::string name = "Han GaYeon";
 
-// cout처럼 << 연산자를 사용함
-oss << "이름: " << name << ", 나이: " << age;
+    int age = 27;
+    std::string name = "Han GaYeon";
 
-// 문자열로 변신
-std::string result = oss.str();
-std::cout << result << std::endl; // "이름: Han GaYeon, 나이: 27"
+    // cout처럼 << 연산자를 사용함
+    oss << "이름: " << name << ", 나이: " << age;
 
-std::string data = "222 3.14 Hello";
-std::istringstream iss(data); // 문자열을 스트림에 넣음
+    // 문자열로 변신
+    std::string result = oss.str();
+    std::cout << result << std::endl; // "이름: Han GaYeon, 나이: 27"
 
-int n;
-double d2;
-std::string s;
+    std::string data = "222 3.14 Hello";
+    std::istringstream iss(data); // 문자열을 스트림에 넣음
 
-// cin처럼 >> 연산자를 사용하여 데이터를 뽑아냄
-iss >> n >> d2 >> s;
-// 데이터를 넣을 때 순서를 지켜야 함.
+    int n;
+    double d2;
+    std::string s;
 
-std::cout << n << " / " << d2 << " / " << s << std::endl;
-// 출력: 222 / 3.14 / Hello
+    // cin처럼 >> 연산자를 사용하여 데이터를 뽑아냄
+    iss >> n >> d2 >> s;
+    // 데이터를 넣을 때 순서를 지켜야 함.
 
-// std::cout << typeid(s).name() << std::endl;
+    std::cout << n << " / " << d2 << " / " << s << std::endl;
+    // 출력: 222 / 3.14 / Hello
+
+    // std::cout << typeid(s).name() << std::endl;
+
+    std::string s9 = "Apple";
+    std::string s10;
+
+    s10 = s9;               // "Apple"
+    // 깊은 복사임.
+
+    std::cout << "s10: " << s10 << std::endl;
+
+    s10.assign("Banana");   // "Banana" (기존 내용 지워짐)
+
+    std::cout << "s9: " << s9 << std::endl;
+    std::cout << "s10: " << s10 << std::endl;
+
+    s10.assign(s9, 0, 3);   // s1의 0번 인덱스부터 3글자: "App"
+    s10.assign(5, 'A');     // "AAAAA"
+
+    std::cout << "s9: " << s9 << std::endl;
+    std::cout << "s9 주소: " << (void*)s9.c_str() << std::endl;
+    std::cout << "s10: " << s10 << std::endl;
+    std::cout << "s10 주소: " << (void*)s10.c_str() << std::endl;
+
+    s9.swap(s10);
+
+    std::cout << "swap 후" << std::endl;
+    std::cout << "s9: " << s9 << std::endl;
+    std::cout << "s9 주소: " << (void*)s9.c_str() << std::endl;
+    std::cout << "s10: " << s10 << std::endl;
+    std::cout << "s10 주소: " << (void*)s10.c_str() << std::endl;
 
     return 0;
 }
