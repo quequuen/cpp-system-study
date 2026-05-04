@@ -598,7 +598,7 @@ int main (){
 }
 ```
 
-- 내부 구조: SBO (Small String Optimization)
+- 내부 구조: SSO (Small String Optimization)
   - **짧은 문자열**: 힙(Heap) 메모리를 빌리지 않고 객체 내부의 작은 배열(보통 15~23바이트)에 바로 저장함. (메모리 할당 속도가 비약적으로 빠름)
   - **긴 문자열**: 데이터가 커지면 그때서야 힙 메모리에 할당 후 저장.
 - `std::string_view`
@@ -681,6 +681,39 @@ std::string s7(v.begin(), v.end()); // "ABC"
 
   s1.swap(s2); // s1은 "Right", s2는 "Left"가 됨
   ```
+
+- 덧붙이기 (Append)
+  문자열 끝에 새로운 내용을 이어 붙임.
+  - `operator+=`: 한 글자나 문자열을 간단히 붙일 때 사용.
+  - `append()`: `assign()`과 마찬가지로 범위를 지정해서 붙일 수 있음.
+  - `push_back()`: 문자 하나만 끝에 넣을 때 사용.
+
+  ```cpp
+  std::string s = "Hello";
+  s += " World";         // "Hello World"
+  s.append("!!!");       // "Hello World!!!"
+  s.append(s1, 0, 2);    // 특정 문자열의 일부를 붙임
+  s.push_back('?');      // "Hello World!!!Ri?" (마지막 글자 하나)
+  ```
+
+- 삽입 (Insert)
+  원하는 위치를 콕 집어서 그 사이에 내용을 끼워 넣음.
+  - `insert(pos, str)`: `pos` 위치 앞에 `str`을 삽입.
+
+  ```cpp
+  std::string s = "ABCDE";
+
+  // 2번 인덱스(C) 자리에 "123" 삽입
+  s.insert(2, "123");
+  // 결과: "AB123CDE"
+  ```
+
+| 기능         | 주요 방법        | 특징                                    |
+| ------------ | ---------------- | --------------------------------------- |
+| **대입**     | `=`, `assign()`  | 기존 내용을 완전히 덮어씀               |
+| **교환**     | `swap()`         | 두 객체의 값을 바꿈 (실제로는 주소)     |
+| **덧붙이기** | `+=`, `append()` | 뒤로 이어서 붙임                        |
+| **삽입**     | `insert()`       | 중간에 끼워 넣음 (뒤쪽 문자들은 밀려남) |
 
 ### `std::ostringstream` (Output String Stream)
 
