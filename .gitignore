@@ -17,3 +17,6 @@ build/
 
 # Debug
 *.dSYM/
+
+# etc
+icon
