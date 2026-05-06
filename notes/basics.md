@@ -746,6 +746,39 @@ int main() {
   - 버퍼가 없을 때: 키보드에서 무언가를 누를 때마다 CPU가 하던 일을 멈추고 처리 반응을 해야 함. (작업 효율 급하락)
   - 버퍼가 있을 때: CPU는 자기 할 일을 하다가, 버퍼가 꽉 차거나 사용자가 엔터를 눌렀을 때만 모인 데이터를 인식하고 한 번에 처리함.
 
+### cin (Standard Input Stream)
+
+`std::istream` 클래스의 객체. 주로 키보드로부터 데이터를 읽어오는 통로 역할을 함.
+
+- `operator>>` (추출 연산자): 공백(Space, Tab, Enter)을 기준으로 데이터를 끊어서 읽음.
+  - `cin >> variable;`
+- `getline(istream & is, string& str)`: **공백을 포함하여 한 줄 전체를 읽을 때 사용.** `>>`만 쓰면 띄어쓰기 뒷부분을 못 읽기 때문에 매우 자주 쓰임.
+  - `getline(cin, s);`
+- `cin.ignore(n, delim)`: 입력 버퍼에 남아있는 찌꺼기(특히 엔터 키 `\n`)를 무시하고 지울 때 사용. `>>` 사용 후 바로 `getline`을 쓸 때 생기는 오류(`>>` 연산자가 남겨놓은 엔터 키(`\n`)를 `getline`이 자신의 입력으로 착각해서 발생하는 문제)를 막기 위해 필수.
+
+```cpp
+int age;
+string name;
+
+cin >> age;    // 25 입력 후 엔터 → 버퍼에 '\n' 잔류
+cin.ignore();  // 버퍼 맨 앞에 있는 문자 하나('\n')를 지워버림
+
+getline(cin, name); // 이제 버퍼가 깨끗해서 사용자의 입력을 기다림
+
+// 현업 사용법
+#include <limits>
+
+// ...
+
+cin >> age;
+// 버퍼에서 최대 크기만큼 읽되, '\n'을 만날 때까지 싹 다 무시(지우기)해라.
+cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+getline(cin, name);
+```
+
+- `cin.fail()`: 잘못된 타입의 입력(숫자 자리에 문자 입력 등)이 들어왔는지 확인할 때 씀. 입력 유효성 검사를 위해 필수적으로 체크.
+
 ### `std::ostringstream` (Output String Stream)
 
 데이터를 문자열로 조립(출력)할 때 사용. `std::cout`으로 화면에 출력하는 대신, 그 내용을 메모리 버퍼에 차곡차곡 쌓음.
