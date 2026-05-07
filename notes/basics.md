@@ -756,28 +756,74 @@ int main() {
   - `getline(cin, s);`
 - `cin.ignore(n, delim)`: 입력 버퍼에 남아있는 찌꺼기(특히 엔터 키 `\n`)를 무시하고 지울 때 사용. `>>` 사용 후 바로 `getline`을 쓸 때 생기는 오류(`>>` 연산자가 남겨놓은 엔터 키(`\n`)를 `getline`이 자신의 입력으로 착각해서 발생하는 문제)를 막기 위해 필수.
 
+  ```cpp
+  int age;
+  string name;
+
+  cin >> age;    // 25 입력 후 엔터 → 버퍼에 '\n' 잔류
+  cin.ignore();  // 버퍼 맨 앞에 있는 문자 하나('\n')를 지워버림
+
+  getline(cin, name); // 이제 버퍼가 깨끗해서 사용자의 입력을 기다림
+
+  // 현업 사용법
+  #include <limits>
+
+  // ...
+
+  cin >> age;
+  // 버퍼에서 최대 크기만큼 읽되, '\n'을 만날 때까지 싹 다 무시(지우기)해라.
+  cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+  getline(cin, name);
+  ```
+
+- `cin.fail()`: 사용자가 의도하지 않은 타입의 데이터를 입력했을 때, 이를 감지해서 프로그램이 엉뚱하게 동작하거나 무한 루프에 빠지는 것을 방지하는 안전장치.
+  - 내부 원리: 사용자가 잘못된 값을 입력하면 `cin` 내부의 'fail' 비트가 1(true)이 됨. 이 비트가 켜지면 `cin`은 입력을 중단하고, 이후에 오는 모든 `cin` 명령을 무시하게 됨.
+
 ```cpp
-int age;
-string name;
+#include <iostream>
+#include <limits> // numeric_limits 사용을 위해 필요
 
-cin >> age;    // 25 입력 후 엔터 → 버퍼에 '\n' 잔류
-cin.ignore();  // 버퍼 맨 앞에 있는 문자 하나('\n')를 지워버림
+using namespace std;
 
-getline(cin, name); // 이제 버퍼가 깨끗해서 사용자의 입력을 기다림
+int main() {
+    int age;
 
-// 현업 사용법
-#include <limits>
+    while (true) {
+        cout << "나이를 입력하세요: ";
+        cin >> age;
 
-// ...
+        // 입력이 실패했는지 확인
+        if (cin.fail()) {
+            cout << "잘못된 입력입니다. 숫자로 입력해주세요." << endl;
 
-cin >> age;
-// 버퍼에서 최대 크기만큼 읽되, '\n'을 만날 때까지 싹 다 무시(지우기)해라.
-cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            // fail 상태를 초기화 (에러 비트 0으로 리셋)
+            cin.clear();
 
-getline(cin, name);
+            // 버퍼에 남아있는 잘못된 문자들을 싹 지우기
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            continue; // 다시 처음으로 돌아가서 입력받기
+        }
+
+        // 이런 식으로 간단한 표현도 가능
+        if (!(cin >> age)) {  // cin.fail()과 같은 의미
+        cin.clear();
+        cin.ignore(100, '\n');
+}
+
+        // 입력에 성공 시 루프 탈출
+        break;
+    }
+
+    cout << "입력하신 나이는 " << age << "세입니다." << endl;
+    return 0;
+}
 ```
 
-- `cin.fail()`: 잘못된 타입의 입력(숫자 자리에 문자 입력 등)이 들어왔는지 확인할 때 씀. 입력 유효성 검사를 위해 필수적으로 체크.
+- `cin.fail()` 체크: 입력이 유효한 지 확인.
+- `cin.clear()`: 에러 비트를 0으로 입력 해주면서 `cin` 정상화.
+- `cin.ignore()`: 버퍼에 여전히 남아있는 '잘못 입력된 데이터'를 지우는 과정. (하지 않을 시 다음 입력 때 이 잘못된 데이터를 또 읽고 다시 `fail`이 뜸)
 
 ### `std::ostringstream` (Output String Stream)
 
