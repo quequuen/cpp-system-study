@@ -73,6 +73,50 @@ int main() {
 }
 ```
 
+### 하이딩 (Hiding)
+
+부모 클래스에 있는 멤버(함수나 변수)와 동일한 이름을 자식 클래스에서 선언했을 때, 부모의 멤버가 가려져서 보이지 않게 되는 현상.
+C++ 컴파일러는 자식 클래스에서 특정 이름을 찾으면, 부모 클래스에 같은 이름의 다른 함수가 있는지 더 이상 찾아보지 않음. (매개변수가 다르더라도 찾아보지 않음) 그냥 부모의 것을 숨김.
+
+```cpp
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+    void display() { cout << "Base display" << endl; }
+    void display(int i) { cout << "Base display with int: " << i << endl; }
+};
+
+class Derived : public Base {
+public:
+    // 부모의 display와 이름이 같음 -> 하이딩 발생
+    void display() { cout << "Derived display" << endl; }
+};
+
+int main() {
+    Derived d;
+    d.display();      // 성공: Derived의 display 실행
+    // d.display(10); // 에러: Base의 display(int)가 하이딩되어 찾을 수 없음
+
+    return 0;
+}
+```
+
+- 하이드 (Hide)된 부모 멤버를 쓰는 방법
+  - 범위 지정 연산자(::) 사용
+    ```cpp
+    d.Base::display(10); // 직접 부모 이름을 명시해서 호출
+    ```
+  - `using` 선언
+    ```cpp
+    class Derived : public Base {
+    public:
+        using Base::display; // Base의 모든 display 함수를 가져옴
+        void display() { cout << "Derived display" << endl; }
+    };
+    ```
+
 ### 상속 오버라이딩 (Overriding)
 
 부모 클래스의 멤버 함수를 자식 클래스에서 재정의하는 것.
@@ -101,6 +145,13 @@ int main() {
   부모에게 void move()와 void move(int x) 두 개가 있을 때, 자식에서 void move()만 오버라이딩하면 매개변수가 있는 move(int x)는 **자식 객체에서 숨겨져서 호출할 수 없게 됨.**
 
 - final 키워드로 더 이상 오버라이딩 되지 못하도록 막을 수 있음.
+
+| 구분     | 오버라이딩 (Overriding)                           | 하이딩 (Hiding / Name Masking)               |
+| -------- | ------------------------------------------------- | -------------------------------------------- |
+| 조건     | 부모 함수가 `virtual`                             | `virtual` 여부 상관럾음.                     |
+| 시그니처 | 이름과 매개변수, 반환값이 모두 같아야 함          | 이름만 같으면 매개변수, 반환값이 달라도 발생 |
+| 다형성   | 부모 포인터로 자식 객체를 가리켜도 자식 함수 실행 | 부모 포인터로 가리키면 부모 함수가 실행됨    |
+| 목적     | 기능을 재정의하여 다형성 구현                     | 실수 혹은 의도적으로 부모 멤버를 가림        |
 
 ### 상속 받은 멤버 숨기기
 
