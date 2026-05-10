@@ -101,6 +101,7 @@ add_executable(inheritance_02
     oop/02_inheritance/Person.cpp
 )
 add_executable(inheritance_03 oop/02_inheritance/main_02.cpp)
+add_executable(hiding oop/02_inheritance/hiding.cpp)
 
 # oop/03_polymorphism
 add_executable(polymorphism_01 oop/03_polymorphism/main_00.cpp)
