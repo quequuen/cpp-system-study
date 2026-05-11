@@ -1,4 +1,5 @@
 #include <iomanip>  // io manipulators
+#include <iomanip>
 #include <iostream>
 #include <string>
 
@@ -20,6 +21,11 @@ int main() {
 
   while (cin >> c) cout << c;
   // cin으로부터 buffer를 가져올 때는 빈칸을 무시함
+  // while로 하게 되면 키보드에 입력을 하고 enter를 누르면
+  // cin은 버퍼에서 데이터를 꺼내 c에 넣고 true를 반환해 마우리 enter를 쳐도
+  // 입력할 데이터를 기다리게 됨. 이때 cin에게 더 이상 들어올 데이터가 없다는
+  // 것을 알려주기 위해 cntl + d를 눌러주는데 이게 바로 여기서의 EOF(End Of
+  // File)
 
   while (cin >> a >> b) cout << a << " " << b << endl;
   // 스페이스로 구분해서 각각 a, b에 데이터를 넣음

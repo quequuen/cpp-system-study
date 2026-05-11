@@ -66,6 +66,7 @@ add_executable(arrays_06 basics/06_arrays/main_06_arrays_06.cpp)
 # basics/07_io_streams
 add_executable(io_stream_01 basics/07_io_streams/main_07_io.cpp)
 add_executable(io_stream_02 basics/07_io_streams/main_07_io_01.cpp)
+add_executable(io_stream_03 basics/07_io_streams/main_07_io_02.cpp)
 
 
 # basics/08_templates
