@@ -1077,3 +1077,50 @@ std::cout << n << " / " << d << " / " << s << std::endl;
   - `char` 배열: 문자열의 끝을 알리기 위해 반드시 마지막에 `\0`(Null) 문자가 있어야 함. 없으면 출력을 할 때 메모리가 엉뚱한 곳까지 계속 읽어버림.
   - `std::string`; 내부적으로 길이를 저장하므로 `\0`에 의존하지 않음. 하지만 `c_str()`을 호출할 때는 C언어와의 호환성을 위해 끝에 `\0`을 붙여서 보여줌.
 - `char` 배열을 직접 다룰 때는 항상 배열의 크기를 넘어서지 않도록(Buffer Overflow) 주의해야 함.
+
+### 정규 표현식 (Regular Expression, Regex 또는 Regexp)
+
+특정한 규칙을 가진 문자열의 집합을 표현하기 위해 사용하는 형식 언어. 방대한 텍스트 중에서 특정 패턴을 찾거나, 수정하거나, 유효성을 검사할 때 필수적으로 사용되는 강력한 도구.
+
+| 기호 | 의미 | 예시 |
+| `.` | 임의의 한 문자 (줄바꿈 제외) | `a.b` → aab, abb, acb 등 |
+| `^` | 문자열의 시작 | `^Hello` → Hello로 시작하는 문장 |
+| `$` | 문자열의 끝 | `done$` → done으로 끝나는 문장 |
+| `*` | 0번 이상 반복 | `a*b` → b, ab, aab, aaab 등 |
+| `+` | 1번 이상 반복 | `a+b` → ab, aab, aaab 등 (b는 안됨) |
+| `?` | 0번 또는 1번 존재 | `apple?` → appl, apple |
+| `[]` | 대괄호 안의 문자 중 하나 | `[abc]d` → ad, db,cd |
+| `[^]` | 대괄호 안의 문자를 제외한 나머지 | `[^0-9]` → 숫자가 아닌 모든 문자 |
+| `\d` | 숫자(Digit) | `\d\d` → 00~99 사이 숫자 |
+| `\w` | 알파벳, 숫자, 언더바(`_`) | `\w+` → 단어 단위 찾기 |
+
+```cpp
+#include <iostream>
+#include <regex>
+#include <string>
+
+using namespace std;
+
+int main() {
+    string email = "user@example.com";
+
+    // 이메일 패턴 정의
+    regex pattern(R"((\w+)@(\w+)\.(\w+))");
+    // R"" → 역슬래시(\)를 문자로 인식하겠다. (\\로 변경 가능)
+    // \w 얘를 그룹으로 지어 변수에 넣음.
+
+    // 매칭 확인 (bool 반환)
+    if (regex_matcrh(email, pattern)) {
+        cout << "올바른 이메일 형식입니다." << endl;
+    }
+
+    // 검색 및 추출
+    smatch match;
+    if (regex_search(email, match, pattern)) {
+        cout << "User ID: " << match[1] << endl;   // user
+        cout << "Domain: " << match[2] << endl;    // example
+    }
+
+    return 0;
+}
+```
