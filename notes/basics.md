@@ -964,6 +964,67 @@ std::cout << n << " / " << d << " / " << s << std::endl;
 
 **ios(규칙)를 바탕으로 ostream/istream(기능)이 설계되었고, 그 설계도로 만든 실제 연결 통로가 cout/cin(객체).**
 
+### 스트림의 흐름 상태 (Stream State Flags)
+
+`std::ios` 조상 클래스는 스트림의 현재 상태를 나타내는 4가지 핵심 플래그를 관리함.
+
+| 플래그 | 의미 | 발생 상황 |
+| `goodbit` | 정상 상태 | 아무런 문제가 없을 때 |
+| `failbit` | 논리적 오류 | 숫자를 입력받아야 하는데 문자가 들어온 경우 |
+| `eofbit` | 입력 종료 | 데이터의 끝(`EOF`)에 도달했을 때 (`Ctrl+Z`, `command+Z` 또는 `Ctrl+D`, `command+D`) |
+| `badbit` | 치명적 오류 | 물리적인 손상이나 복구 불가능한 스트림 에러 발생 시 |
+
+- 입력 유효성 검증의 표준 절차
+  사용자가 잘못된 값을 입력했을 때 프로그램이 멈추거나 무한 루프에 빠지지 않도록 3단계 대응을 하는 것이 실무 표준.
+  1. **상태 확인 (`cin.fail()`)**
+     `cin >> value` 연산이 성공했는지 확인. 만약 타입이 맞지 않는 데이터가 들어오면 `failbit`가 켜지고 `cin.fail()`은 `true`를 반환.
+  2. **상태 초기화(`cin.clear()`)**
+     `failbit`가 켜진 상태에서는 `cin`이 모든 동작을 거부함. `cin.clear()`를 호출하려 에러 플래그를 끄고 스트림을 다시 `good` 상태로 되돌려야 함.
+  3. **버퍼 비우기(`cin.ignore()`)**
+     상태를 초기화했어도 버퍼에는 여전히 잘못 입력된 쓰레기 값이 남음. 지우지 않으면 다음 입력 시 똑같은 에러가 발생하므로 `cin.ignore()`를 사용해 버퍼를 깨끗하게 비움.
+
+  ```cpp
+  #include <iostream>
+  #include <limits> // numeric_limits
+
+  using namespace std;
+
+  int main() {
+      int age;
+
+      cout << "나이를 입력해주세요: ";
+
+      while (!(cin >> age)) {
+        // 입력을 시도함과 동시에 성공(true)/실패(false)를 체크 → cin.fail()과 같은 효과
+          cin.clear();
+          // 에러 상태(failbit 등)를 초기화
+          // 이걸 안 하면 cin은 계속 거부 상태라 다음 입력을 아예 안 받음.
+
+          cin.ignore(numeric_limits<streamsize>::max(), '\n');
+          // 버퍼에 남아있는 '잘못된 입력(문자 등)'과 '엔터(\n)'를 싹 지움.
+          // \n을 만날 때까지 최대치의 문자들을 무시하라는 뜻.
+
+          cout << "입력 실패: 숫자만 입력 가능합니다." << endl;
+          cout << "다시 입력해주세요: ";
+      }
+
+      // 루프를 탈출했다는 건 입력이 완벽하게 성공했다는 뜻.
+      cout << "입력 성공: 당신의 나이는 " << age << "세입니다." << endl;
+
+      return 0;
+  }
+  ```
+
+  - 위의 코드를 아래 코드처럼 한 줄로 줄이면서 범위 체크를 할 수도 있음. while(true)로 구현해 if로 유효성 검증을 하기도 함.
+
+  ```cpp
+  while (!(cin >> age) || (age < 0 || age > 150)) {
+      cout << "잘못된 입력입니다. 0~150 사이의 숫자를 입력하세요." << endl;
+      cin.clear();
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+  }
+  ```
+
 ### `char` 배열 (C-style string)과 `std::string` 접근(Access)과 변환(Conversion)
 
 - 문자 접근 방법 (Access)
