@@ -1124,3 +1124,73 @@ int main() {
     return 0;
 }
 ```
+
+### 파일 입출력
+
+데이터를 영구적으로 저장하고 불러오는 핵심 기능. `std::ios`와 `std::ostream`의 기능을 그대로 상속받아 사용.
+
+- <fstream> 헤더 사용.
+- `std::ifstream`: `std::istream`을 상속. 파일로부터 데이터를 읽을 때 사용. Input file stream.
+- `std::ofstream`: `std::ostream`을 상속. 파일로 데이터를 쓸 때 사용. Output file stream.
+- `std::fstream`: 읽기와 쓰기를 동시에 할 때 사용하는 클래스.
+
+- 파일 쓰기 (Saving)
+
+  ```cpp
+  #include <fstream>
+
+  int main() {
+  // 파일 열기 (객체 생성과 동시에 파일명 지정)
+  std::ofstream fout("example.txt");
+
+      // 데이터 쓰기
+      if (fout.is_open()) {
+          fout << "Hello, World!" << std::endl;
+          fout << "C++ 파일 입출력 기초입니다." << std::endl;
+      }
+
+      // 파일 닫기 (생략 가능하지만 명시하면 좋음)
+      fout.close();
+
+      return 0;
+
+  }
+  ```
+
+  - is_open(): 객체 자체를 검사하여 파일이 성공적으로 열렸는지를 확인할 수 있지만 더 명시적이고 더 범용적으로 체크할 수 있음.
+  - 상속을 받았기 때문에 cout과 사용법이 완전 동일함.
+
+- 파일 읽기 (Loading)
+
+  ```cpp
+  #include <fstream>
+  #include <iostream>
+  #include <string>
+
+  int main() {
+      // 읽기 전용 통로 연결
+      std::ifstream fin("example.txt");
+
+      // 파일이 잘 열렸는지 확인
+      if (!fin.is_open()) {
+          std::cerr << "파일을 찾을 수 없습니다!" << std::endl;
+          return 1;
+      }
+
+      // 데이터를 한 줄씩 읽어서 출력
+      std::string line;
+      while (std::getline(fin, line)) { // 더 이상 읽을 내용이 없을 때까지 반복
+          std::cout << line << std::endl;
+      }
+
+      return 0;
+  }
+  ```
+
+- 기초 입출력의 흐름
+  모든 파일 입출력은 해당 순서를 따름.
+  1. 연결 (Open): 스트림 객체를 생성하고 파일 이름을 지정. 이때 파일이 실제로 존재하는지, 쓰기 권한이 있는지 확인하는 과정(`is_open()`)이 필요함.
+  2. 작업 (Read/Write)
+  - 쓰기: `<<` 연산자 사용.
+  - 읽기: `>>`(단어 단위)나 `getline()`(줄 단위)을 사용.
+  3. 해제 (Close): 작업을 마친 통로를 닫아줌. C++에서는 객체가 소멸할 때 자동으로 닫아줌. 코드가 길어질 때는 직접 `close()`를 해주는 것이 안전함.
