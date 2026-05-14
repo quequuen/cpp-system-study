@@ -81,6 +81,10 @@ add_executable(exception_01 basics/09_exception_handling/main.cpp)
 add_executable(exception_02 basics/09_exception_handling/main_01.cpp)
 add_executable(exception_03 basics/09_exception_handling/main_02.cpp)
 
+# basics/10_file
+add_executable(file_01 basics/10_file/file_01.cpp)
+add_executable(file_02 basics/10_file/file_02.cpp)
+
 # oop/01_class
 add_executable(class_01 oop/01_class/main_00.cpp)
 add_executable(class_02 oop/01_class/main_01.cpp)
