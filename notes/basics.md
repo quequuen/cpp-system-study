@@ -1245,3 +1245,66 @@ int main() {
   - **압도적인 성능과 속도 (Speed)**: 컴퓨터 입장에서는 텍스트 저장은 문자로 한 자 한 자를 모두 변환하는 연산을 거쳐야 하고 읽을 때도 다시 역산이 필요하기 때문에 피곤한 일. 하지만 바이너리 방식은 메모리에 있는 비트 데이터를 그대로 복사해서 하드디스크에 붙여넣음. 변환 과정이 없어서 대용량 데이터를 다룰 때 수십 배 이상 빠름.
   - **저장 공간 절약 (Size)**: 예를 들어, 정수 `1234567890`을 저장하려면 문자 10개가 필요하므로 10 바이트가 소모됨. `int` 타입은 값이 아무리 커도 메모리에서 딱 4 바이트만 차지 하기 때문에 그대로 저장하면 공간을 절반 이상 아낌.
   - **데이터들의 표준**: 일상에서 쓰는 고성능 데이터들은 전부 바이너리임. 이미지/영상, 게임 세이브 파일, 실행 파일 등.
+
+- 바이너리 저장의 핵심 요소
+  바이너리 입출력을 할 때는 `<<`나 `getline`을 쓰지 않음.
+  - `ios::binary` 플래그: 파일을 열 때 텍스트가 아닌 이진 데이터라고 각인시킴.
+  - `write()`와 `read()` 메서드: 메모리 주소에서 직접 데이터를 읽고 씀.
+
+- 파일 저장 (Writing)
+
+```cpp
+#include <fstream>
+#include <iostream>
+
+struct Player {
+    int id;
+    double health;
+    char level;
+};
+
+int main() {
+    Player p1 = { 1, 95.5, 'A' };
+
+    // 바이너리 모드로 파일 열기
+    std::ofstream ofs("player.dat", std::ios::binary);
+
+    if (!ofs) return 1;
+
+    // 데이터 쓰기
+    // write(데이터의 주소, 데이터의 크기)
+    // 이때 주소는 반드시 (char*)로 형변환(Casting)해야 함.
+    ofs.write(reinterpret_cast<const char*>(&p1), sizeof(p1));
+
+    ofs.close();
+    return 0;
+}
+```
+
+- 파일 읽기 (Reading)
+
+```cpp
+#include <fstream>
+#include <iostream>
+
+int main() {
+    Player p2;
+
+    // 바이너리 모드로 파일 읽기
+    std::ifstream ifs("player.dat", std::ios::binary);
+
+    if (!ifs) return 1;
+
+    // 데이터 읽기
+    // read(데이터를 담을 주소, 읽어올 크기)
+    ifs.read(reinterpret_cast<char*>(&p2), sizeof(p2));
+
+    std::cout << "ID: " << p2.id << ", Health: " << p2.health << ", Level: " << p2.level << std::endl;
+
+    return 0;
+}
+```
+
+- `write()`와 `read()` 메서드는 설계할 때 데이터가 어떤 것인지는 확인하지 않고 1 바이트(char) 단위로 쪼개서 보내는 것을 약속함. → `Player` 객체는 덩어리가 큼. 이걸 `char*`(1 바이트 단위 주소)로 강제로 변환해서 전달하면, 함수가 그 주소부터 `sizeof(p1)`만큼의 바이트를 순서대로 파일에 복사하게 됨.
+  - `char*`여야만 하는 이유: 메서드 내부가 그렇게 설계됨. 객체 자체가 차지하는 메모리 공간을 그대로 복사하는 것이 아닌 메모의 주소값을 복사하게 되어서 메모리 공간 효율성이 좋아지고 컴파일러도 안심이 될 수 있음.
+- 이때 저장 시 `std::string`이나 포인터(`int*`)가 포함된 클래스는 위 방식으로 저장하면 안됨. 포인터는 '메모리 주소'일 뿐이어서 프로그램을 껐다 키면 그 주소에는 아무것도 없기 때문에, 다시 읽어왔을 때 엉뚱한 곳을 가리켜 프로그램이 터짐. (`Segmentation Fault`) → 문자열은 고정 크기 배열(`char name[20]`)을 쓰거나, 하나씩 따로 저장(직렬화) 해야 함.
