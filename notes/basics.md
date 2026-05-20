@@ -1337,11 +1337,11 @@ std::streampos pos = ifs.tellg(); // 현재 위치를 pos에 저장
     "현재 위치에서 뒤로 10칸"과 같은 기준점을 잡고 이동.
     - `seekg(-10, std::ios::cur)`: 현재 위치에서 10바이트 뒤로 이동
 
-| 기준점 플래그   | 의미                    |
-| --------------- | ----------------------- |
-| `std::ios::beg` | 파일의 시작 (Beginning) |
-| `std::ios::cur` | 현재 위치 (Current)     |
-| `std::ios::end` | 파일의 끝 (End)         |
+  | 기준점 플래그   | 의미                    |
+  | --------------- | ----------------------- |
+  | `std::ios::beg` | 파일의 시작 (Beginning) |
+  | `std::ios::cur` | 현재 위치 (Current)     |
+  | `std::ios::end` | 파일의 끝 (End)         |
 
 ```cpp
 #include <fstream>
