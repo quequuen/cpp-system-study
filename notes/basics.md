@@ -537,12 +537,17 @@ int count = std::count_if(scores.begin(), scores.end(), [limit](int s) {
 - [&]: 주변의 모든 지역 변수를 참조로 캡처.
 - 반환 타입을 알아서 추론해주만 명시하고 싶을 때는 `->`를 사용.
 
+- 변수에 람다식을 담아 사용 가능. 자바스크립트의 화살표 함수처럼 동작함. 좀 더 유연성을 가지고 사용할 수 있음. 콜백, 비동기/이벤트 처리 등에서 실용적임.
+
 ```cpp
 auto divide = [](double a, double b) -> double {
     if (b == 0) return 0;
     return a / b;
 };
 ```
+
+- 람다를 직접 쓸 때는 `auto`를 쓰면 되지만, 해당 함수 변수를 다른 함수에 인자로 넘기거나 클래스 멤버로 보관할 때는 `std::function<반환형(매개변수)>`라는 고정된 타입에 담아야 함.
+  - [`std::function`](functions.md#stdfunction): 함수를 담을 수 있는 규격화된 틀.
 
 ### `std::string`
 

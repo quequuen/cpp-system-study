@@ -260,3 +260,5 @@ int main(int argc, char* argv[]) {
 
 - 현대 C++ 개발자들은 가변 인자 템플릿 (Variadic Templates)을 더 많이 사용. (컴파일 타임에 타입을 완벽히 체크함.)
 - 같은 타입의 인자 여러 개를 받을 때 편리한 std::initializer_list를 사용하기도 함.
+
+### `std::function`
