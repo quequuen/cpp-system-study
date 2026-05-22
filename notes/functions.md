@@ -262,3 +262,43 @@ int main(int argc, char* argv[]) {
 - 같은 타입의 인자 여러 개를 받을 때 편리한 std::initializer_list를 사용하기도 함.
 
 ### `std::function`
+
+C++에서 함수처럼 동작하는 종류(일반 함수, 람다식, 함수 객체(Functor), 클래스의 멤버 함수)가 너무 많기 때문에 그 자체로 타입이 매우 복잡해서 다른 곳으로 전달하거나 변수에 저장하려면 공통된 규격이 필요함. 그 규격을 만들어 주는 것이 `std::function`임. 매개변수와 반환 타입만 같다면 무엇이든 담을 수 있음.
+
+- `<functional>`
+- `std::function<반환타입(매개변수타입1, 매개변수타입2)>`
+
+```cpp
+#include <iostream>
+#include <functional>
+#include <vector>
+
+using namespace std;
+
+// 일반 함수
+int add(int a, int b) { return a + b; }
+
+int main() {
+    // std::function (int 두 개 받고 int 반환하는 규격)
+    function<int(int, int)> f;
+
+    // 일반 함수 담기
+    f = add;
+    cout << "일반 함수: " << f(10, 20) << endl;
+
+    // 람다식 담기
+    f = [](int a, int b) { return a * b; };
+    cout << "람다식: " << f(10, 20) << endl;
+
+    // 상자들을 벡터에 담기 (함수 리스트)
+    vector<function<int(int, int)>> calcList;
+    calcList.push_back(add);
+    calcList.push_back([](int a, int b) { return a - b; });
+
+    for (auto& func : calcList) {
+        cout << "결과: " << func(5, 3) << endl;
+    }
+
+    return 0;
+}
+```
