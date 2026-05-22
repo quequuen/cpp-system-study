@@ -263,7 +263,7 @@ int main(int argc, char* argv[]) {
 
 ### `std::function`
 
-C++에서 함수처럼 동작하는 종류(일반 함수, 람다식, 함수 객체(Functor), 클래스의 멤버 함수)가 너무 많기 때문에 그 자체로 타입이 매우 복잡해서 다른 곳으로 전달하거나 변수에 저장하려면 공통된 규격이 필요함. 그 규격을 만들어 주는 것이 `std::function`임. 매개변수와 반환 타입만 같다면 무엇이든 담을 수 있음.
+C++에서 함수처럼 동작하는 종류(일반 함수, 람다식, 함수 객체(Functor), 클래스의 멤버 함수)가 너무 많기 때문에 그 자체로 타입이 매우 복잡해서 다른 곳으로 전달하거나 변수에 저장하려면 공통된 규격이 필요함. 그 규격을 만들어 주는 것이 `std::function`임. 매개변수와 반환 타입만 같다면 무엇이든 담을 수 있음. **함수 전용 인터페이스.**
 
 - `<functional>`
 - `std::function<반환타입(매개변수타입1, 매개변수타입2)>`
@@ -302,3 +302,49 @@ int main() {
     return 0;
 }
 ```
+
+- 내부 동작
+  타입 삭제(Type Erasure)와 소형 객체 최적화(Small Object Optimization, SOO).
+  - **타입 삭제 (Type Erasure)**
+    C++은 컴파일할 때 모든 변수의 크기와 타입을 명확히 알아야 한다. 하지만 람다식은 생성될 때마다 컴파일러가 내부적으로 고유한 클래스 타입을 새로 만듦. 즉, 모양이 같은 람다라도 타입이 전부 다름.
+    → `std::function`은 이러한 타입을 내부적으로 지워버리고 정해진 반환형과 정해진 매개변수라는 인터페이스만 보여줌.
+
+    ```cpp
+    template<typename T>
+    class std_function;
+
+    // void(int) 규격의 std::function 내부 내부 구조
+    class function_void_int {
+        // 모든 함수/람다를 대변할 추상 베이스 클래스 (인터페이스)
+        struct Invoker {
+            virtual void invoke(int) = 0;
+            virtual ~Invoker() = default;
+        };
+
+        // 실제 들어온 함수(람다)의 '진짜 타입'을 보관하는 템플릿 자식 클래스
+        template<typename T>
+        struct Holder : public Invoker {
+            T callable; // 진짜 람다나 함수 객체가 여기 저장됨!
+            Holder(T c) : callable(c) {}
+            void invoke(int x) override { callable(x); } // 가상 함수를 통해 호출
+        };
+
+        Invoker* invoker = nullptr; // 자식 객체를 가리킬 포인터
+
+    public:
+        template<typename T>
+        function_void_int(T c) {
+            // 내부적으로 진짜 타입을 숨긴 래퍼 객체를 힙(Heap)에 생성!
+            invoker = new Holder<T>(c);
+        }
+
+        void operator()(int x) {
+            invoker->invoke(x); // 가상 함수 호출: 여기서 성능 손실 발생
+        }
+
+        ~function_void_int() { delete invoker; }
+    };
+    ```
+
+    - `std::function`에 람다를 집어넣으면, 컴파일러는 그 람다 전용 `Holder<람다 타입>`을 만들어서 포인터(`Invoker*`)를 가리킴.
+    - 호출할 때는 가상 함수인 `invoke()`를 거쳐서 실행. 이 과정에서 진짜 타입은 감춰지기 때문에 **타입 삭제**임.
