@@ -46,6 +46,7 @@ add_executable(functions_03 basics/03_functions/main_03_func_03.cpp)
 add_executable(functions_04 basics/03_functions/main_03_func_04.cpp)
 add_executable(functions_05 basics/03_functions/main_03_func_05.cpp)
 add_executable(functions_06 basics/03_functions/main_03_func_06.cpp)
+add_executable(functions_07 basics/03_functions/main_07.cpp)
 add_executable(lambda basics/03_functions/lambda.cpp)
 
 # basics/04_pointers
