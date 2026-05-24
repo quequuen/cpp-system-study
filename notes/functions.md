@@ -304,7 +304,6 @@ int main() {
 ```
 
 - 내부 동작
-  타입 삭제(Type Erasure)와 소형 객체 최적화(Small Object Optimization, SOO).
   - **타입 삭제 (Type Erasure)**
     C++은 컴파일할 때 모든 변수의 크기와 타입을 명확히 알아야 한다. 하지만 람다식은 생성될 때마다 컴파일러가 내부적으로 고유한 클래스 타입을 새로 만듦. 즉, 모양이 같은 람다라도 타입이 전부 다름.
     → `std::function`은 이러한 타입을 내부적으로 지워버리고 정해진 반환형과 정해진 매개변수라는 인터페이스만 보여줌.
@@ -312,8 +311,10 @@ int main() {
     ```cpp
     template<typename T>
     class std_function;
+    // std_function이라는 이름의 켐플릿 클래스를 만들 거라는 예고
+    // 실제 구현부는 바로 아래 function_void_int
 
-    // void(int) 규격의 std::function 내부 내부 구조
+    // void(int) 규격의 std::function 내부 구조
     class function_void_int {
         // 모든 함수/람다를 대변할 추상 베이스 클래스 (인터페이스)
         struct Invoker {
@@ -325,7 +326,7 @@ int main() {
         template<typename T>
         struct Holder : public Invoker {
             T callable; // 진짜 람다나 함수 객체가 여기 저장됨
-            Holder(T c) : callable(c) {}
+            Holder(T c) : callable(c) {}    // 외부에서 받은 함수(c)를 내부 변수(callable)에 복사해서 집어넣는 생성자.
             void invoke(int x) override { callable(x); } // 가상 함수를 통해 호출
         };
 
@@ -338,8 +339,9 @@ int main() {
             invoker = new Holder<T>(c);
         }
 
+        // 이 규격 변수를 마치 일반 함수처럼 f(x); 형태로 괄호를 붙여서 실행할 수 있게 만들어주는 특수 문법 정의
         void operator()(int x) {
-            invoker->invoke(x); // 가상 함수 호출: 여기서 성능 손실 발생
+            invoker->invoke(x); // 가상 함수 호출: 여기서 성능 손실 발생. 바로 호출을 하는 것이 아닌 해당 포인터를 타고 들어가서 가상 함수를 찾아서 실행시키는 중간 단계를 거치기 때문
         }
 
         ~function_void_int() { delete invoker; }
@@ -347,6 +349,8 @@ int main() {
     ```
 
     - `std::function`에 람다를 집어넣으면, 컴파일러는 그 람다 전용 `Holder<람다 타입>`을 만들어서 포인터(`Invoker*`)를 가리킴.
+
+    `f(x)` 호출 → `f.operator()(x)` 실행 → `invoker->invoke(x)` 호출 → `Holder<람다_타입>::invoke(x)` 실행 (힙에 있는 진짜 함수에 도착) → `callable(x)` 실행 (진짜 함수 실행)
     - 호출할 때는 가상 함수인 `invoke()`를 거쳐서 실행. 이 과정에서 진짜 타입은 감춰지기 때문에 **타입 삭제**임.
 
   하지만 타입 삭제 때문에 `std::function`은 두 가지 치명적인 성능 비용을 지불해야 함.
