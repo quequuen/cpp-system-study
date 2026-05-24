@@ -324,7 +324,7 @@ int main() {
         // 실제 들어온 함수(람다)의 '진짜 타입'을 보관하는 템플릿 자식 클래스
         template<typename T>
         struct Holder : public Invoker {
-            T callable; // 진짜 람다나 함수 객체가 여기 저장됨!
+            T callable; // 진짜 람다나 함수 객체가 여기 저장됨
             Holder(T c) : callable(c) {}
             void invoke(int x) override { callable(x); } // 가상 함수를 통해 호출
         };
@@ -334,7 +334,7 @@ int main() {
     public:
         template<typename T>
         function_void_int(T c) {
-            // 내부적으로 진짜 타입을 숨긴 래퍼 객체를 힙(Heap)에 생성!
+            // 내부적으로 진짜 타입을 숨긴 래퍼 객체를 힙(Heap)에 생성
             invoker = new Holder<T>(c);
         }
 
@@ -355,3 +355,10 @@ int main() {
 
   `std::function`을 쓸 때마다 매번 느린 힙 할당을 해야 할 수는 없어서 SOO 방식을 사용.
   - **소형 객체 최적화 (Small Object Optimization, SOO)**
+    힙 할당은 기본적으로 느리기 때문에 가벼운 람다들은 힙 할당을 하지 않도록 하는 방식.
+    1. `std::function` 객체 내부에 약 16~32 바이트 정도의 작은 자체 임시 버퍼(배열)가 내장.
+    2. 만약 담으려는 람다식의 크기(캡처한 변수들의 총 크기)가 이 버퍼보다 작다면, `new`를 쓰지 않고 자체 버퍼 공간에 란다 데이터를 구겨 넣음. (인플레이스 생성)
+    3. 덕분에 크기가 작은 람다를 쓸 때는 메모리 할당 오버 헤드가 발생하지 않아 제법 빠르게 동작함.
+
+- 아주 빈번하게 호출되는 루프 내부나 그래픽스 연산 등에서는 `std::function` 대신 `auto`나 템플릿(`template<typename F>)을 사용해 컴파일 타임에 완벽히 인라인화시키는 것이 정석.
+- "사용하지 않는 것에 대해서는 대가를 치르지 않는다"는 C++의 철학이 아주 잘 드러남.
