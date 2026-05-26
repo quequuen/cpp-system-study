@@ -20,3 +20,54 @@
 
 - 장점: 여러 작업을 병렬로 처리하여 빠르게 처리할 수 있고 자원을 효율적으로 사용할 수 있음.
 - 단점: 자원을 공유하기 때문에 하나의 스레드에 문제가 생기면 프로세스 전체에 영향을 줄 수 있음. 설계가 복잡함.
+
+### 컨텍스트 스위칭 (Context Switching)
+
+CPU 코어는 한 번에 하나의 스레드만 처리할 수 있음. 그래서 스레드를 바꿀 때, 기존 하던 일의 상태를 저장하고 다음 상태를 불러오는 작업을 하는데 이를 컨텍스트 스위칭이라고 함. 하지만 이 작업이 너무 자주 일어나게 되면 컴퓨터가 쉽게 지침.
+
+### 동기화 (Synchronization)
+
+여러 스레드가 공용 변수를 건드릴 때 순서를 정리해주는 기술.
+
+### 교착 상태 (Deadlock)
+
+두 개 이상의 스레드가 서로 상대방의 자원이 풀리기만을 기다리며 무한히 대기하는 상태. 서로 양보하지 않아서 프로그램이 그 자리에 얼어붙어 버리는(Freeze) 현상.
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <mutex>
+
+std::mutex mtxA;
+std::mutex mtxB;
+// 한 자물쇠 당 하나만 잠글 수 있음.
+
+void worker1() {
+    mtxA.lock(); // A를 먼저 잠금
+    std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 잠시 대기 (강제로 lock 발생시키려고)
+    mtxB.lock(); // B를 잠그려고 보니 이미 worker2에서 사용 (무한 대기)
+
+    std::cout << "worker 1 업무 완료!" << std::endl;
+    mtxB.unlock();
+    mtxA.unlock();
+}
+
+void worker2() {
+    mtxB.lock(); // B를 먼저 잠금
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    mtxA.lock(); // A를 잠그려고 보니 이미 worker1에서 사용 (무한 대기)
+
+    std::cout << "worker2 업무 완료!" << std::endl;
+    mtxA.unlock();
+    mtxB.unlock();
+}
+```
+
+- `std::mutex`: Mutual Exclusion(상호 배제)의 약자로, 여러 스레드가 공유 자원에 동시에 접근하지 못하도록 막는 동기화 도구.
+- worker1이 A를 쥐고 B를 원함 → worker2이 B를 쥐고 A를 원함 → 프로그램은 이 지점에서 멈춰버리고 다음 코드로 넘어가지 못함. (deadlock 발생)
+- 교착 상태가 성립하는 4가지 조건
+  교착 상태는 다음 4가지 조건이 동시에 만족할 때만 발생. 역으로 말하면 이 중 하나라도 부수면 교착 상태를 예방할 수 있음.
+  - **상호 배제 (Mutual Exclusion)**: 한 번에 한 스레드만 자원을 사용 가능.
+  - **점유와 대기 (Hold and Wait)**: 자원 하나를 쥔 상태(`Hold`)에서 다른 자원을 달라고 기다림(`Wait`).
+  - **비선점 (No preemption)**: 다른 스레드가 쥐고 있는 자원을 강제로 뺏어올 수 없음.
+  - **순환 대기 (Circular Wait)**: 대기 관계가 원형 모양으로 꼬여있음 (A→B, B→A).
