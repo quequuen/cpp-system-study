@@ -142,3 +142,6 @@ add_executable(unordered_map_01 stl/unordered_map/main.cpp)
 
 # stl
 add_executable(iterator_01 stl/iterator.cpp)
+
+# concurrency/thread
+add_executable(thread_01 concurrency/thread/01_thread_basic.cpp)

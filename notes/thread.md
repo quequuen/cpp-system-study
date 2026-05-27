@@ -88,11 +88,11 @@ void worker2() {
   - `std::scoped_lock`
     위의 `std::lock_guard`를 따로 해줄 필요없이 함수가 끝날 때 알아서 해제를 해주는 방법. 알아서 해제해주기 때문에 가장 안전하고 가장 권장됨.
 
-```cpp
-void worker1(){
-    // mtxA와 mtxB를 안전하게 동시에 잠금 (순서 꼬임 방지)
-    std::scoped_lock lock(mtxA, mtxB);
+    ```cpp
+    void worker1(){
+        // mtxA와 mtxB를 안전하게 동시에 잠금 (순서 꼬임 방지)
+        std::scoped_lock lock(mtxA, mtxB);
 
-    // do something...
-} // 알아서 해제.
-```
+        // do something...
+    } // 알아서 해제
+    ```
