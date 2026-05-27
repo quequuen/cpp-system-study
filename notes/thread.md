@@ -71,3 +71,28 @@ void worker2() {
   - **점유와 대기 (Hold and Wait)**: 자원 하나를 쥔 상태(`Hold`)에서 다른 자원을 달라고 기다림(`Wait`).
   - **비선점 (No preemption)**: 다른 스레드가 쥐고 있는 자원을 강제로 뺏어올 수 없음.
   - **순환 대기 (Circular Wait)**: 대기 관계가 원형 모양으로 꼬여있음 (A→B, B→A).
+
+- 해결 방법
+  - `std::lock`
+    교착 상태는 한 마디로 잠그는 순서가 서로 달라서 발생. 그렇기 때문에 가장 쉽고 확실한 해결책은 lock의 순서를 모두 통일하는 것. 그래서 C++은 `std::lock`이라는 도구를 제공.
+
+    ```cpp
+    // worker 1, 2 내부에서 순서 상관없이 이렇게 쓰면 알아서 교착 상태를 피해 잠금.
+    std::lock(mtxA, mtxB);
+
+    // 해제도 안전하게 처리하기 위해 lock_guard와 조합.
+    std::lock_guard<std::mutex> lockA(mtxA, std::adopt_lock);
+    std::lock_guard<std::mutex> lockA(mtxB, std::adopt_lock);
+    ```
+
+  - `std::scoped_lock`
+    위의 `std::lock_guard`를 따로 해줄 필요없이 함수가 끝날 때 알아서 해제를 해주는 방법. 알아서 해제해주기 때문에 가장 안전하고 가장 권장됨.
+
+```cpp
+void worker1(){
+    // mtxA와 mtxB를 안전하게 동시에 잠금 (순서 꼬임 방지)
+    std::scoped_lock lock(mtxA, mtxB);
+
+    // do something...
+} // 알아서 해제.
+```
