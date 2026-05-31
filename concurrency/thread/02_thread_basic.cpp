@@ -10,6 +10,8 @@ int main() {
   std::thread t1 = std::thread([]() {
     std::cout << std::this_thread::get_id() << std::endl;
     while (true) {
+      std::cout << "서브 스레드" << std::endl;
+      // 운영체제의 비결정성에 의해 나올 수도 있고 안 나올 수도 있음.
     }
   });
 
@@ -19,6 +21,7 @@ int main() {
   // 전에 메인 스레드 종료
 
   t1.join();
+  std::cout << "메인 스레드 종료" << std::endl;
   // 이러면 오류 발생하지 않음. std::thread의 소멸자 규칙 같은 거임.
   // 하지만 강종 시키지 않으면 cpu 내 계속 구동. 활성상태에서 확인 가능.
 }

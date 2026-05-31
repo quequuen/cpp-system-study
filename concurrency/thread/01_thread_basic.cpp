@@ -24,7 +24,7 @@ int main() {
   // smartWorker();
   // 다른 스레드(나쁜 녀석)를 만들어서 자물쇠를 먼저 채워버림.
   std::thread badGuy([]() {
-    mtx.lock();  // 자물쇠를 먼저 선점!
+    mtx.lock();  // 자물쇠를 먼저 선점
     std::this_thread::sleep_for(
         std::chrono::seconds(5));  // 5초 동안 절대 안 놔줌
     mtx.unlock();
