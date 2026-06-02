@@ -176,3 +176,56 @@ std::thread에 연관된 C++의 규칙: **스레드에게 작업을 시키고 �
   - `std::thread::hardware_destuctive_interference_size`
     - 현재 내 컴퓨터의 CPU의 L1 캐시 라인(Cache Line)의 크기를 바이트 단위로 출력.
     - 멀티스레딩에서 아주 심오한 성능 저하 원인 중 하나인 거짓 공유(False Sharing)을 막기 위해 사용. 서로 다른 두 스레드가 같은 캐시 라인에 묶여 있는 변수들을 동시에 수정하면 성능이 비약적으로 떨어짐. 이 함수는 알려주는 크기만큼 변수 사이의 간격을 벌려놓는(`alignas`) 하드웨어 최적화를 할 때 사용.
+
+### `std::jthread` (Joinable thread)
+
+`std::thread`의 매번 해주어야 하는 `join()` 처리를 알아서 자동으로 해주고, 중간에 안전장치까지 마련된 스레드 객체.
+
+- 자동 합류(Auto-Join)
+  `std::thread`는 `join()`이나 `detach()`를 깜빡하면 프로그램이 강제 종료됨. 하지만 `std::jthread`는 프로그램 종료 시 소멸자가 알아서 join()을 호출하고 안전하게 끝냄.
+
+```cpp
+void test() {
+    // std::thread는 함수가 끝날 때 t가 사라지면서 프로그램이 터짐.
+    std::thread t([]() { /* 무한루프 */ });
+
+    // std::jthread는 함수가 끝날 때 jt가 사라지면서 자동으로 jt.join()을 해줌.
+    // 프로그램이 터지지 않고, 일꾼이 끝날 때까지 여기서 안전하게 기다려줌.
+    std::jthread jt([]() { /* 작업 */ });
+}
+```
+
+- 협력적 중단(Cooperative Interruption)
+  무한 루프를 돌고 있는 서브 스레드를 메인 스레드가 중간에 멈추게 하고 싶을 때, 기존에는 외부 변수를 조절하는 등 추가적인 코드가 필요했음. `std::jthread`는 중단 신호기(Stop Token)이라는 브레이크 장치를 내부에 기본 탑재함.
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+int main() {
+    // 람다식 매개변수에 'std::stop_token'을 적어주면 컴파일러가 신호기를 꽂아줌.
+    std::jthread jt([](std::stop_token token) {
+        // 메인에서 멈추라고 하기 전까지만 돌기
+        while (!token.stop_requested()) {
+            std::cout << "스레드 작업 중...\n";
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+        std::cout << "스레드 종료 \n";
+    });
+
+    std::this_thread::sleep_for(std::chrono::seconds(2)); // 2초 대기
+
+    // 메인 스레드가 그만하라고 명령함.
+    jt.request_stop();
+
+    return 0; // jt 소멸자가 자동으로 join()까지 호출.
+}
+```
+
+| 특징             | `std::thread`                               | `std::jthread`                               |
+| ---------------- | ------------------------------------------- | -------------------------------------------- |
+| 소멸자 동작      | 마무리 처리가 없으면 **프로그램 강제 종료** | 내부에서 알아서 **자동 `join()` 호출**       |
+| 중단 (취소) 가능 | 없음 (개발자가 수동으로 플래그 변수 구현)   | 내장된 **Stop Token**으로 안전하게 중단 가능 |
+| 안전성           | 낮음                                        | 높음 (자원 누수와 크래시를 원천 차단)        |
+| 사용 권장 버전   | C++11~17 프로젝트                           | C++20 이상 최신 프로젝트                     |
