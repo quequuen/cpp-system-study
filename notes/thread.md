@@ -41,6 +41,8 @@
   CPU 코어는 한 번에 하나의 스레드만 처리할 수 있음. 그래서 스레드를 바꿀 때, 기존 하던 일의 상태를 저장하고 다음 상태를 불러오는 작업을 하는데 이를 컨텍스트 스위칭이라고 함. 하지만 이 작업이 너무 자주 일어나게 되면 컴퓨터가 쉽게 지침.(컨텍스트 스위칭 오버헤드)
   - 컨텍스트 스위칭 오버헤드 (Context Switching Overhead)
     CPU 코어 개수는 정해져 있는데 스레드만 너무 많으면, 작업은 안 하고 스레드 교체(컨텍스트 스위칭)하는 데만 CPU 자원을 다 써버려서 오히려 프로그램이 느려짐. 이를 **스래싱(Thrashing)** 현상이라고 부름.
+    - 오버헤드(Overhead): 스레드가 바뀔 때 CPU 연산 자원이 낭비되는 '현상이나 비용' 그 자체를 뜻함.
+    - 스래싱(Thrashing): 가상 메모리 영역에서 주로 쓰는 단어로, 메모리가 부족해 하드디스크와 메모리 사이에 페이지 교체(`Page Swap`)가 너무 자주 일어나서 컴퓨터가 마비되는 상태를 뜻함.
 - 동기화 (Synchronization)
   여러 스레드가 공용 변수를 건드릴 때 순서를 정리해주는 기술.
 - 비결정성 (Non-determinism)
@@ -114,7 +116,7 @@ void worker2() {
 
     // 해제도 안전하게 처리하기 위해 lock_guard와 조합.
     std::lock_guard<std::mutex> lockA(mtxA, std::adopt_lock);
-    std::lock_guard<std::mutex> lockA(mtxB, std::adopt_lock);
+    std::lock_guard<std::mutex> lockB(mtxB, std::adopt_lock);
     ```
 
   - `std::scoped_lock`
@@ -159,7 +161,7 @@ std::thread에 연관된 C++의 규칙: **스레드에게 작업을 시키고 �
   `t1.join()`처럼 객체에 명령을 내리는 것이 아닌 실제 작업 중인 스레드 스스로에게 명령을 내리는 특수한 메서드.
   - `std::this_thread::get_id()`
     - 현재 이 코드를 실행하는 스레드의 고유 ID를 출력.
-  - `std::this_thread::slepp_for(시간)`
+  - `std::this_thread::sleep_for(시간)`
     - 작업 중인 스레드가 이 줄을 만나면 지정한 시간 동안 완전히 동작을 멈추고 수면 상태가 됨.
     - 너무 빠른 루프의 속도를 조절하거나, 동시성 타이밍을 강제로 꼬아서 테스트해 보고 싶을 때 애용.
   - `std::this_thread::sleep_until(시간_시점)`
@@ -184,44 +186,46 @@ std::thread에 연관된 C++의 규칙: **스레드에게 작업을 시키고 �
 - 자동 합류(Auto-Join)
   `std::thread`는 `join()`이나 `detach()`를 깜빡하면 프로그램이 강제 종료됨. 하지만 `std::jthread`는 프로그램 종료 시 소멸자가 알아서 join()을 호출하고 안전하게 끝냄.
 
-```cpp
-void test() {
-    // std::thread는 함수가 끝날 때 t가 사라지면서 프로그램이 터짐.
-    std::thread t([]() { /* 무한루프 */ });
+  ```cpp
+  void test() {
+      // std::thread는 함수가 끝날 때 t가 사라지면서 프로그램이 터짐.
+      std::thread t([]() { /* 무한루프 */ });
 
-    // std::jthread는 함수가 끝날 때 jt가 사라지면서 자동으로 jt.join()을 해줌.
-    // 프로그램이 터지지 않고, 일꾼이 끝날 때까지 여기서 안전하게 기다려줌.
-    std::jthread jt([]() { /* 작업 */ });
-}
-```
+      // std::jthread는 함수가 끝날 때 jt가 사라지면서 자동으로 jt.join()을 해줌.
+      // 프로그램이 터지지 않고, 일꾼이 끝날 때까지 여기서 안전하게 기다려줌.
+      std::jthread jt([]() { /* 작업 */ });
+  }
+  ```
 
 - 협력적 중단(Cooperative Interruption)
   무한 루프를 돌고 있는 서브 스레드를 메인 스레드가 중간에 멈추게 하고 싶을 때, 기존에는 외부 변수를 조절하는 등 추가적인 코드가 필요했음. `std::jthread`는 중단 신호기(Stop Token)이라는 브레이크 장치를 내부에 기본 탑재함.
 
-```cpp
-#include <iostream>
-#include <thread>
-#include <chrono>
+  ```cpp
+  #include <iostream>
+  #include <thread>
+  #include <chrono>
 
-int main() {
-    // 람다식 매개변수에 'std::stop_token'을 적어주면 컴파일러가 신호기를 꽂아줌.
-    std::jthread jt([](std::stop_token token) {
-        // 메인에서 멈추라고 하기 전까지만 돌기
-        while (!token.stop_requested()) {
-            std::cout << "스레드 작업 중...\n";
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        }
-        std::cout << "스레드 종료 \n";
-    });
+  int main() {
+      // 람다식 매개변수에 'std::stop_token'을 적어주면 컴파일러가 신호기를 꽂아줌.
+      std::jthread jt([](std::stop_token token) {
+          // 메인에서 멈추라고 하기 전까지만 돌기
+          while (!token.stop_requested()) {
+              std::cout << "스레드 작업 중...\n";
+              std::this_thread::sleep_for(std::chrono::milliseconds(500));
+          }
+          std::cout << "스레드 종료 \n";
+      });
 
-    std::this_thread::sleep_for(std::chrono::seconds(2)); // 2초 대기
+      std::this_thread::sleep_for(std::chrono::seconds(2)); // 2초 대기
 
-    // 메인 스레드가 그만하라고 명령함.
-    jt.request_stop();
+      // 메인 스레드가 그만하라고 명령함.
+      jt.request_stop();
 
-    return 0; // jt 소멸자가 자동으로 join()까지 호출.
-}
-```
+      return 0; // jt 소멸자가 자동으로 join()까지 호출.
+  }
+  ```
+
+  - `stop_token`과 일반 커스텀 매개변수를 함께 전달하려면, 반드시 `stop_token`을 함수의 **첫 번째 매개변수**로 선언해야 함. 컴파일러가 첫 번째 인자로만 토큰을 주입하도록 설계되어 있기 때문.
 
 | 특징             | `std::thread`                               | `std::jthread`                               |
 | ---------------- | ------------------------------------------- | -------------------------------------------- |
