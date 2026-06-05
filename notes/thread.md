@@ -283,3 +283,64 @@ std::thread에 연관된 C++의 규칙: **스레드에게 작업을 시키고 �
     return 0;
   }
   ```
+
+- 해결 방법
+  - `std::mutex`와 `std::scoped_lock` 사용
+    가장 범용적인 해결책. 공용 메모리를 한번에 딱 한 스레드만 들어올 수 있는 임계 구역(Critical Section)으로 만들고 자물쇠를 채워버리는 것.
+
+    ```cpp
+    #include <iostream>
+    #include <thread>
+    #include <mutex> // 자물쇠를 쓰기 위해 헤더 추가
+
+    int counter = 0;
+    std::mutex mtx; // 공용 자물쇠 생성
+
+    void increaseCounter() {
+        for (int i = 0; i < 100000; ++i) {
+          std::scoped_lock lock(mtx);
+            // C++20 표준에 맞춰 가장 안전한 scoped_lock을 채움.
+            // 한 루프가 끝날 때 자동으로 자물쇠가 풀림.
+
+            counter++;
+        } // 여기서 자물쇠 해제 (unlock)
+    }
+
+    int main() {
+        std::jthread t1(increaseCounter);
+        std::jthread t2(increaseCounter);
+
+        // jthread 소멸자가 알아서 join() 처리를 하므로 대기 코드는 생략
+        return 0;
+    }
+    ```
+
+    - 자물쇠를 잠그고 여는 행위(Context Switching 유발 및 대기 시간) 자체가 하드웨어 관점에서 꽤 무겁기 때문에 프로그램의 실행 속도가 자물쇠가 없을 때보다 눈에 띄게 느려짐.
+
+  - `std::atomic` 사용
+    공용 메모리의 3단계(Read → Modify → Write)를 쪼개지 않는 하나의 원자(Atomic) 연산으로 처리하라고 하는 것. 중간에 스케줄러가 끼어들 틈을 원천 차단.
+
+    ```cpp
+    #include <iostream>
+    #include <thread>
+    #include <atomic> // 원자적 변수를 쓰기 위해 헤더 추가
+
+    // int 대신 std::atomic<int> 로 선언
+    std::atomic<int> counter = 0;
+
+    void increaseCounter() {
+        for (int i = 0; i < 100000; ++i) {
+            // atomic 변수는 ++ 연산이 하드웨어 수준에서 (Atomic) 처리
+            counter++;
+        }
+    }
+
+    int main() {
+        std::jthread t1(increaseCounter);
+        std::jthread t2(increaseCounter);
+
+        return 0;
+    }
+    ```
+
+    - 소프트웨어적으로 스레드를 잠재우고 깨우는 자물쇠 방식이 아닌 CPU 하드웨어 기능(Lock 명령어)을 직접 쓰기 때문에, `mutex`보다 압도적으로 빠르고 효율적임. 이를 **락 프리(Lock-free) 프로그래밍**의 기초라고 함.
