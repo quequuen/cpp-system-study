@@ -376,3 +376,51 @@ std::thread에 연관된 C++의 규칙: **스레드에게 작업을 시키고 �
   - **우선순위 역전 (Priority Inversion)**: 중요하고 빠른 스레드가 일해야 하는데, 더 우선순위가 낮은 스레드가 자물쇠를 쥐고 놔주질 않아 시스템 전체가 먹통이 됨.
 
   **락 프리(Lock-free)의 핵심 철학**: 시스템 안의 어떤 스레드가 멈추거나(Crash) 잠들더라도, 최소한 다른 한 개 이상의 스레드는 아무 방해 없이 계속 앞으로 나아가며 일을 처리할 수 있도록 보장한다.
+
+- CAS(Compare-And-Swap, 비교 및 교환) 연산
+  자물쇠도 없이 레이스 컨디션을 막을 수 있는 락 프리의 핵심 연산.
+  - `std::atomic`의 `compare_exchange_strong()`
+  - CAS는 CPU에게 3단계 과정을 **물리적으로 절대 쪼개지지 않는 하나의 원자적(Atomic) 행동**으로 처리하라고 명령.
+    1. 현재 메모리에 있는 값이 예상한 값(Expected)랑 같은지 비교
+    2. **똑같다면**: 다른 스레드가 접근하지 않았다고 판단 → CAS가 예상한 새로운 값(Desired)으로 바꿈. (성공: `true` 반환)
+    3. **다르다면**: 다른 스레드가 먼저 와서 값을 바꿨다고 판단 → CAS가 예상한 값으로 바꾸지 않음. (실패: `false` 반환)
+
+- 락 프리 프로그래밍은 자물쇠를 채우는 대신, 원하는 결과가 나올 때까지 무한 루프를 돌며 계속 Retry 하는 구조.
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <atomic>
+
+std::atomic<int> counter = 0;
+
+void lockFreeIncrease() {
+    for (int i = 0; i < 100000; ++i) {
+        // 현재 counter에 저장된 값을 일단 안전하게 읽어옴 (예상 값)
+        int expected = counter.load();
+
+        // 만들고 싶은 새로운 값
+        int desired = expected + 1;
+
+        // CAS 연산 (락 프리의 핵심 루프)
+        // counter의 값이 내가 읽어왔던 expected와 여전히 똑같다면 desired로 교체
+        // 만약 그새 다른 스레드가 가로채서 counter를 올려버렸다면,
+        // 실패(false)하고 루프를 다시 돌며(Retry) 바뀐 counter 값을 새로 읽어와 재시도
+        while (!counter.compare_exchange_strong(expected, desired)) {
+            // 실패 시 expected는 현재 바뀐 최신 counter 값으로 자동 갱신
+            desired = expected + 1;
+        }
+    }
+}
+
+int main() {
+    std::jthread t1(lockFreeIncrease);
+    std::jthread t2(lockFreeIncrease);
+
+    t1.join();
+    t2.join();
+
+    std::cout << "락 프리 최종 값: " << counter.load() << std::endl; // 정확히 200000 출력
+    return 0;
+}
+```
