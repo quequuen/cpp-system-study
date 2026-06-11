@@ -468,3 +468,40 @@ int main() {
   ```
 
   값을 대입하고 싶다면 일반 `int` 값을 대입하거나, `store()`, `load()` 메서드를 사용.
+
+- 핵심 메서드
+  - `load()`와 `store()`
+    원자적으로 값을 읽고 쓰는 명시적인 함수.
+    - `load()`: 현재 변수에 저장된 값을 원자적으로 읽어옴.
+    - `store(val)`: 변수에 새로운 값을 원자적으로 저장함.
+
+    ```cpp
+    std::atomic<bool> is_running = false;
+
+    is_running.store(true); // 원자적 쓰기
+    if (is_running.load()) { // 원자적 읽기
+        // 실행 코드
+    }
+    ```
+
+  - `exchange(val)`
+    새로운 값으로 변경하는 동시에, 변경되기 직전의 원래 메모리에 있던 값을 한 번에(Atomic) 반환.
+
+    ```cpp
+    std::atomic<int> data = 100;
+    int old_value = data.exchange(200);
+    // 결과: data는 200이 되고, old_value에는 100이 저장됨
+    ```
+
+  - `compare_exchange_strong()` 및 `compare_exchange_weak()`
+    멀티스레딩 고급 기법인 락 프리 알고리즘의 핵심 함수. 하드웨어의 CAS(Compare-And-Swap) 명령어 수행.
+    **메모리의 현재 값이 내가 예상한 값(Expected)과 일치하면 새로운 값(Desired)으로 교체하고 `true`를 반환하며, 다르면 교체하지 않고 `false`를 반환한다.**
+
+    ```cpp
+    std::atomic<int> counter = 10;
+    int expected = 10;
+    int desired = 20;
+
+    // counter가 expected(10)와 같으므로 desired(20)로 바뀌고 true 반환
+    bool success = counter.compare_exchange_strong(expected, desired);
+    ```
