@@ -215,3 +215,66 @@ int main() {
 
 **스택 풀기(Stack Unwinding)와 소멸자**라는 C++ 하드웨어 규칙을 역이용해서, 내가 원하는 마감 코드를 무조건 실행하게 만드는 프로그래밍 기법.
 개발자가 직접 설계 해서 쓰는 일종의 자원 관리 패턴.
+
+```cpp
+#include <iostream>
+#include <functional>
+#include <stdexcept>
+
+// 어떤 마감 작업이든 담을 수 있는 범용 가드 클래스 정의
+class CustomGuard {
+private:
+    std::function<void()> cleanup_func; // 마감 작업을 저장할 상자
+
+public:
+    // 생성자: 실행할 마감 함수(람다) 보관
+    explicit CustomGuard(std::function<void()> func) : cleanup_func(func) {}
+
+    // 소멸자: 이 객체가 스택에서 사라질 때 보관하던 마감 함수를 무조건 실행
+    ~CustomGuard() {
+        if (cleanup_func) {
+            cleanup_func();
+        }
+    }
+
+    // 복사 방지 (가드가 복사되면 마감 작업이 중복 실행되므로 막아야 함)
+    CustomGuard(const CustomGuard&) = delete;
+    CustomGuard& operator=(const CustomGuard&) = delete;
+};
+```
+
+```cpp
+bool is_db_connected = false;
+
+void processDatabase() {
+    is_db_connected = true;
+    std::cout << "DB 연결 성공" << std::endl;
+
+    // 가드 객체를 스택에 생성하고, 마감 시 실행할 람다식을 주입
+    CustomGuard db_guard([]() {
+        is_db_connected = false;
+        std::cout << "가드 작동: DB 연결 안전하게 해제됨" << std::endl;
+    });
+
+    // 비즈니스 로직 수행 중 예외 발생 가정
+    std::cout << "데이터 쿼리 송수신 중..." << std::endl;
+    throw std::runtime_error("네트워크 단절 에러 발생!");
+
+    std::cout << "이 줄은 실행되지 않습니다." << std::endl;
+}
+
+int main() {
+    try {
+        processDatabase();
+    } catch (const std::exception& e) {
+        std::cout << "메인에서 에러 잡음: " << e.what() << std::endl;
+    }
+    return 0;
+}
+```
+
+1. `processDatabase()` 함수가 실행되면서 메인 메모리의 스택 영역에 `db_gaurd`라는 지역 변수(객체)가 생성.
+2. `throw` 명령어를 만나며 예외 인터럽트가 발생.
+3. CPU와 C++런타임은 현재 함수의 실행을 즉시 중단하고, 예외를 처리할 수 있는 `catch` 블록을 찾기 위해 상위 함수로 거슬러 올라가는 스택 풀기(Stack Unwinding)를 시작.
+4. 이 과정에서 `processDatabase()`의 스택 프레임을 파괴하기 직전, 스택에 남아있던 `db_gaurd` 객체의 소멸자(`~CustomGuard()`)를 강제 호출.
+5. 소멸자 내부에 있던 람다식이 실행되면서 `is_db_connected`가 `false`로 안전하게 바뀐 뒤, 함수가 완전히 폭파됨.
