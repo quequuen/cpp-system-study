@@ -514,4 +514,90 @@ int main() {
 
 ### 비동기 프로그래밍
 
-작업이 완료될 때까지 기다리지 않고 다음 코드를 실행하는 방식. 파일 읽기난 네트워크 요청 등 응답 대기 시간이 긴 작업이 있을 때 동기 방식을 사용하면 프로그램 전체가 멈추는(Blocking) 현상이 발생함. 비동기는 이 대기 시간 동안 다른 작업을 수행할 수 있게 해줌.
+작업이 완료될 때까지 기다리지 않고 다음 코드를 실행하는 방식. 파일 읽기나 네트워크 요청 등 응답 대기 시간이 긴 작업이 있을 때 동기 방식을 사용하면 프로그램 전체가 멈추는(Blocking) 현상이 발생함. 비동기는 이 대기 시간 동안 다른 작업을 수행할 수 있게 해줌.
+
+```cpp
+#include <chrono>
+#include <future>
+#include <iostream>
+#include <thread>
+
+using namespace std;
+
+// 커피 만드는 작업
+string makeCoffee() {
+  cout << "커피 제조 시작...\n";
+
+  this_thread::sleep_for(chrono::seconds(3));
+
+  cout << "커피 완성!\n";
+  return "아메리카노";
+}
+
+// 빵 굽는 작업
+string bakeBread() {
+  cout << "빵 굽기 시작...\n";
+
+  this_thread::sleep_for(chrono::seconds(5));
+
+  cout << "빵 완성!\n";
+  return "크루아상";
+}
+
+int main() {
+  cout << "카페에 입장했습니다.\n\n";
+
+  // 비동기 작업 시작
+
+  // 나중에 string을 받을 예정인 객체
+  // 3초가 지나면  결과값을 받음.
+  future<string> coffeeFuture = async(launch::async, makeCoffee);
+  // async 함수가 이 함수를 별도의 비동기 작업으로 실행하라는 명령을 함.
+  // 실제로는 메인 스레드 외 새로운 스레드를 할당받아 실행됨.
+  future<string> breadFuture = async(launch::async, bakeBread);
+
+  cout << "음료를 기다리는 동안 결제합니다.\n";
+
+  this_thread::sleep_for(chrono::seconds(1));
+
+  cout << "결제 완료!\n\n";
+
+  // 결과가 아직 없으면 기다리는 작업
+  // 이미 끝났다면 즉시 반환
+  string coffee = coffeeFuture.get();
+  string bread = breadFuture.get();
+
+  cout << "\n===== 주문 완료 =====\n";
+  cout << coffee << endl;
+  cout << bread << endl;
+}
+```
+
+### `std::future`
+
+그저 '결과를 저장하는 변수'가 아닌 **미래에 값이 준비될 것이라는 약속을 관리하는 객체**.
+
+위 코드에서 async 내부에서는
+
+```
+(main thread →) async() → 새로운 thread 생성 → makeCoffee() 실행 → 결과(string) 생성 → shared state에 저장 ← future가 바라봄
+```
+
+이런 동작을 하게 됨. 여기서 중요한 것은 **shared state**.
+
+- Shared state
+  future는 사실 값을 직접 들고 있는 것이 아님.
+
+  ```
+  future
+    ↓
+  ┌────────────────────┐
+  │ Shared State       │
+  │                    │
+  │ 결과가 준비됐는가?      │
+  │ 예외가 발생했는가?      │
+  │ 실제 결과(double)     │
+  └────────────────────┘
+  ```
+
+  위의 구조로 공유 메모리 공간을 가리킴. 그래서 처음에는 Shared state에 아무 값이 없는 상태였다가 몇 초 뒤 값이 생기는 것을 future가 가리키는 것.
