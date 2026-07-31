@@ -660,9 +660,9 @@ struct SharedState {
 };
 ```
 
-### `get()`
+### `future::get()`
 
-정확한 이름은 `std::future<T>::get()`. 다양한 일을 하지만 기본적으로 **Shared State에 저장된 결과를 가져오는 멤버 함수**다.
+`std::future<T>::get()`. 다양한 일을 하지만 기본적으로 **Shared State에 저장된 결과를 가져오는 멤버 함수.**
 
 ```cpp
 int work() {
@@ -678,3 +678,7 @@ int result = future.get();
 
 - 즉, `future.get()`은 **결과가 준비될 때까지 현재 스레드를 멈춤.** `get()`이 완료되면 `Shared State`와 `future`와의 연결을 끊음. 그래서 해당 작업 이후 `future.get()`을 다시 하게 되면 예외가 발생함. `get()`이 한 번만 가능한 이유는 `future`가 '결과를 받을 권리'를 나타내기 때문.
 - `get()`은 `future`의 템플릿 타입(<T>)을 그대로 반환.
+
+### `future::wait()`
+
+`std::future<T>::wait()`. **Shared State의 결과가 준비될 때까지 현재 스레드를 기다리게 하는 멤버 함수.** 값을 가져오지 않고 기다리기만 한다는 점이 `get()`과의 차이점.
