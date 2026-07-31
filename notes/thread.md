@@ -591,13 +591,12 @@ int main() {
   ```
   future
     ↓
-  ┌────────────────────┐
-  │ Shared State       │
-  │                    │
-  │ 결과가 준비됐는가?      │
-  │ 예외가 발생했는가?      │
-  │ 실제 결과(double)     │
-  └────────────────────┘
+  shared state
+    ├── 결과가 준비됐는가?
+    ├── 결과 값
+    ├── 예외가 발생했는가?
+    ├── 작업이 끝났는가?
+    └── 대기 중인 스레드가 있는가?
   ```
 
   위의 구조로 공유 메모리 공간을 가리킴. 그래서 처음에는 Shared state에 아무 값이 없는 상태였다가 몇 초 뒤 값이 생기는 것을 future가 가리키는 것.
@@ -639,3 +638,24 @@ return std::future<int>(state);
 ```
 
 따라서 async의 반환값은 '값'이 아닌 **'값을 기다리는 객체'**.
+
+### Shared state
+
+**공유 메모리 + 상태 정보.** 값만을 저장하는 공간이 아닌 비동기 작업 전체를 관리하는 객체. `std::async`를 하면 `std::future`가 값을 갖는 것이 아닌 이 `shared state` 내부에 값을 저장함. `std::future`는 그저 이 `shared state`를 가리키는 핸들(handle).
+
+```cpp
+template<typename T>
+struct SharedState {
+
+    T value;              // 결과값
+
+    bool ready;           // 준비됐는가
+
+    std::exception_ptr e; // 예외 발생 여부
+
+    std::mutex m;         // 동기화
+
+    std::condition_variable cv;
+
+};
+```
