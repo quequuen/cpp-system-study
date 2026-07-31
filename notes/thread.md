@@ -604,7 +604,7 @@ int main() {
 
 ### `std::async`
 
-스레드를 직접 손으로 만들고 관리하지 않고, 특정 함수를 비동기(백그라운드)로 실행시킨 뒤 그 '결과 값'을 나중에 받아오기 위해 사용하는 표준 함수. `future`를 만들어 주는 함수라고 생각하면 됨. 기존 `std::thread`는 반환 값 (`return`)을 직접 돌려줄 수 없어서 전역 변수나 매개변수 포인터/참조를 써야 했습니다. 하지만 `std::async`는 작업의 반환 값을 간편하게 받아올 수 있음.
+스레드를 직접 손으로 만들고 관리하지 않고, 특정 함수를 비동기(백그라운드)로 실행시킨 뒤 그 '결과 값'을 나중에 받아오기 위해 사용하는 표준 함수. `future`를 만들어 주는 함수라고 생각하면 됨. 기존 `std::thread`는 반환 값 (`return`)을 직접 돌려줄 수 없어서 전역 변수나 매개변수 포인터/참조를 써야 했습니다. 하지만 `std::async`는 작업의 반환 값을 간편하게 받아올 수 있음. 내부 구현은 완전히 같지는 않지만, `std::thread` + `std::future`로 이해하면 됨.
 
 - 함수 원형
 
@@ -615,3 +615,27 @@ async(F&& f, Args&&... args);
 ```
 
 → `std::async`는 원래부터 `future`를 반환하는 함수. 그렇기 때문에 보통 `auto f = std::async(work);`로 작성해도 컴파일 시 auto가 `std::future`로 치환됨.
+
+```cpp
+auto future = std::async(work);
+```
+
+↓
+
+```cpp
+// 1. shared state 생성
+SharedState<int>* state = new SharedState<int>();
+
+// 2. 새로운 스레드 시작
+thread([state] {
+    int value = work();
+    state->value = value;
+    state->ready = true;
+});
+
+// 3. shared state를 가리키는 future 반환
+// 실제 값은 shared state 내에 저장.
+return std::future<int>(state);
+```
+
+따라서 async의 반환값은 '값'이 아닌 **'값을 기다리는 객체'**.
