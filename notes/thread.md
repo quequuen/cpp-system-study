@@ -681,4 +681,45 @@ int result = future.get();
 
 ### `future::wait()`
 
-`std::future<T>::wait()`. **Shared State의 결과가 준비될 때까지 현재 스레드를 기다리게 하는 멤버 함수.** 값을 가져오지 않고 기다리기만 한다는 점이 `get()`과의 차이점.
+`std::future<T>::wait()`. **Shared State의 결과가 준비될 때까지 현재 스레드를 대기시키는 멤버 함수.** 값을 가져오지 않고 기다리기만 한다는 점이 `get()`과의 차이점.
+
+- 기본 구조
+
+```cpp
+void future<T>::wait() {
+    // 실제 구현이 아닌 개념적인 동작
+    while (!state->ready) {
+        // 결과가 준비될 때까지 대기
+    }
+}
+```
+
+실제로는 `busy waiting`('바쁜 대기', 반복문으로 Shared State의 상태를 계속 확인하는 방식)을 하지 않고 `condition_variable`(스레드를 잠재운 뒤 조건이 만족되면 깨우는 동기화 객체) 등을 사용해서 효율적으로 대기함.
+
+```cpp
+int work() {
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    return 100;
+}
+
+auto future = std::async(work);
+// 이 상태인 경우, auto가 std::future<int> 타입으로 추론됨.
+// future 객체는 Shared State를 참조함.
+
+future.wait();
+// wait()을 호출하게 될 경우
+// Shared State가 sleep_for로 인해 아직 work()가 종료되지 않았으므로 value: ?, readey: false 상태.
+// 그러므로 현재 스레드는 대기(Block) 상태가 됨.
+// 작업이 완료된 순간 Shared State의 상태는 value: 100, ready: true가 됨.
+// ready가 true가 되면 wait()이 반환. 하지만 여전히 future는 Shared State를 참조함. get과는 다르게 연결이 해제되지 않음.
+// get과는 다르게 결과를 소비(consume)하지 않기 때문.
+
+std::cout << "작업 완료\n";
+
+int value = future.get();
+// get()이 결과를 반환한 후 future와 Shared State의 연결이 해제된다.
+```
+
+- 결과를 바로 사용할 거라면 `get()`.
+- 결과는 아직 필요 없고 작업이 끝났는지만 확인하고 싶은 경우 `wait()`.
+- 위 코드에서는 `future.wait()`이 동기화(Synchronization) 역할을 함.
