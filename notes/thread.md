@@ -723,3 +723,26 @@ int value = future.get();
 - 결과를 바로 사용할 거라면 `get()`.
 - 결과는 아직 필요 없고 작업이 끝났는지만 확인하고 싶은 경우 `wait()`.
 - 위 코드에서는 `future.wait()`이 동기화(Synchronization) 역할을 함.
+- `wait()`
+
+  ```cpp
+  future.wait();
+  ```
+
+  결과가 준비될 때까지 무한히 기다림.
+
+- `wait_for()`
+
+  ```cpp
+  future.wait_for(std::chrono::seconds(3));
+  ```
+
+  최대 3초 기다림. 3초 안에 끝나면 바로 반환하고, 끝나지 않으면 시간 초과 상태를 반환.
+
+- `wait_until()`
+
+  ```cpp
+  future.wait_until(deadline);
+  ```
+
+  특정 시간까지 기다림.
