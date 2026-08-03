@@ -746,3 +746,38 @@ int value = future.get();
   ```
 
   특정 시간까지 기다림.
+
+### `std::promise`
+
+**Shared State에 결과(또는 예외)를 저장하는 객체**이다. 비동기 작업의 결과를 전달하는 객체. 결과를 받아오는 객체 `future`와는 반대.
+
+```cpp
+Producer                  Consumer
+
+promise   ─────────────►   future
+   │                          ▲
+   │                          │
+   ▼                          │
+  Shared State────────────────┘
+```
+
+- `promise` → 값을 저장.
+- `future` → 값을 추출.
+
+```cpp
+#include <future>
+#include <iostream>
+
+int main() {
+
+    std::promise<int> promise;  // promise 생성
+
+    std::future<int> future = promise.get_future();   // future 생성
+    // 여기서 둘은 같은 Shared State를 보게 됨.
+
+    promise.set_value(100);   // 값 저장
+
+    std::cout << future.get();    // 값 추출
+
+}
+```
