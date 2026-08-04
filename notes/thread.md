@@ -816,3 +816,56 @@ int main()
 - `std::promise`는 **복사가 금지(copy deleted)** 되어 있기 때문에 `std::move`를 사용해 소유권을 이전. 복사를 허용하게 되면 어떤 promise가 Shared State에 값을 넣어야 하는지 불분명해짐.
 
 → `async`는 이 promise/future 과정을 라이브러리가 자동으로 처리해 주는 **고수준 인터페이스**. 구현은 표준 라이브러리마다 다를 수 있지만, 동작 구조는 promise/future 모델과 매우 유사함.
+
+### `std::packaged_task`
+
+호출 가능한 객체(함수, 람다 등)를 감싸고, 실행 결과를 Shared State에 저장하는 객체. 쉽게 `함수 + Promise`라고 이해하면 됨.
+
+```cpp
+#include <future>
+#include <iostream>
+
+int work() {
+    return 100;
+}
+
+int main() {
+
+    std::packaged_task<int()> task(work);
+    // 생성과 동시에 work() 함수를 task 객체 안에 넣음.
+    // 생성자가 work 함수를 task 객체 안에 저장.
+
+    auto future = task.get_future();
+    // future와 연결.
+
+    task();
+    // 함수 호출 연산자 operator()를 호출해 작업 실행.
+
+    std::cout << future.get();
+}
+```
+
+- `set_value()`라는 메소드를 사용해 Shared State에 값을 저장하는 `promise`와는 다르게 자동으로 Shared State에 값을 저장.
+
+- 개념적 구조
+
+  ```cpp
+  class packaged_task {
+
+      int (*func)();
+
+  public:
+
+      packaged_task(int(*f)()) {
+          func = f;
+      }
+
+      void operator()() {
+          int result = func();
+
+          // Shared State 저장
+      }
+  };
+  ```
+
+  - 바로 thread를 생성하는 `async`와는 다르게 thread를 생성하지 않고 메인 스레드에서 작업함. 작업 자체를 저장해 작업을 즉시 실행하지 않고, 원하는 시점에 실행할 수 있음.
