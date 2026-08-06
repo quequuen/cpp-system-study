@@ -696,10 +696,14 @@ int value = future.get();
 - `wait_for()`
 
   ```cpp
-  future.wait_for(std::chrono::seconds(3));
+  while (future.wait_for(std::chrono::milliseconds(100))
+       != std::future_status::ready)
+  {
+    std::cout << "아직 작업 중...\n";
+  }
   ```
 
-  최대 3초 기다림. 3초 안에 끝나면 바로 반환하고, 끝나지 않으면 시간 초과 상태를 반환.
+  일정 시간 기다림. 일정 시간 안에 끝나면 바로 `ready`를 반환하고, 끝나지 않으면 `timeout` 시간 초과 상태를 반환. 위처럼 사용하게 되면 `0.1초 기다림` → `안 끝남` → `"아직 작업 중..."` → `다시 0.1초 기다림` → `안 끝남` → `"아직 작업 중..."`을 반복.
 
 - `wait_until()`
 
