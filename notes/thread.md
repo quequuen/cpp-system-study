@@ -601,44 +601,6 @@ int main() {
 
   위의 구조로 공유 메모리 공간을 가리킴. 그래서 처음에는 Shared state에 아무 값이 없는 상태였다가 몇 초 뒤 값이 생기는 것을 future가 가리키는 것.
 
-### `std::async`
-
-스레드를 직접 손으로 만들고 관리하지 않고, 특정 함수를 비동기(백그라운드)로 실행시킨 뒤 그 '결과 값'을 나중에 받아오기 위해 사용하는 표준 함수. `future`를 만들어 주는 함수라고 생각하면 됨. 기존 `std::thread`는 반환 값 (`return`)을 직접 돌려줄 수 없어서 전역 변수나 매개변수 포인터/참조를 써야 했습니다. 하지만 `std::async`는 작업의 반환 값을 간편하게 받아올 수 있음. 내부 구현은 완전히 같지는 않지만, `std::thread` + `std::future`로 이해하면 됨.
-
-- 함수 원형
-
-```cpp
-template<class F, class... Args>
-std::future<ReturnType>
-async(F&& f, Args&&... args);
-```
-
-→ `std::async`는 원래부터 `future`를 반환하는 함수. 그렇기 때문에 보통 `auto f = std::async(work);`로 작성해도 컴파일 시 auto가 `std::future`로 치환됨.
-
-```cpp
-auto future = std::async(work);
-```
-
-↓
-
-```cpp
-// 1. shared state 생성
-SharedState<int>* state = new SharedState<int>();
-
-// 2. 새로운 스레드 시작
-thread([state] {
-    int value = work();
-    state->value = value;
-    state->ready = true;
-});
-
-// 3. shared state를 가리키는 future 반환
-// 실제 값은 shared state 내에 저장.
-return std::future<int>(state);
-```
-
-따라서 async의 반환값은 '값'이 아닌 **'값을 기다리는 객체'**.
-
 ### Shared state
 
 **공유 메모리 + 상태 정보.** 값만을 저장하는 공간이 아닌 비동기 작업 전체를 관리하는 객체. `std::async`를 하면 `std::future`가 값을 갖는 것이 아닌 이 `shared state` 내부에 값을 저장함. `std::future`는 그저 이 `shared state`를 가리키는 핸들(handle).
@@ -869,3 +831,73 @@ int main() {
   ```
 
   - 바로 thread를 생성하는 `async`와는 다르게 thread를 생성하지 않고 메인 스레드에서 작업함. 작업 자체를 저장해 작업을 즉시 실행하지 않고, 원하는 시점에 실행할 수 있음.
+
+### `std::async`
+
+스레드를 직접 손으로 만들고 관리하지 않고, 특정 함수를 비동기(백그라운드)로 실행시킨 뒤 그 '결과 값'을 나중에 받아오기 위해 사용하는 표준 함수. `future`를 만들어 주는 함수라고 생각하면 됨. 기존 `std::thread`는 반환 값 (`return`)을 직접 돌려줄 수 없어서 전역 변수나 매개변수 포인터/참조를 써야 했습니다. 하지만 `std::async`는 작업의 반환 값을 간편하게 받아올 수 있음. 내부 구현은 완전히 같지는 않지만, `std::thread` + `std::package_task`로 이해하면 됨.
+
+- 함수 원형
+
+```cpp
+template<class F, class... Args>
+std::future<ReturnType>
+async(F&& f, Args&&... args);
+```
+
+→ `std::async`는 원래부터 `future`를 반환하는 함수. 그렇기 때문에 보통 `auto f = std::async(work);`로 작성해도 컴파일 시 auto가 `std::future`로 치환됨.
+
+```cpp
+auto future = std::async(work);
+```
+
+↓
+
+```cpp
+// 1. shared state 생성
+SharedState<int>* state = new SharedState<int>();
+
+// 2. 새로운 스레드 시작
+thread([state] {
+    int value = work();
+    state->value = value;
+    state->ready = true;
+});
+
+// 3. shared state를 가리키는 future 반환
+// 실제 값은 shared state 내에 저장.
+return std::future<int>(state);
+```
+
+따라서 async의 반환값은 '값'이 아닌 **'값을 기다리는 객체'**.
+
+- `Launch Policy`(실행 정책)
+  `std::async`가 비동기 작업을 어떤 방식으로 실행할지를 결정하는 정책.
+  `std::async(...)`를 호출했을 때 새로운 스레드 생성 여부, 즉시 실행 여부를 결정.
+  - `std::launch::async`: 즉시 새로운 스레드를 만들어 작업을 실행.
+  - `std::launch::deferred`: 작업을 즉시 실행하지 않고, `future.get()` 또는 `future.wait()`가 호출될 때 현재 스레드에서 실행.
+
+    ```cpp
+    int work()
+    {
+        std::cout << "Work\n";
+        return 100;
+    }
+
+    int main()
+    {
+        auto future =
+            std::async(std::launch::deferred, work);
+
+        std::cout << "Main\n";
+
+        future.get();
+        // 이때 work() 실행.
+    }
+    ```
+
+    ```
+    Main
+    Work
+    ```
+
+    - `wait()`도 `deferred`라면 작업을 실행시켜서 보통 `wait_for()`를 사용함.
