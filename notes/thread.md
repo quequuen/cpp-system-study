@@ -780,6 +780,7 @@ int main()
 ```
 
 - `std::promise`는 **복사가 금지(copy deleted)** 되어 있기 때문에 `std::move`를 사용해 소유권을 이전. 복사를 허용하게 되면 어떤 promise가 Shared State에 값을 넣어야 하는지 불분명해짐.
+  - [Move Semantics](./smart_pointers.md#무브시맨틱)
 
 → `async`는 이 promise/future 과정을 라이브러리가 자동으로 처리해 주는 **고수준 인터페이스**. 구현은 표준 라이브러리마다 다를 수 있지만, 동작 구조는 promise/future 모델과 매우 유사함.
 
