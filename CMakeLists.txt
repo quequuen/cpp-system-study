@@ -149,3 +149,7 @@ add_executable(thread_02 concurrency/thread/02_thread_basic.cpp)
 add_executable(jthread_01 concurrency/thread/jthread_basic.cpp)
 add_executable(race_condition_01 concurrency/thread/race_condition.cpp)
 add_executable(async_01 concurrency/thread/asynchronous_programming.cpp)
+
+# concurrency/mutex
+add_executable(no_mutex concurrency/mutex/no_mutex.cpp)
+add_executable(mutex concurrency/mutex/mutex.cpp)
