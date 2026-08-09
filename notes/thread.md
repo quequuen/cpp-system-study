@@ -224,7 +224,24 @@ std::thread에 연관된 C++의 규칙: **스레드에게 작업을 시키고 �
   1. `std::mutex`와 `std::scoped_lock` 사용
   2. `std::atomic` 사용
 
-### `std::mutex`와 `std::scoped_lock`
+### `Critical Section`
+
+여러 스레드가 동시에 접근하면 문제가 발생할 수 있어서, 한 번에 하나의 스레드만 실행하도록 보호해야 하는 코드 영역. `mutex`와 서로 다른 개념이며 `mutex`는 **그 영역에 한 번에 하나만 들어가도록 하는 자물쇠**를 의미하고, `Critical Section`은 **보호해야 하는 코드 영역**을 의미함.
+아래 `std::mutex` 예시
+
+```
+Thread 1 ── lock ──→ [ Critical Section ] ── unlock ──→
+                         counter++
+
+Thread 2 ── lock ──→        대기
+                              ↓
+                      Thread 1이 unlock
+                              ↓
+                     [ Critical Section ]
+                         counter++
+```
+
+### `std::mutex`
 
 `Race Condition`의 가장 범용적인 해결책. 공용 메모리를 한번에 딱 한 스레드만 들어올 수 있는 임계 구역(`Critical Section`)으로 만들고 자물쇠를 채워버리는 것.
 
@@ -242,7 +259,7 @@ void increaseCounter() {
         // C++20 표준에 맞춰 가장 안전한 scoped_lock을 채움.
         // 한 루프가 끝날 때 자동으로 자물쇠가 풀림.
 
-        counter++;
+      counter++;
     } // 여기서 자물쇠 해제 (unlock)
 }
 
