@@ -241,6 +241,14 @@ Thread 2 ── lock ──→        대기
                          counter++
 ```
 
+### `Lock`
+
+`Critical Section`에 한 번에 하나의 스레드만 접근하도록 제한하는 동작.
+
+```
+Lock → [ Critical Section ] → Unlock
+```
+
 ### `std::mutex`
 
 `Race Condition`의 가장 범용적인 해결책. 공용 메모리를 한번에 딱 한 스레드만 들어올 수 있는 임계 구역(`Critical Section`)으로 만들고 자물쇠를 채워버리는 것.
