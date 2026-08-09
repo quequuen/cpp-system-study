@@ -31,106 +31,6 @@
 - 프로세스와 스레드의 비용 차이
   스레드는 프로세스보다 생성하고 전환(Context Switching)하는 비용이 압도적으로 저렴함. **새 프로세스를 만들려면 메모리 공간을 통째로 새로 파야 하지만, 스레드는 프로세스가 가진 방(Heap, Data)을 그냥 같이 쓰면서 몸만 들어가면 되기 때문.** (멀티 프로세스보다 멀티 스레드를 선호하는 이유)
 
-### **멀티 스레드 (Multi-thread)**
-
-하나의 프로세스 안에 여러 개의 스레드를 만들어 여러 작업을 동시에 처리하는 방식.
-
-- 장점: 여러 작업을 병렬로 처리하여 빠르게 처리할 수 있고 자원을 효율적으로 사용할 수 있음.
-- 단점: 자원을 공유하기 때문에 하나의 스레드에 문제가 생기면 프로세스 전체에 영향을 줄 수 있음. 설계가 복잡함.
-- 컨텍스트 스위칭 (Context Switching)
-  CPU 코어는 한 번에 하나의 스레드만 처리할 수 있음. 그래서 스레드를 바꿀 때, 기존 하던 일의 상태를 저장하고 다음 상태를 불러오는 작업을 하는데 이를 컨텍스트 스위칭이라고 함. 하지만 이 작업이 너무 자주 일어나게 되면 컴퓨터가 쉽게 지침.(컨텍스트 스위칭 오버헤드)
-  - 컨텍스트 스위칭 오버헤드 (Context Switching Overhead)
-    CPU 코어 개수는 정해져 있는데 스레드만 너무 많으면, 작업은 안 하고 스레드 교체(컨텍스트 스위칭)하는 데만 CPU 자원을 다 써버려서 오히려 프로그램이 느려짐. 이를 **스래싱(Thrashing)** 현상이라고 부름.
-    - 오버헤드(Overhead): 스레드가 바뀔 때 CPU 연산 자원이 낭비되는 '현상이나 비용' 그 자체를 뜻함.
-    - 스래싱(Thrashing): 가상 메모리 영역에서 주로 쓰는 단어로, 메모리가 부족해 하드디스크와 메모리 사이에 페이지 교체(`Page Swap`)가 너무 자주 일어나서 컴퓨터가 마비되는 상태를 뜻함.
-- 동기화 (Synchronization)
-  여러 스레드가 공용 변수를 건드릴 때 순서를 정리해주는 기술.
-- 비결정성 (Non-determinism)
-  사실 스레드들의 실행 순서는 코딩한 순서대로 가지 않고, 운영체제(OS)의 스케줄러 마음대로 결정됨. 이 때문에 똑같은 코드를 돌려도 실행될 때마다 결과나 출력 순서가 바뀔 수 있어 디버깅이 매우 까다로움.
-  - 비결정성의 이유: **선점형 스케줄링(Preemptive Scheduling)**
-    - 주체: 운영체제(OS)의 스케줄러(Scheduler)
-      컴퓨터의 한정된 자원(CPU 코어)을 효율적으로 활용하기 위해 운영체제가 코딩한 순서대로 가지 않는 것.
-    1. 시분할(Time Sharing)과 선점(Preemption)
-       코드로 스레드 3개(`t1`, `t2`, `t3`)를 만들어서 동시에 실행하라고 명령하면, CPU 코어 개수보다 스레드가 보통 훨씬 많기 때문에 스케줄러가 아주 짧은 시간 단위로 쪼개서 스레드에세 CPU를 번갈아 쥐여줌. 이걸 **시분할**이라고 함.
-       이때 운영체제가 어떤 스레드가 CPU를 잡고 작업을 하고 있더라고 정해진 시간(Time Slice)이 지나면 **운영체제가 강제로 CPU를 뺏어서 다음 스레드에게 넘겨주는 게 선점형**이라는 규칙임.
-    2. I/O 블로킹
-       만약 스레드 A가 작업을 하다가 '네트워크에서 데이터 받아오기'나 '하드디스크에서 파일 읽기' 같은 작업(I/O 작업)을 만나면 컴퓨터 입장에서 CPU 연산 속도에 비해 인터넷이나 디스크의 속도는 굉장히 느림.
-       그렇기 때문에 운영체제의 스케줄러가 판단해 스레드 A가 데이터를 기다리느라 대기 상태(`Blocked`) 경우, 그 시간동안 CPU를 스레드 B에게 줌.
-    3. 스케줄러의 복잡한 알고리즘
-       스케줄러는 단순히 차례대로 순찰을 도는 게 아니라, 컴퓨터 전체의 효율을 위해 아주 복잡한 계산을 함.
-       - **우선순위(Priority)**: 지금 당장 화면을 그려야 하는 스레드나 마우스 입력을 받아야 하는 스레드에게 CPU를 우선적으로 밀어줌.
-       - **기아 상태(Starvation) 방지**: 우선순위가 낮은 스레드가 너무 오랫동안 작업을 하지 못하고 있으면(`Starvation`), 스케줄러가 일시적으로 순서를 앞당겨주기도 함.
-
-    결국 컴퓨터 내부의 상황(지금 실행 중인 다른 프로그램, 마우스 움직임, 네트워크 상태 등)이 매 순간 다르기 때문에, 스케줄러가 내리는 최적의 판단도 매번 달라짐. 그래서 똑같은 코드를 실행해도 실행할 때마다 스레드의 출력 순서가 뒤바뀌는 것.
-
-### 교착 상태 (Deadlock)
-
-두 개 이상의 스레드가 서로 상대방의 자원이 풀리기만을 기다리며 무한히 대기하는 상태. 서로 양보하지 않아서 프로그램이 그 자리에 얼어붙어 버리는(Freeze) 현상.
-
-```cpp
-#include <iostream>
-#include <thread>
-#include <mutex>
-
-std::mutex mtxA;
-std::mutex mtxB;
-// 한 자물쇠 당 하나만 잠글 수 있음.
-
-void worker1() {
-    mtxA.lock(); // A를 먼저 잠금
-    std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 잠시 대기 (강제로 lock 발생시키려고)
-    mtxB.lock(); // B를 잠그려고 보니 이미 worker2에서 사용 (무한 대기)
-
-    std::cout << "worker 1 업무 완료!" << std::endl;
-    mtxB.unlock();
-    mtxA.unlock();
-}
-
-void worker2() {
-    mtxB.lock(); // B를 먼저 잠금
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    mtxA.lock(); // A를 잠그려고 보니 이미 worker1에서 사용 (무한 대기)
-
-    std::cout << "worker2 업무 완료!" << std::endl;
-    mtxA.unlock();
-    mtxB.unlock();
-}
-```
-
-- `std::mutex`: Mutual Exclusion(상호 배제)의 약자로, 여러 스레드가 공유 자원에 동시에 접근하지 못하도록 막는 동기화 도구.
-- worker1이 A를 쥐고 B를 원함 → worker2이 B를 쥐고 A를 원함 → 프로그램은 이 지점에서 멈춰버리고 다음 코드로 넘어가지 못함. (deadlock 발생)
-- 교착 상태가 성립하는 4가지 조건
-  교착 상태는 다음 4가지 조건이 동시에 만족할 때만 발생. 역으로 말하면 이 중 하나라도 부수면 교착 상태를 예방할 수 있음.
-  - **상호 배제 (Mutual Exclusion)**: 한 번에 한 스레드만 자원을 사용 가능.
-  - **점유와 대기 (Hold and Wait)**: 자원 하나를 쥔 상태(`Hold`)에서 다른 자원을 달라고 기다림(`Wait`).
-  - **비선점 (No preemption)**: 다른 스레드가 쥐고 있는 자원을 강제로 뺏어올 수 없음.
-  - **순환 대기 (Circular Wait)**: 대기 관계가 원형 모양으로 꼬여있음 (A→B, B→A).
-
-- 해결 방법
-  - `std::lock`
-    교착 상태는 한 마디로 잠그는 순서가 서로 달라서 발생. 그렇기 때문에 가장 쉽고 확실한 해결책은 lock의 순서를 모두 통일하는 것. 그래서 C++은 `std::lock`이라는 도구를 제공.
-
-    ```cpp
-    // worker 1, 2 내부에서 순서 상관없이 이렇게 쓰면 알아서 교착 상태를 피해 잠금.
-    std::lock(mtxA, mtxB);
-
-    // 해제도 안전하게 처리하기 위해 lock_guard와 조합.
-    std::lock_guard<std::mutex> lockA(mtxA, std::adopt_lock);
-    std::lock_guard<std::mutex> lockB(mtxB, std::adopt_lock);
-    ```
-
-  - `std::scoped_lock`
-    위의 `std::lock_guard`를 따로 해줄 필요없이 함수가 끝날 때 알아서 해제를 해주는 방법. 알아서 해제해주기 때문에 가장 안전하고 가장 권장됨.
-
-    ```cpp
-    void worker1(){
-        // mtxA와 mtxB를 안전하게 동시에 잠금 (순서 꼬임 방지)
-        std::scoped_lock lock(mtxA, mtxB);
-
-        // do something...
-    } // 알아서 해제
-    ```
-
 ### `std::thread`
 
 OS의 실제 스레드를 제어하기 위한 C++의 클래스. 클래스라서 객체일 뿐임. 운영체제가 실제로 돌리는 스레드가 아님.
@@ -237,6 +137,38 @@ std::thread에 연관된 C++의 규칙: **스레드에게 작업을 시키고 �
 - **트러블슈팅: jthread를 썼는데 최종 값이 0이 나오는 이유**
   `std::jthread`가 자동으로 `join()`을 해주는 시점은 `main` 함수의 중괄호(`}`)가 완전히 닫히는 소멸 시점임. 따라서 그보다 위에 있는 `std::cout` 출력문은 서브 스레드들이 채 일을 시작하기도 전에 실행되므로 `0`이 찍히게 됨. 이를 해결하려면 출력문 전에 명시적으로 `t1.join()`을 호출해 순서를 보장해야 함. [트러블 슈팅 예시](../concurrency/thread/race_condition.cpp)
 
+### **멀티 스레드 (Multi-thread)**
+
+하나의 프로세스 안에 여러 개의 스레드를 만들어 여러 작업을 동시에 처리하는 방식.
+
+- 장점: 여러 작업을 병렬로 처리하여 빠르게 처리할 수 있고 자원을 효율적으로 사용할 수 있음.
+- 단점: 자원을 공유하기 때문에 하나의 스레드에 문제가 생기면 프로세스 전체에 영향을 줄 수 있음. 설계가 복잡함.
+- 컨텍스트 스위칭 (Context Switching)
+  CPU 코어는 한 번에 하나의 스레드만 처리할 수 있음. 그래서 스레드를 바꿀 때, 기존 하던 일의 상태를 저장하고 다음 상태를 불러오는 작업을 하는데 이를 컨텍스트 스위칭이라고 함. 하지만 이 작업이 너무 자주 일어나게 되면 컴퓨터가 쉽게 지침.(컨텍스트 스위칭 오버헤드)
+  - 컨텍스트 스위칭 오버헤드 (Context Switching Overhead)
+    CPU 코어 개수는 정해져 있는데 스레드만 너무 많으면, 작업은 안 하고 스레드 교체(컨텍스트 스위칭)하는 데만 CPU 자원을 다 써버려서 오히려 프로그램이 느려짐. 이를 **스래싱(Thrashing)** 현상이라고 부름.
+    - 오버헤드(Overhead): 스레드가 바뀔 때 CPU 연산 자원이 낭비되는 '현상이나 비용' 그 자체를 뜻함.
+    - 스래싱(Thrashing): 가상 메모리 영역에서 주로 쓰는 단어로, 메모리가 부족해 하드디스크와 메모리 사이에 페이지 교체(`Page Swap`)가 너무 자주 일어나서 컴퓨터가 마비되는 상태를 뜻함.
+- 동기화 (Synchronization)
+  여러 스레드가 공용 변수를 건드릴 때 순서를 정리해주는 기술.
+- 비결정성 (Non-determinism)
+  사실 스레드들의 실행 순서는 코딩한 순서대로 가지 않고, 운영체제(OS)의 스케줄러 마음대로 결정됨. 이 때문에 똑같은 코드를 돌려도 실행될 때마다 결과나 출력 순서가 바뀔 수 있어 디버깅이 매우 까다로움.
+  - 비결정성의 이유: **선점형 스케줄링(Preemptive Scheduling)**
+    - 주체: 운영체제(OS)의 스케줄러(Scheduler)
+      컴퓨터의 한정된 자원(CPU 코어)을 효율적으로 활용하기 위해 운영체제가 코딩한 순서대로 가지 않는 것.
+    1. 시분할(Time Sharing)과 선점(Preemption)
+       코드로 스레드 3개(`t1`, `t2`, `t3`)를 만들어서 동시에 실행하라고 명령하면, CPU 코어 개수보다 스레드가 보통 훨씬 많기 때문에 스케줄러가 아주 짧은 시간 단위로 쪼개서 스레드에세 CPU를 번갈아 쥐여줌. 이걸 **시분할**이라고 함.
+       이때 운영체제가 어떤 스레드가 CPU를 잡고 작업을 하고 있더라고 정해진 시간(Time Slice)이 지나면 **운영체제가 강제로 CPU를 뺏어서 다음 스레드에게 넘겨주는 게 선점형**이라는 규칙임.
+    2. I/O 블로킹
+       만약 스레드 A가 작업을 하다가 '네트워크에서 데이터 받아오기'나 '하드디스크에서 파일 읽기' 같은 작업(I/O 작업)을 만나면 컴퓨터 입장에서 CPU 연산 속도에 비해 인터넷이나 디스크의 속도는 굉장히 느림.
+       그렇기 때문에 운영체제의 스케줄러가 판단해 스레드 A가 데이터를 기다리느라 대기 상태(`Blocked`) 경우, 그 시간동안 CPU를 스레드 B에게 줌.
+    3. 스케줄러의 복잡한 알고리즘
+       스케줄러는 단순히 차례대로 순찰을 도는 게 아니라, 컴퓨터 전체의 효율을 위해 아주 복잡한 계산을 함.
+       - **우선순위(Priority)**: 지금 당장 화면을 그려야 하는 스레드나 마우스 입력을 받아야 하는 스레드에게 CPU를 우선적으로 밀어줌.
+       - **기아 상태(Starvation) 방지**: 우선순위가 낮은 스레드가 너무 오랫동안 작업을 하지 못하고 있으면(`Starvation`), 스케줄러가 일시적으로 순서를 앞당겨주기도 함.
+
+    결국 컴퓨터 내부의 상황(지금 실행 중인 다른 프로그램, 마우스 움직임, 네트워크 상태 등)이 매 순간 다르기 때문에, 스케줄러가 내리는 최적의 판단도 매번 달라짐. 그래서 똑같은 코드를 실행해도 실행할 때마다 스레드의 출력 순서가 뒤바뀌는 것.
+
 ### 레이스 컨디션 (Race Condition)
 
 두 개 이상의 스레드가 하나의 공유 자원(전역 변수, 힙 메모리 등)을 동시에 수정하려고 서로 경쟁할 때, 스레드가 실행되는 타이밍이나 순서에 따라 결과 값이 매번 엉뚱하게 바뀌는 현상.
@@ -273,10 +205,11 @@ std::thread에 연관된 C++의 규칙: **스레드에게 작업을 시키고 �
   }
 
   int main() {
-    // 두 명의 일꾼을 동시에 가동
-    std::jthread t1(increaseCounter);
-    std::jthread t2(increaseCounter);
-
+    // 두 개의 스레드를 동시에 가동
+    {
+      std::jthread t1(increaseCounter);
+      std::jthread t2(increaseCounter);
+    } // 여기서 두 스레드 종료 대기
     // jthread이므로 메인 함수 종료 시 자동으로 join() 되어
     // 두 스레드가 일을 마칠 때까지 기다려줌.
 
@@ -288,72 +221,148 @@ std::thread에 연관된 C++의 규칙: **스레드에게 작업을 시키고 �
   ```
 
 - 해결 방법
-  - `std::mutex`와 `std::scoped_lock` 사용
-    가장 범용적인 해결책. 공용 메모리를 한번에 딱 한 스레드만 들어올 수 있는 임계 구역(Critical Section)으로 만들고 자물쇠를 채워버리는 것.
+  1. `std::mutex`와 `std::scoped_lock` 사용
+  2. `std::atomic` 사용
+
+### `std::mutex`와 `std::scoped_lock`
+
+`Race Condition`의 가장 범용적인 해결책. 공용 메모리를 한번에 딱 한 스레드만 들어올 수 있는 임계 구역(`Critical Section`)으로 만들고 자물쇠를 채워버리는 것.
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <mutex> // 자물쇠를 쓰기 위해 헤더 추가
+
+int counter = 0;
+std::mutex mtx; // 공용 자물쇠 생성
+
+void increaseCounter() {
+    for (int i = 0; i < 100000; ++i) {
+      std::scoped_lock lock(mtx);
+        // C++20 표준에 맞춰 가장 안전한 scoped_lock을 채움.
+        // 한 루프가 끝날 때 자동으로 자물쇠가 풀림.
+
+        counter++;
+    } // 여기서 자물쇠 해제 (unlock)
+}
+
+int main() {
+    std::jthread t1(increaseCounter);
+    std::jthread t2(increaseCounter);
+
+    // jthread 소멸자가 알아서 join() 처리를 하므로 대기 코드는 생략
+    return 0;
+}
+```
+
+- `mutex`의 핵심은 "최소한으로 잡되 충분하게". `Critical Section`은 가능한 한 짧게 유지를 해야 함.
+- 자물쇠를 잠그고 여는 행위(Context Switching 유발 및 대기 시간) 자체가 하드웨어 관점에서 꽤 무겁기 때문에 프로그램의 실행 속도가 자물쇠가 없을 때보다 눈에 띄게 느려짐.
+
+### `std::atomic`
+
+원자적. 공용 메모리의 3단계(Read → Modify → Write)를 쪼개지 않는 하나의 원자(Atomic) 연산으로 처리하라고 하는 것. 중간에 스케줄러가 끼어들 틈을 원천 차단.
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <atomic> // 원자적 변수를 쓰기 위해 헤더 추가
+
+// int 대신 std::atomic<int> 로 선언
+std::atomic<int> counter = 0;
+
+void increaseCounter() {
+    for (int i = 0; i < 100000; ++i) {
+        // atomic 변수는 ++ 연산이 하드웨어 수준에서 (Atomic) 처리
+        counter++;
+    }
+}
+
+int main() {
+    std::jthread t1(increaseCounter);
+    std::jthread t2(increaseCounter);
+
+    return 0;
+}
+```
+
+- 하드웨어 수준에서 두 개 변수를 동시에 원자적으로 다루는 건 불가능하기 때문에 값을 대입하고 싶다면 그 값 자체를 넘겨주어야 함.
+
+```cpp
+std::atomic<int> a = 10;
+std::atomic<int> b = a; // 에러: 복사 생성자가 막혀있음.
+```
+
+- 소프트웨어적으로 스레드를 잠재우고 깨우는 자물쇠 방식이 아닌 CPU 하드웨어 기능(Lock 명령어)을 직접 쓰는 원자적 연산을 제공하므로, 단순한 공유 변수의 연산에는 `mutex`보다 효율적일 수 있음.
+
+하지만 항상 `mutex`보다 빠른 것은 아니며, 복잡한 여러 공유 상태를 하나의 일관된 상태로 보호해야 한다면 `mutex`가 더 적합함.
+
+### 교착 상태 (Deadlock)
+
+두 개 이상의 스레드가 서로 상대방의 자원이 풀리기만을 기다리며 무한히 대기하는 상태. 서로 양보하지 않아서 프로그램이 그 자리에 얼어붙어 버리는(Freeze) 현상.
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <mutex>
+
+std::mutex mtxA;
+std::mutex mtxB;
+// 한 자물쇠 당 하나만 잠글 수 있음.
+
+void worker1() {
+    mtxA.lock(); // A를 먼저 잠금
+    std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 잠시 대기 (강제로 lock 발생시키려고)
+    mtxB.lock(); // B를 잠그려고 보니 이미 worker2에서 사용 (무한 대기)
+
+    std::cout << "worker 1 업무 완료!" << std::endl;
+    mtxB.unlock();
+    mtxA.unlock();
+}
+
+void worker2() {
+    mtxB.lock(); // B를 먼저 잠금
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    mtxA.lock(); // A를 잠그려고 보니 이미 worker1에서 사용 (무한 대기)
+
+    std::cout << "worker2 업무 완료!" << std::endl;
+    mtxA.unlock();
+    mtxB.unlock();
+}
+```
+
+- `std::mutex`: Mutual Exclusion(상호 배제)의 약자로, 여러 스레드가 공유 자원에 동시에 접근하지 못하도록 막는 동기화 도구.
+- worker1이 A를 쥐고 B를 원함 → worker2이 B를 쥐고 A를 원함 → 프로그램은 이 지점에서 멈춰버리고 다음 코드로 넘어가지 못함. (deadlock 발생)
+- 교착 상태가 성립하는 4가지 조건
+  교착 상태는 다음 4가지 조건이 동시에 만족할 때만 발생. 역으로 말하면 이 중 하나라도 부수면 교착 상태를 예방할 수 있음.
+  - **상호 배제 (Mutual Exclusion)**: 한 번에 한 스레드만 자원을 사용 가능.
+  - **점유와 대기 (Hold and Wait)**: 자원 하나를 쥔 상태(`Hold`)에서 다른 자원을 달라고 기다림(`Wait`).
+  - **비선점 (No preemption)**: 다른 스레드가 쥐고 있는 자원을 강제로 뺏어올 수 없음.
+  - **순환 대기 (Circular Wait)**: 대기 관계가 원형 모양으로 꼬여있음 (A→B, B→A).
+
+- 해결 방법
+  - `std::lock`
+    교착 상태는 한 마디로 잠그는 순서가 서로 달라서 발생. 그렇기 때문에 가장 쉽고 확실한 해결책은 lock의 순서를 모두 통일하는 것. 그래서 C++은 `std::lock`이라는 도구를 제공.
 
     ```cpp
-    #include <iostream>
-    #include <thread>
-    #include <mutex> // 자물쇠를 쓰기 위해 헤더 추가
+    // worker 1, 2 내부에서 순서 상관없이 이렇게 쓰면 알아서 교착 상태를 피해 잠금.
+    std::lock(mtxA, mtxB);
 
-    int counter = 0;
-    std::mutex mtx; // 공용 자물쇠 생성
-
-    void increaseCounter() {
-        for (int i = 0; i < 100000; ++i) {
-          std::scoped_lock lock(mtx);
-            // C++20 표준에 맞춰 가장 안전한 scoped_lock을 채움.
-            // 한 루프가 끝날 때 자동으로 자물쇠가 풀림.
-
-            counter++;
-        } // 여기서 자물쇠 해제 (unlock)
-    }
-
-    int main() {
-        std::jthread t1(increaseCounter);
-        std::jthread t2(increaseCounter);
-
-        // jthread 소멸자가 알아서 join() 처리를 하므로 대기 코드는 생략
-        return 0;
-    }
+    // 해제도 안전하게 처리하기 위해 lock_guard와 조합.
+    std::lock_guard<std::mutex> lockA(mtxA, std::adopt_lock);
+    std::lock_guard<std::mutex> lockB(mtxB, std::adopt_lock);
     ```
 
-    - 자물쇠를 잠그고 여는 행위(Context Switching 유발 및 대기 시간) 자체가 하드웨어 관점에서 꽤 무겁기 때문에 프로그램의 실행 속도가 자물쇠가 없을 때보다 눈에 띄게 느려짐.
-
-  - `std::atomic` 사용
-    원자적. 공용 메모리의 3단계(Read → Modify → Write)를 쪼개지 않는 하나의 원자(Atomic) 연산으로 처리하라고 하는 것. 중간에 스케줄러가 끼어들 틈을 원천 차단.
+  - `std::scoped_lock`
+    위의 `std::lock_guard`를 따로 해줄 필요없이 함수가 끝날 때 알아서 해제를 해주는 방법. 알아서 해제해주기 때문에 가장 안전하고 가장 권장됨.
 
     ```cpp
-    #include <iostream>
-    #include <thread>
-    #include <atomic> // 원자적 변수를 쓰기 위해 헤더 추가
+    void worker1(){
+        // mtxA와 mtxB를 안전하게 동시에 잠금 (순서 꼬임 방지)
+        std::scoped_lock lock(mtxA, mtxB);
 
-    // int 대신 std::atomic<int> 로 선언
-    std::atomic<int> counter = 0;
-
-    void increaseCounter() {
-        for (int i = 0; i < 100000; ++i) {
-            // atomic 변수는 ++ 연산이 하드웨어 수준에서 (Atomic) 처리
-            counter++;
-        }
-    }
-
-    int main() {
-        std::jthread t1(increaseCounter);
-        std::jthread t2(increaseCounter);
-
-        return 0;
-    }
+        // do something...
+    } // 알아서 해제
     ```
-
-    - 하드웨어 수준에서 두 개 변수를 동시에 원자적으로 다루는 건 불가능하기 때문에 값을 대입하고 싶다면 그 값 자체를 넘겨주어야 함.
-
-    ```cpp
-    std::atomic<int> a = 10;
-    std::atomic<int> b = a; // 에러: 복사 생성자가 막혀있음.
-    ```
-
-    - 소프트웨어적으로 스레드를 잠재우고 깨우는 자물쇠 방식이 아닌 CPU 하드웨어 기능(Lock 명령어)을 직접 쓰기 때문에, `mutex`보다 압도적으로 빠르고 효율적임. 이를 **락 프리(Lock-free) 프로그래밍**의 기초라고 함.
 
 ### 락 프리 프로그래밍(Lock-free Programming)
 
