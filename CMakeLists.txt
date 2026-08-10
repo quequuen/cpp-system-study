@@ -156,4 +156,5 @@ add_executable(mutex concurrency/mutex/mutex.cpp)
 
 # concurrency/lock
 add_executable(lock concurrency/lock/lock.cpp)
+add_executable(scoped_lock concurrency/lock/scoped_lock.cpp)
 
