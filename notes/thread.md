@@ -301,7 +301,7 @@ void worker1() {
     std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 잠시 대기 (강제로 lock 발생시키려고)
     mtxB.lock(); // B를 잠그려고 보니 이미 worker2에서 사용 (무한 대기)
 
-    std::cout << "worker 1 업무 완료!" << std::endl;
+    std::cout << "worker1 업무 완료!" << std::endl;
     mtxB.unlock();
     mtxA.unlock();
 }
@@ -317,7 +317,7 @@ void worker2() {
 }
 
 int main() {
-    std::jthread t1(worker);
+    std::jthread t1(worker1);
     std::jthread t2(worker2);
 
     return 0;
@@ -331,7 +331,7 @@ int main() {
 직접 `lock()`/`unlock()` 하는 동작 자체는 위험할 수 있음. 그렇기 때문에 객체의 생성과 소멸을 이용해서 자동으로 관리하는 방식이 필요함. 이러한 방식을 지원하기 위해 `std::lock_guard`, `std::scoped_lock` 등의 객체가 생김.
 
 - `std::lock`
-  여러 개의 `mutex`를 동시에 안전하게 잠그기 위한 함수.
+  여러 개의 `mutex`를 동시에 안전하게 잠그기 위한 함수. `RAII Lock` 개념은 아니지만 비교용.
 
   ```cpp
   #include <iostream>
@@ -348,6 +348,7 @@ int main() {
     std::cout << "두 mutex를 모두 획득\n";
 
     // std::lock은 unlock까지 해주지는 않음
+    // 직접 각각의 자물쇠를 unlock
     mtxA.unlock();
     mtxB.unlock();
   }
@@ -359,6 +360,9 @@ int main() {
     return 0;
   }
   ```
+
+- `std::lock_guard`
+  `mutex`를 자동으로 잠그고 자동으로 풀어주는 RAII 객체.
 
 ### `std::atomic`
 
