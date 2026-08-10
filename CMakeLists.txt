@@ -153,3 +153,7 @@ add_executable(async_01 concurrency/thread/asynchronous_programming.cpp)
 # concurrency/mutex
 add_executable(no_mutex concurrency/mutex/no_mutex.cpp)
 add_executable(mutex concurrency/mutex/mutex.cpp)
+
+# concurrency/lock
+add_executable(lock concurrency/lock/lock.cpp)
+

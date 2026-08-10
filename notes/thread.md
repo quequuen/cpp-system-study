@@ -287,6 +287,8 @@ int main() {
 
 직접 `lock()`/`unlock()` 하는 동작 자체는 위험할 수 있음. 그렇기 때문에 객체의 생성과 소멸을 이용해서 자동으로 관리하는 방식이 필요함. 이러한 방식을 지원하기 위해 `std::lock_guard`, `std::scoped_lock` 등의 객체가 생김.
 
+- `std::lock_guard`
+
 ### `std::atomic`
 
 원자적. 공용 메모리의 3단계(Read → Modify → Write)를 쪼개지 않는 하나의 원자(Atomic) 연산으로 처리하라고 하는 것. 중간에 스케줄러가 끼어들 틈을 원천 차단.
