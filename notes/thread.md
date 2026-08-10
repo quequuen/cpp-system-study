@@ -283,11 +283,82 @@ int main() {
 - `mutex`의 핵심은 "최소한으로 잡되 충분하게". `Critical Section`은 가능한 한 짧게 유지를 해야 함.
 - 자물쇠를 잠그고 여는 행위(Context Switching 유발 및 대기 시간) 자체가 하드웨어 관점에서 꽤 무겁기 때문에 프로그램의 실행 속도가 자물쇠가 없을 때보다 눈에 띄게 느려짐.
 
+### 교착 상태 (Deadlock)
+
+두 개 이상의 스레드가 서로 상대방의 자원이 풀리기만을 기다리며 무한히 대기하는 상태. 서로 양보하지 않아서 프로그램이 그 자리에 얼어붙어 버리는(Freeze) 현상.
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <mutex>
+
+std::mutex mtxA;
+std::mutex mtxB;
+// 한 자물쇠 당 하나만 잠글 수 있음.
+
+void worker1() {
+    mtxA.lock(); // A를 먼저 잠금
+    std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 잠시 대기 (강제로 lock 발생시키려고)
+    mtxB.lock(); // B를 잠그려고 보니 이미 worker2에서 사용 (무한 대기)
+
+    std::cout << "worker 1 업무 완료!" << std::endl;
+    mtxB.unlock();
+    mtxA.unlock();
+}
+
+void worker2() {
+    mtxB.lock(); // B를 먼저 잠금
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    mtxA.lock(); // A를 잠그려고 보니 이미 worker1에서 사용 (무한 대기)
+
+    std::cout << "worker2 업무 완료!" << std::endl;
+    mtxA.unlock();
+    mtxB.unlock();
+}
+
+int main() {
+    std::jthread t1(worker);
+    std::jthread t2(worker2);
+
+    return 0;
+  }
+```
+
+- 교착 상태는 한 마디로 잠그는 순서가 서로 달라서 발생. 그렇게 때문에 가장 쉽고 확실한 해결책은 lock의 순서를 모두 통일하는 것. 그래서 C++는 이러한 부분을 해소해주는 여러 객체를 제공.
+
 ### `RAII Lock`
 
 직접 `lock()`/`unlock()` 하는 동작 자체는 위험할 수 있음. 그렇기 때문에 객체의 생성과 소멸을 이용해서 자동으로 관리하는 방식이 필요함. 이러한 방식을 지원하기 위해 `std::lock_guard`, `std::scoped_lock` 등의 객체가 생김.
 
-- `std::lock_guard`
+- `std::lock`
+  여러 개의 `mutex`를 동시에 안전하게 잠그기 위한 함수.
+
+  ```cpp
+  #include <iostream>
+  #include <mutex>
+  #include <thread>
+
+  std::mutex mtxA;
+  std::mutex mtxB;
+
+  void worker() {
+    // A와 B를 안전하게 동시에 lock
+    std::lock(mtxA, mtxB);
+
+    std::cout << "두 mutex를 모두 획득\n";
+
+    // std::lock은 unlock까지 해주지는 않음
+    mtxA.unlock();
+    mtxB.unlock();
+  }
+
+  int main() {
+    std::jthread t1(worker);
+    std::jthread t2(worker);
+
+    return 0;
+  }
+  ```
 
 ### `std::atomic`
 
@@ -327,40 +398,6 @@ std::atomic<int> b = a; // 에러: 복사 생성자가 막혀있음.
 
 하지만 항상 `mutex`보다 빠른 것은 아니며, 복잡한 여러 공유 상태를 하나의 일관된 상태로 보호해야 한다면 `mutex`가 더 적합함.
 
-### 교착 상태 (Deadlock)
-
-두 개 이상의 스레드가 서로 상대방의 자원이 풀리기만을 기다리며 무한히 대기하는 상태. 서로 양보하지 않아서 프로그램이 그 자리에 얼어붙어 버리는(Freeze) 현상.
-
-```cpp
-#include <iostream>
-#include <thread>
-#include <mutex>
-
-std::mutex mtxA;
-std::mutex mtxB;
-// 한 자물쇠 당 하나만 잠글 수 있음.
-
-void worker1() {
-    mtxA.lock(); // A를 먼저 잠금
-    std::this_thread::sleep_for(std::chrono::milliseconds(10)); // 잠시 대기 (강제로 lock 발생시키려고)
-    mtxB.lock(); // B를 잠그려고 보니 이미 worker2에서 사용 (무한 대기)
-
-    std::cout << "worker 1 업무 완료!" << std::endl;
-    mtxB.unlock();
-    mtxA.unlock();
-}
-
-void worker2() {
-    mtxB.lock(); // B를 먼저 잠금
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    mtxA.lock(); // A를 잠그려고 보니 이미 worker1에서 사용 (무한 대기)
-
-    std::cout << "worker2 업무 완료!" << std::endl;
-    mtxA.unlock();
-    mtxB.unlock();
-}
-```
-
 - `std::mutex`: Mutual Exclusion(상호 배제)의 약자로, 여러 스레드가 공유 자원에 동시에 접근하지 못하도록 막는 동기화 도구.
 - worker1이 A를 쥐고 B를 원함 → worker2이 B를 쥐고 A를 원함 → 프로그램은 이 지점에서 멈춰버리고 다음 코드로 넘어가지 못함. (deadlock 발생)
 - 교착 상태가 성립하는 4가지 조건
@@ -369,31 +406,6 @@ void worker2() {
   - **점유와 대기 (Hold and Wait)**: 자원 하나를 쥔 상태(`Hold`)에서 다른 자원을 달라고 기다림(`Wait`).
   - **비선점 (No preemption)**: 다른 스레드가 쥐고 있는 자원을 강제로 뺏어올 수 없음.
   - **순환 대기 (Circular Wait)**: 대기 관계가 원형 모양으로 꼬여있음 (A→B, B→A).
-
-- 해결 방법
-  - `std::lock`
-    교착 상태는 한 마디로 잠그는 순서가 서로 달라서 발생. 그렇기 때문에 가장 쉽고 확실한 해결책은 lock의 순서를 모두 통일하는 것. 그래서 C++은 `std::lock`이라는 도구를 제공.
-
-    ```cpp
-    // worker 1, 2 내부에서 순서 상관없이 이렇게 쓰면 알아서 교착 상태를 피해 잠금.
-    std::lock(mtxA, mtxB);
-
-    // 해제도 안전하게 처리하기 위해 lock_guard와 조합.
-    std::lock_guard<std::mutex> lockA(mtxA, std::adopt_lock);
-    std::lock_guard<std::mutex> lockB(mtxB, std::adopt_lock);
-    ```
-
-  - `std::scoped_lock`
-    위의 `std::lock_guard`를 따로 해줄 필요없이 함수가 끝날 때 알아서 해제를 해주는 방법. 알아서 해제해주기 때문에 가장 안전하고 가장 권장됨.
-
-    ```cpp
-    void worker1(){
-        // mtxA와 mtxB를 안전하게 동시에 잠금 (순서 꼬임 방지)
-        std::scoped_lock lock(mtxA, mtxB);
-
-        // do something...
-    } // 알아서 해제
-    ```
 
 ### 락 프리 프로그래밍(Lock-free Programming)
 
