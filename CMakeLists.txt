@@ -1,10 +1,15 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 project(cpp_system_study)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # 실행 파일들이 build/bin에 생성되도록
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# 라이브러리
+find_package(fmt CONFIG REQUIRED)
 
 # 각 학습 프로그램 추가
 
@@ -101,7 +106,10 @@ add_executable(class_06 oop/01_class/main_05.cpp)
 add_executable(class_07 oop/01_class/main_06.cpp)
 
 # oop/02_inheritance
-include_directories(oop/02_inheritance/headers)
+target_include_directories(inheritance_01
+    PRIVATE
+    oop/02_inheritance/headers
+)
 add_executable(inheritance_01 oop/02_inheritance/main_00.cpp)
 add_executable(inheritance_02
     oop/02_inheritance/main_01.cpp
