@@ -362,7 +362,29 @@ int main() {
   ```
 
 - `std::lock_guard`
-  `mutex`를 자동으로 잠그고 자동으로 풀어주는 RAII 객체.
+  하나의 `mutex`를 자동으로 잠그고 자동으로 풀어주는 RAII 객체. `scope`가 끝나면 자동 unlock.
+
+  ```cpp
+  #include <iostream>
+  #include <mutex>
+  #include <thread>
+
+  std::mutex mtx;
+
+  void worker() {
+      // mutex를 자동으로 lock
+      std::lock_guard<std::mutex> lock(mtx);
+
+      std::cout << "mutex를 획득했습니다.\n";
+  } // lock_guard 소멸 → mutex 자동 unlock
+
+  int main() {
+      std::jthread t1(worker);
+      std::jthread t2(worker);
+
+      return 0;
+  }
+  ```
 
 ### `std::atomic`
 
