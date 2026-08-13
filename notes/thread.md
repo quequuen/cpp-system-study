@@ -386,6 +386,8 @@ int main() {
   }
   ```
 
+- `std::scoped_lock`
+
 ### `std::atomic`
 
 원자적. 공용 메모리의 3단계(Read → Modify → Write)를 쪼개지 않는 하나의 원자(Atomic) 연산으로 처리하라고 하는 것. 중간에 스케줄러가 끼어들 틈을 원천 차단.

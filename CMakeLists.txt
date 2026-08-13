@@ -10,6 +10,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # 라이브러리
 find_package(fmt CONFIG REQUIRED)
+find_package(Boost REQUIRED)
+
 
 # 각 학습 프로그램 추가
 
@@ -106,11 +108,11 @@ add_executable(class_06 oop/01_class/main_05.cpp)
 add_executable(class_07 oop/01_class/main_06.cpp)
 
 # oop/02_inheritance
+add_executable(inheritance_01 oop/02_inheritance/main_00.cpp)
 target_include_directories(inheritance_01
     PRIVATE
     oop/02_inheritance/headers
 )
-add_executable(inheritance_01 oop/02_inheritance/main_00.cpp)
 add_executable(inheritance_02
     oop/02_inheritance/main_01.cpp
     oop/02_inheritance/Person.cpp
@@ -167,3 +169,6 @@ add_executable(lock concurrency/lock/lock.cpp)
 add_executable(scoped_lock concurrency/lock/scoped_lock.cpp)
 add_executable(lock_guard concurrency/lock/lock_guard.cpp)
 
+# network
+add_executable(network network/boost.cpp)
+target_link_libraries(network PRIVATE Boost::boost)
