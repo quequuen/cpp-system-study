@@ -171,5 +171,5 @@ add_executable(scoped_lock concurrency/lock/scoped_lock.cpp)
 add_executable(lock_guard concurrency/lock/lock_guard.cpp)
 
 # network
-add_executable(network network/boost.cpp)
-target_link_libraries(network PRIVATE Boost::boost)
+add_executable(tcp_basic network/tcp/tcp_basic.cpp)
+target_link_libraries(tcp_basic PRIVATE Boost::boost)
