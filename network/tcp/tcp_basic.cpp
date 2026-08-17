@@ -47,17 +47,27 @@ int main() {
       if (ec) {
         std::cerr << "Accept error: " << ec.message() << '\n';
         continue;
+        // accept 실패 → 오류 출력 → 다시 클라이언트 기다림
       }
 
       std::cout << "Client connected\n";
+      // 클라이언트 연결 성공
 
       const std::string message = "Hello From Server\n";
 
       boost::asio::write(socket, boost::asio::buffer(message), ec);
+      // 실제 네트워크 통신이 일어나는 부분
+      // 어떤 연결(클라이언트)로 보낼 것인가, 무슨 데이터를 보낼 것인가 (위의
+      // message를 네트워크 I/O에서 사용할 수 있는 버퍼 형태로 감싼 구조) 해당
+      // 데이터를 socket을 통해 전송 message → buffer → write → socket → TCP →
+      // Client
 
       if (ec) {
         std::cerr << "Write error: " << ec.message() << '\n';
+        // write() 과정에서 오류 발생 확인
       }
+
+      // 해당 과정 반복
     }
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
