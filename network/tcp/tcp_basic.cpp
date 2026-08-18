@@ -73,3 +73,7 @@ int main() {
     std::cerr << e.what() << '\n';
   }
 }
+
+// Server → io_context 생성 → endpoint 생성 (IPv4 + port 13) → acceptor 생성 →
+// 클라이언트 기다림 → accept() → Client 연결 발생 → write() → "Hello From
+// Server" → 다음 Client
