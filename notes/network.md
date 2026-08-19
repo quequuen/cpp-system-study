@@ -74,7 +74,29 @@ IPv4는 32 bit 주소라서 사용할 수 있는 주소가 약 43억 개. 처음
 - loopback 주소
   `127.0.0.1`과 같은 '내 컴퓨터 자신'을 가리키는 주소. `localhost`가 이 주소를 가리키며 IPv6에서는 `::1`.
 
-```
-IP = 어느 컴퓨터/네트워크 인터페이스인가
-Port = 그 컴퓨터에서 어느 네트워크 서비스인가
-```
+### Port
+
+하나의 컴퓨터에서 네트워크 통신의 목적기인 프로세스/서비스를 구분하기 위한 16비트 번호.
+
+- 범위
+  - 0 ~ 65535
+  - 0 ~ 1023: Well-known Port
+  - 1024 ~ 49151: Registered Port
+  - 49152 ~ 65535: Dynamic / Private Port
+
+- IP와의 관계
+  - IP: 어느 컴퓨터/네트워크 인터페이스인가
+  - Port: 그 컴퓨터에서 어느 네트워크 서비스인가
+
+- Server
+  - 특정 Port를 열고 Client의 연결을 기다림.
+  - 예: HTTP → 80, HTTPS → 443
+
+- Client
+  - 연결할 때 운영체제가 임시 Port를 할당하는 경우가 일반적.
+
+- TCP 연결
+  - Source IP
+  - Source Port
+  - Destination IP
+  - Destination Port
