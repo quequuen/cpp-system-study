@@ -100,3 +100,11 @@ IPv4는 32 bit 주소라서 사용할 수 있는 주소가 약 43억 개. 처음
   - Source Port
   - Destination IP
   - Destination Port
+
+### Socket
+
+Socket은 애플리케이션이 네트워크를 통해 데이터를 주고받을 수 있도록 운영체제가 제공하는 통신 인터페이스. 프로그램이 직접 이더넷이나 TCP 패킷을 조작하는 게 아니라 **Socket을 통해 운영체제에 네트워크 통신을 요청하는 것.**
+Socket은 TCP 전용 개념이 아님. TCP, UDP 둘 다 사용 가능.
+
+- IP + Port: 통신 대상(endpoint)
+- Socket: 그 대상과 통신하기 위한 인터페이스.
