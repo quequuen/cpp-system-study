@@ -108,3 +108,99 @@ Socket은 TCP 전용 개념이 아님. TCP, UDP 둘 다 사용 가능.
 
 - IP + Port: 통신 대상(endpoint)
 - Socket: 그 대상과 통신하기 위한 인터페이스.
+
+- TCP Socket
+  TCP에서는 연결을 기반으로 통신.
+
+  ```
+  Client                         Server
+
+  Socket                         Socket
+  │                              │
+  │─────── TCP Connection ───────│
+  │                              │
+  │──────────── Data ───────────→│
+  │←─────────── Data ────────────│
+  │                              │
+  ```
+
+  TCP에서는 Socket을 통해 `connect`, `read`, `write`, `close` 같은 작업을 수행함.
+  - TCP 기본 흐름
+
+    ```cpp
+    #include <boost/asio.hpp>
+    #include <iostream>
+    #include <string>
+
+    using boost::asio::ip::tcp;
+
+    int main() {
+    try {
+        boost::asio::io_context io_context;
+
+        tcp::endpoint endpoint(tcp::v4(), 13);
+        // endpoint 생성
+        // IPv4 + Port 13
+        // 127.0.0.1:13 같은 네트워크 주소 정보
+
+        tcp::acceptor acceptor(io_context, endpoint);
+        // acceptor 생성
+        // Server가 해당 주소에서 Client 연결을 받을 준비
+
+        std::cout << "Server started\n";
+
+        for (;;) {
+        tcp::socket socket(io_context);
+        // 통신을 위한 Socket 객체 준비
+
+        std::cout << "Waiting for client...\n";
+
+        boost::system::error_code ec;
+        acceptor.accept(socket, ec);
+        // Client가 접속할 때까지 기다림
+
+        if (ec) {
+            std::cerr << "Accept error: " << ec.message() << '\n';
+            continue;
+        }
+        // 에러 발생 시 에러 메시지 출력
+
+        std::cout << "Client connected\n";
+        // 클라이언트 접속 성공
+        // socket에 연결이 성립
+
+        const std::string message = "Hello From Server\n";
+
+        boost::asio::write(socket, boost::asio::buffer(message), ec);
+        // 해당 Client에게 데이터 전송
+
+        if (ec) {
+            std::cerr << "Write error: " << ec.message() << '\n';
+        }
+
+        }
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
+    }
+    }
+    ```
+
+    - TCP Server의 기본 흐름: `socket` → `bind` → `listen` → `accept` → `read / write` → `close`
+    - `acceptor`: Client의 연결 요청을 받아들이는 역할
+    - `socket`: 연결된 Client와 실제 데이터를 주고받는 역할
+    - TCP Client의 기본 흐름: `socket` → `connect` → `read / write` → `close`
+
+- UDP Socket
+  UDP는 연결을 유지하는 방식이 아님. 데이터를 보낼 때 목적지 주소를 함께 지정해서 보내는 방식.
+
+  ```
+  Client Socket
+      │
+      │ Datagram
+      ▼
+  Server Socket
+  ```
+
+  UDP에서는 대표적으로 `send_to`, `receive_from` 같은 작업을 수행.
+
+TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 Datagram으로 송수신함.
