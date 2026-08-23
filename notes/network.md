@@ -204,3 +204,26 @@ Socket은 TCP 전용 개념이 아님. TCP, UDP 둘 다 사용 가능.
   UDP에서는 대표적으로 `send_to`, `receive_from` 같은 작업을 수행.
 
 TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 Datagram으로 송수신함.
+
+### TCP (Transmission Control Protocol)
+
+두 호스트 간에 신뢰성 있고 순서가 보장되는 Byte Stream 통신을 제공하는 연결 지향형 전송 계층 프로토콜.
+
+네트워크에서는 데이터를 보내면 끝이 나는 게 아님. 인터넷을 거치면서 패킷 유실, 패킷 순서 변경, 중복, 전송 지연 등 다양한 문제가 발생할 수 있음. TCP는 이런 문제를 애플리케이션이 직접 처리하지 않아도 되도록 여러 기능을 제공함.
+
+- 연결 지향 (Connection-oriented)
+  - 데이터를 주고받기 전에 연결을 설정
+  - 3-way Handshake
+- 신뢰성 (Reliable)
+  - 데이터 전달을 확인
+  - 필요한 경우 재전송
+- 순서 보장 (Ordered)
+  - 데이터가 순서대로 전달되도록 보장
+- Byte Stream
+  - 메시지 단위가 아닌 연속된 Byte Stream으로 데이터 전달
+  - Message Boundary를 보장하지 않음
+  - 애플리케이션에서 Message Framing 필요
+- Flow Control
+  - 수신자가 처리할 수 있는 양을 고려하여 전송 속도 조절
+- Congestion Control
+  - 네트워크 혼잡 상태에 따라 전송 속도 조절
