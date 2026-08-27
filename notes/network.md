@@ -1,5 +1,31 @@
 ## 네트워크 (network)
 
+### 네트워크 계층 모델
+
+인터넷 통신을 여러 계픙으로 나누어 각 계층이 서로 다른 역할을 담당하도록 구성되어 있음.
+
+- OSI 7계층과 TCP/IP 4계층
+
+```
+OSI 7계층                TCP/IP 4계층
+
+Application ─┐
+Presentation ├────────→ Application
+Session ─────┘
+
+Transport ────────────→ Transport
+
+Network ──────────────→ Internet
+
+Data Link ──┐
+Physical ───┴─────────→ Network Access
+```
+
+- OSI는 개념적으로 세분화한 모델, TCP/IP 4계층은 실제 인터넷 프로토콜 스택을 설명할 때 더 실용적인 모델.
+
+1. APPlication Layer
+   애플리케이션이 사용하는 네트워크 프로토콜. `HTTP`, `HTTPS`, `DNS`, `FTP`, `SSH` 등. 예를 들어 `Chat Server`를 만든다면 애플리케이션 계층에서 '채팅 메시지의 형식' 같은 것을 정의하게 됨.
+
 ### Client / Server
 
 - Client (클라이언트)
