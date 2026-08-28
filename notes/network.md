@@ -26,6 +26,45 @@ Physical ───┴─────────→ Network Access
 1. APPlication Layer
    애플리케이션이 사용하는 네트워크 프로토콜. `HTTP`, `HTTPS`, `DNS`, `FTP`, `SSH` 등. 예를 들어 `Chat Server`를 만든다면 애플리케이션 계층에서 '채팅 메시지의 형식' 같은 것을 정의하게 됨.
 
+2. Transport Layer
+   프로세스 간 통신을 담당하며 `Port`, `TCP`, `UDP`의 기능이 이 계층에서 수행됨.
+
+3. Internet Layer
+   IP의 영역. 대표적으로 `IPv4`, `IPv6`가 존재하고 패킷을 목적지 IP까지 전달하기 위한 논리적인 주소 지정과 라우팅을 수행. `192.168.0.10`, `127.0.0.1`, `IPv4`, `IPv6`, `Public IP`, `Private IP`와 같은 내용들이 이 계층과 연결.
+
+4. Network Access Layer
+   가장 최하층. 실제 네트워크를 통해 데이터를 전달하는 부분. `Ethernet`, `Wi-Fi`, `Mac Address`, `Ethernet Frame` 같은 개념들이 이곳에 해당.
+
+```
+┌──────────────────────────────┐
+│ Application Layer            │
+│                              │
+│ HTTP / Chat Protocol / JSON  │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ Transport Layer              │
+│                              │
+│ TCP / UDP                    │
+│ Port                         │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ Internet Layer               │
+│                              │
+│ IP (IPv4 / IPv6)             │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ Network Access Layer         │
+│                              │
+│ Ethernet / Wi-Fi             │
+└──────────────────────────────┘
+```
+
 ### Client / Server
 
 - Client (클라이언트)
