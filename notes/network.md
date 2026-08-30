@@ -382,3 +382,23 @@ TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 D
   - 연결 관리 및 제어로 인한 오버헤드
   - UDP에 비해 상대적으로 높은 지연 가능성
   - Byte Stream이므로 Message Framing을 애플리케이션에서 구현해야 함.
+
+### TCP 서버 구조
+
+- `socket`: 통신에 사용할 Socket 생성.
+- `bind`: Socket에 IP Address + Port 할당.
+- `listen`: Client의 연결 요청을 받을 수 있는 상태로 전환.
+- `accept`: 연결 요청을 받아 새로운 통신용 Socket 생성.
+- `read`/`recv`: Client가 보낸 데이터 수신.
+- `write`/`send`: Client에게 데이터 전송.
+- `close`: 연결 종료.
+
+| TCP Server 개념    | Boost.Asio                              |
+| ------------------ | --------------------------------------- |
+| `socket()`         | `tcp::socket`                           |
+| `bind()`           | `tcp::acceptor` 생성 과정에서 처리 가능 |
+| `listen()`         | `tcp::acceptor`가 처리                  |
+| `accept()`         | `acceptor.accept()`                     |
+| `read()`/`recv()`  | `socket.read_some()` 등                 |
+| `write()`/`send()` | `socket.write_some()`/`asio::write()`   |
+| `close()`          | `socket.close()`                        |
