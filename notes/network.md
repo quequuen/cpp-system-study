@@ -406,7 +406,7 @@ TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 D
 - `socket()`
   가장 먼저 네트워크 통신에 사용할 Socket을 생성. 일반적인 BSD Socket API에서는
 
-  ```
+  ```cpp
   int server_fd = socket(AF_INET, SOCK_STREAM, 0);
   ```
 
@@ -414,3 +414,12 @@ TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 D
   - `SOCK_STREAM`: TCP
   - `0`: 프로토콜 자동 선택
     즉, IPv4 TCP 통신을 할 수 있는 Socket을 하나 만든다는 의미. 해당 부분에서는 아직 특정 Port에서 Client를 기다리는 상태가 아님. 단순히 통신에 사용할 Socket이라는 자원을 만든 것.
+
+- `bind()`
+  Socket을 생성 후, 어떤 주소에서 통신할 것인지 지정함.
+
+  ```cpp
+  bind(server_fd, ...);
+  ```
+
+  개념적으로는 `Socket` + `IP Address` + `Port` + `bind()`. 해당 Socket을 이 IP와 Port에서 사용하겠다는 의미. 즉, `bind()`는 Socket과 주소를 연결하는 과정.
