@@ -402,3 +402,15 @@ TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 D
 | `read()`/`recv()`  | `socket.read_some()` 등                 |
 | `write()`/`send()` | `socket.write_some()`/`asio::write()`   |
 | `close()`          | `socket.close()`                        |
+
+- `socket()`
+  가장 먼저 네트워크 통신에 사용할 Socket을 생성. 일반적인 BSD Socket API에서는
+
+  ```
+  int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+  ```
+
+  - `AF_INET`: IPv4
+  - `SOCK_STREAM`: TCP
+  - `0`: 프로토콜 자동 선택
+    즉, IPv4 TCP 통신을 할 수 있는 Socket을 하나 만든다는 의미. 해당 부분에서는 아직 특정 Port에서 Client를 기다리는 상태가 아님. 단순히 통신에 사용할 Socket이라는 자원을 만든 것.
