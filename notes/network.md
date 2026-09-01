@@ -432,3 +432,21 @@ TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 D
   ```
 
   해당 함수로 인해 Client 연결 요청을 기다리는 상태가 됨.
+
+- `accept()`
+  대기 중인 Client의 연결 요청을 받아 실제 통신을 위한 새로운 Socket을 반환.
+
+  ```cpp
+  int client_fd = accept(server_fd, ...);
+  ```
+
+  - 해당 부분에서 Socket 객체가 하나 더 생성됨. → 서버는 계속해서 새로운 Client의 연결 요청을 받아야 하기 때문. 아래 그림과 같은 개념.
+
+    ```
+    Listening Socket
+        │
+        ├── Client A → Socket A
+        ├── Client B → Socket B
+        ├── Client C → Socket C
+        └── ...
+    ```
