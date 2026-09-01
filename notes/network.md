@@ -422,4 +422,13 @@ TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 D
   bind(server_fd, ...);
   ```
 
-  개념적으로는 `Socket` + `IP Address` + `Port` + `bind()`. 해당 Socket을 이 IP와 Port에서 사용하겠다는 의미. 즉, `bind()`는 Socket과 주소를 연결하는 과정.
+  개념적으로는 `Socket` + `IP Address` + `Port` + `bind()`. 해당 Socket을 이 IP와 Port에서 사용하겠다는 의미. 즉, `bind()`는 Socket과 주소를 연결하는 과정. 예를 들어 `127.0.0.1:8080`에 연결.
+
+- `listen()`
+  `bind()`에서 서버가 특정 주소를 사용하도록 했지만 아직 Client 연결을 받는 상태가 아님. 해당 함수로 Socket을 Client의 TCP 연결 요청을 기다리는 Listening Socket으로 만들어줌.
+
+  ```cpp
+  listen(server_fd, SOMAXCONN);
+  ```
+
+  해당 함수로 인해 Client 연결 요청을 기다리는 상태가 됨.
