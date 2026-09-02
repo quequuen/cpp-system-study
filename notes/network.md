@@ -461,8 +461,22 @@ TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 D
   - 파일 디스크립터에서 데이터를 읽는 일반적인 Unix/Linux I/O 함수. 소켓뿐만 아니라 파일, 파이프, 터미널 등에서 사용 가능.
 
   ```cpp
-  recv(client_fd, buffer, ...);
+  recv(client_fd, buffer, sizeof(buffer), flags);
   ```
 
   - 소켓 전용 데이터를 받기 위한 함수. `read()`와 다르게 인수 마지막에 플래그를 통해 `MSG_PEEK`를 사용할 수 있음. 해당 부분을 사용하면 데이터를 읽기는 하지만 수신 버퍼에서 제거하지 않고 확인할 수 있음.
   - 해당 부분에서 `recv(...)` 한 번으로 모든 데이터가 온다는 보장이 없음.(`TCP Byte Stream` 때문) → 그렇기 때문에 `Message Framing`이 필요.
+
+- `write()` / `send()`
+
+  ```cpp
+  write(client_fd, buffer, ...);
+  ```
+
+  - 일반적인 파일 디스크립터에 데이터를 쓰는 함수. 소켓에서도 사용 가능.
+
+  ```cpp
+  send(client_fd, buffer, length, 0);
+  ```
+
+  - `recv()`와 마찬가지로 소켓 전용 데이터를 보내는 함수이며, 플래그를 통해 Socket 전용 옵션을 줄 수 있음.
