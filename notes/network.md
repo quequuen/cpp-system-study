@@ -481,3 +481,21 @@ TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 D
 
   - `recv()`와 마찬가지로 소켓 전용 데이터를 보내는 함수이며, 플래그를 통해 Socket 전용 옵션을 줄 수 있음.
   - TCP에서는 `send()` 호출이 해당 메시지를 보내라는 명령이 아닌 Socket의 송신 버퍼에 바이트를 전달하고 TCP가 이 바이트 스트림을 전송하는 개념.
+
+### TCP Chat Server 실습
+
+TCP Server 구조에서 배운 것을 토대로 실제 작은 Chat Server 하나 구현.
+
+1. Client ↔ Server
+
+```
+Client
+   │
+   │ "Hello"
+   ▼
+Server
+   │
+   │ "Hello Client"
+   ▼
+Client
+```
