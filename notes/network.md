@@ -486,7 +486,7 @@ TCP Socket은 TCP 연결을 통해 데이터를 송수신하고, UDP Socket은 D
 
 TCP Server 구조에서 배운 것을 토대로 실제 작은 Chat Server 하나 구현.
 
-1. Client ↔ Server
+1. TCP Chat - 1 Client
 
 ```
 Client
@@ -593,10 +593,26 @@ int main() {
 
 ```
 
-2. 여러 Client 연결
+2. TCP Chat - 여러 Client
 
-3. Client마다 Session 개념 도입
+```
+                    ┌── Client A
+                    │
+Server ── accept ───┼── Client B
+                    │
+                    └── Client C
+
+              각각 별도의 Thread
+                    │
+          ┌─────────┼─────────┐
+          ↓         ↓         ↓
+       Thread A  Thread B  Thread C
+```
+
+3. Session 클래스 분리
 
 4. Broadcast
 
-5. 연결 종료
+5. Disconnect 처리
+
+6. 최종 Chat Server

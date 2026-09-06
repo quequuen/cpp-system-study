@@ -12,6 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # 라이브러리
 find_package(fmt CONFIG REQUIRED)
 find_package(Boost REQUIRED)
+find_package(Threads REQUIRED)
 
 
 # 각 학습 프로그램 추가
@@ -172,3 +173,7 @@ add_executable(lock_guard concurrency/lock/lock_guard.cpp)
 # network
 add_executable(tcp_basic network/tcp/tcp_basic.cpp)
 target_link_libraries(tcp_basic PRIVATE Boost::boost)
+add_executable(tcp_chat network/chat_server/chat1.cpp)
+target_link_libraries(tcp_chat PRIVATE Boost::boost)
+add_executable(tcp_chat_02 network/chat_server/chat2.cpp)
+target_link_libraries(tcp_chat_02 PRIVATE Boost::boost Threads::Threads)
