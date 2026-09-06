@@ -41,8 +41,7 @@ add_executable(variables_09 basics/01_variables/main_01_variables_09.cpp)
 add_executable(control_01 basics/02_control/main_02_control.cpp)
 add_executable(control_02 basics/02_control/main_02_control_02.cpp)
 add_executable(control_03 basics/02_control/main_02_control_03.cpp)
-add_executable(control_04 basics/02_control/main_02_control_04.cpp)
-add_executable(control_05 basics/02_control/main_02_control_05.cpp)
+# control_04 / control_05: 빈 스텁 파일이라 빌드 대상에서 제외
 
 # basics/03_functions
 add_executable(functions_01 
@@ -62,7 +61,7 @@ add_executable(pointers_01 basics/04_pointers/main_04_pointers.cpp)
 add_executable(pointers_02 basics/04_pointers/main_04_pointers_02.cpp)
 add_executable(pointers_03 basics/04_pointers/main_04_pointers_03.cpp)
 add_executable(pointers_04 basics/04_pointers/main_04_pointers_04.cpp)
-add_executable(pointers_05 basics/04_pointers/main_04_pointers_05.cpp)
+# pointers_05: 빈 스텁 파일이라 빌드 대상에서 제외
 add_executable(pointers_06 basics/04_pointers/main_04_pointers_06.cpp)
 
 # basics/06_arrays
@@ -80,76 +79,76 @@ add_executable(io_stream_03 basics/07_io_streams/main_07_io_02.cpp)
 
 
 # basics/08_templates
-add_executable(templates_01 basics/08_templates/main.cpp)
-add_executable(templates_02 
-    basics/08_templates/main_01.cpp
+add_executable(templates_01 basics/08_templates/01_function_template.cpp)
+add_executable(templates_02
+    basics/08_templates/02_class_template.cpp
     basics/08_templates/headers/Box.h
 )
 
 # basics/09_exception_handling
-add_executable(exception_01 basics/09_exception_handling/main.cpp)
-add_executable(exception_02 basics/09_exception_handling/main_01.cpp)
-add_executable(exception_03 basics/09_exception_handling/main_02.cpp)
+add_executable(exception_01 basics/09_exception_handling/01_try_catch_throw.cpp)
+add_executable(exception_02 basics/09_exception_handling/02_stack_unwinding_raii.cpp)
+add_executable(exception_03 basics/09_exception_handling/03_custom_exception_rethrow.cpp)
 
 # basics/10_file
 add_executable(file_01 basics/10_file/file_01.cpp)
 add_executable(file_02 basics/10_file/file_02.cpp)
 
 # oop/01_class
-add_executable(class_01 oop/01_class/main_00.cpp)
-add_executable(class_02 oop/01_class/main_01.cpp)
-add_executable(class_03 oop/01_class/main_02.cpp)
-add_executable(class_04 
-    oop/01_class/main_03.cpp
+add_executable(class_01 oop/01_class/01_class_basic.cpp)
+add_executable(class_02 oop/01_class/02_constructor_date.cpp)
+add_executable(class_03 oop/01_class/03_this_pointer.cpp)
+add_executable(class_04
+    oop/01_class/04_static_member.cpp
     oop/01_class/header_files/Calculator.h
     oop/01_class/Calculator.cpp
 )
-add_executable(class_05 oop/01_class/main_04.cpp)
-add_executable(class_06 oop/01_class/main_05.cpp)
-add_executable(class_07 oop/01_class/main_06.cpp)
+add_executable(class_05 oop/01_class/05_friend.cpp)
+add_executable(class_06 oop/01_class/06_operator_overloading.cpp)
+add_executable(class_07 oop/01_class/07_deep_copy_string.cpp)
 
 # oop/02_inheritance
-add_executable(inheritance_01 oop/02_inheritance/main_00.cpp)
+add_executable(inheritance_01 oop/02_inheritance/01_basic_inheritance.cpp)
 target_include_directories(inheritance_01
     PRIVATE
     oop/02_inheritance/headers
 )
 add_executable(inheritance_02
-    oop/02_inheritance/main_01.cpp
+    oop/02_inheritance/02_inheritance_ostream.cpp
     oop/02_inheritance/Person.cpp
 )
-add_executable(inheritance_03 oop/02_inheritance/main_02.cpp)
+add_executable(inheritance_03 oop/02_inheritance/03_protected_inheritance.cpp)
 add_executable(hiding oop/02_inheritance/hiding.cpp)
 
 # oop/03_polymorphism
-add_executable(polymorphism_01 oop/03_polymorphism/main_00.cpp)
-add_executable(polymorphism_02 oop/03_polymorphism/main_01.cpp)
-add_executable(polymorphism_03 oop/03_polymorphism/main_02.cpp)
-add_executable(polymorphism_04 oop/03_polymorphism/main_03.cpp)
+add_executable(polymorphism_01 oop/03_polymorphism/01_virtual_function.cpp)
+add_executable(polymorphism_02 oop/03_polymorphism/02_covariant_return.cpp)
+add_executable(polymorphism_03 oop/03_polymorphism/03_reference_polymorphism.cpp)
+add_executable(polymorphism_04 oop/03_polymorphism/04_multiple_derived.cpp)
 
 # memory/smart_pointers
 add_executable(smart_pointers_01
     memory/smart_pointers/headers/Resource.h
-    memory/smart_pointers/main.cpp
+    memory/smart_pointers/01_move_semantics.cpp
     memory/smart_pointers/Resource.cpp
 )
-add_executable(smart_pointers_02 memory/smart_pointers/main_01.cpp)
-add_executable(smart_pointers_03 memory/smart_pointers/main_02.cpp)
-add_executable(smart_pointers_04 memory/smart_pointers/main_03.cpp)
+add_executable(smart_pointers_02 memory/smart_pointers/02_unique_ptr.cpp)
+add_executable(smart_pointers_03 memory/smart_pointers/03_shared_ptr.cpp)
+add_executable(smart_pointers_04 memory/smart_pointers/04_weak_ptr_cycle.cpp)
 
 # stl/vector
-add_executable(vector_01 stl/vector/main.cpp)
+add_executable(vector_01 stl/vector/vector_basic.cpp)
 add_executable(deque_01 stl/vector/deque.cpp)
 add_executable(list_01 stl/vector/list.cpp)
 
 # stl/set
-add_executable(set_01 stl/set/main.cpp)
+add_executable(set_01 stl/set/set_basic.cpp)
 
 # stl/map
-add_executable(map_01 stl/map/main.cpp)
+add_executable(map_01 stl/map/map_basic.cpp)
 
 # stl/unordered_map
-add_executable(unordered_map_01 stl/unordered_map/main.cpp)
+add_executable(unordered_map_01 stl/unordered_map/unordered_map_basic.cpp)
 
 # stl
 add_executable(iterator_01 stl/iterator.cpp)

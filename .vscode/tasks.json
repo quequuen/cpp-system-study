@@ -1,17 +1,41 @@
-// 컴파일 담당
-
+// 빌드 담당 - CMake + vcpkg 워크플로 기준
 {
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build c++",
+      "label": "CMake: configure",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-B", "build",
+        "-S", ".",
+        "-DCMAKE_TOOLCHAIN_FILE=/Users/ga_yeon/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "CMake: build",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "build"],
+      "group": { "kind": "build", "isDefault": true },
+      "dependsOn": "CMake: configure",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "compile current file (c++20)",
+      "detail": "CMake 없이 현재 열려 있는 파일 하나만 빠르게 컴파일",
       "type": "shell",
       "command": "clang++",
-      "args": ["-std=c++17", "main.cpp", "-o", "main"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
+      "args": [
+        "-std=c++20",
+        "-Wall",
+        "${file}",
+        "-o",
+        "${fileDirname}/${fileBasenameNoExtension}"
+      ],
+      "group": "build",
+      "problemMatcher": ["$gcc"]
     }
   ]
 }
