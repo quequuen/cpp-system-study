@@ -733,7 +733,38 @@ int main() {
   - `main()`은 연결을 받아서 `socket`을 만들어주고, 그 `socket`을 해당 `Thread`에게 넘김. 그러면 `main()`은 바로 다음 `Client`를 받을 수 있음.
   - 이렇게 `Thread`를 통해 `socket` 객체를 넘기지 않으면 다른 클라이언트 접속 후 `accept()`를 호출하지 못함.
 
-3. Session 클래스 분리
+3. `Session` 클래스 분리
+   2번에서 Client 하나의 전체 관리를 `handle_client`가 했다면 이 작업을 `Session`이라는 객체로 묶어서 관리하는 것.
+   - `Session`
+     Client 한 명의 연결과 통신 상태를 관리하는 객체.
+
+     ```
+     Client A
+     ↕
+     Session A
+     └── socket A
+
+     Client B
+     ↕
+     Session B
+     └── socket B
+
+     Client C
+     ↕
+     Session C
+     └── socket C
+     ```
+
+     서버는 이제 `socket`을 직접 관리하는 것이 아닌
+
+     ```
+     Server
+     ├── Session A
+     ├── Session B
+     └── Session C
+     ```
+
+     처럼 Client별 Session을 관리하게 됨.
 
 4. Broadcast
 
