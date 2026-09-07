@@ -43,6 +43,9 @@ void handle_client(tcp::socket socket) {
       }
 
       std::string message(buffer, length);
+      // buffer가 클라이언트와 연결되는 게 아님
+      // 이미 socket이 연결되어 있고 read_some()이 그 socket을 통해 데이터를
+      // 받아서 buffer에 복사해주는 개념.
 
       std::cout << "Client: " << message;
 
@@ -85,6 +88,7 @@ int main() {
 
       // Client 연결을 기다림
       acceptor.accept(socket, ec);
+      // accept가 성공할 때, socket이 해당 client와 연결된 TCP socket이 됨.
 
       if (ec) {
         std::cerr << "Accept error: " << ec.message() << '\n';
