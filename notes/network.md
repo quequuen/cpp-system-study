@@ -710,6 +710,7 @@ int main() {
       // Socket을 새로운 Thread로 이동
       std::thread client_thread(handle_client, std::move(socket));
 
+
       // Thread를 독립적으로 실행
       client_thread.detach();
     }
@@ -719,6 +720,18 @@ int main() {
   }
 }
 ```
+
+- `socket.read_some(boost::asio::buffer(buffer), ec);`
+  - `buffer`가 클라이언트와 연결되는 게 아님
+  - 이미 `socket`이 연결되어 있고 `read_some()`이 그 `socket`을 통해 데이터를 받아서 `buffer`에 복사해주는 개념.
+
+- `std::move(socket)`
+  - `socket` 객체가 Clinet와 연결된 상태가 되고, 그 연결된 `socket`객체의 소유권을 `handle_client()`로 넘긴 것
+  - `main`은 그저 `Client`의 연결을 받기만 할 뿐, 실질적인 통신은 `handle_client()`가 함
+  - `std::move(socket)`이 해당 `socket` 객체를 자신이 계속 가지고 있지 않고 다른 곳으로 소유권을 넘길 것을 선언.
+  - 해당 작어으로 인해 `socket`이 복사되는 게 아님. `main()`의 `socket`은 더 이상 그 연결을 소유하지 않을 뿐임.
+  - `main()`은 연결을 받아서 `socket`을 만들어주고, 그 `socket`을 해당 `Thread`에게 넘김. 그러면 `main()`은 바로 다음 `Client`를 받을 수 있음.
+  - 이렇게 `Thread`를 통해 `socket` 객체를 넘기지 않으면 다른 클라이언트 접속 후 `accept()`를 호출하지 못함.
 
 3. Session 클래스 분리
 
