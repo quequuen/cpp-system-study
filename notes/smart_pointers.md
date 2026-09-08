@@ -212,7 +212,7 @@ int main() {
 - `std::make_shared`로 사용 가능함.
 - `use_count()`로 현재 소유자 수 확인이 가능함.
 - `unique_ptr`보다 오버
-- `shared_ptr`을 가리키다 보면 서로가 서로를 가리킬 때가 발생함. **(숨환 참조 발생)** → `std::weak_ptr` 사용.
+- `shared_ptr`을 가리키다 보면 서로가 서로를 가리킬 때가 발생함. **(순환 참조 발생)** → `std::weak_ptr` 사용.
 
 ### `std::weak_ptr`
 
