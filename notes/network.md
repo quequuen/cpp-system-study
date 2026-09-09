@@ -891,6 +891,22 @@ make_shared()로 인해 main의 지역변수 session이 사라져도 Thread의 �
 
 4. Broadcast
 
+현재 서버는 기본적으로 클라이언트 1명 ↔ 서버 1개의 통신 구조를 사용하는 **Echo Server.** 한 클라이언트가 보낸 메시지를 서버에 연결된 다른 모든 클라이언트에게 전달하는 **Broadcast**로 변경할 예정.
+
+```
+Client A
+   │
+   │ "Hello"
+   ↓
+Server
+   │
+   ├────────→ Client A
+   ├────────→ Client B
+   └────────→ Client C
+```
+
+이런 식으로 서버가 모든 클라이언트에게 전달을 해주려면 각각의 클라이언트를 알고 있어야 함. 즉, 서버가 각각의 Session들을 어딘가에 저장하고 있어야 함.
+
 5. Disconnect 처리
 
 6. 최종 Chat Server
