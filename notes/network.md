@@ -900,9 +900,11 @@ Client A
    ↓
 Server
    │
-   ├────────→ Client A
-   ├────────→ Client B
-   └────────→ Client C
+   ├── sessions
+   │     │
+   │     ├── Session A ── Client A
+   │     ├── Session B ── Client B
+   │     └── Session C ── Client C
 ```
 
 이런 식으로 서버가 모든 클라이언트에게 전달을 해주려면 각각의 클라이언트를 알고 있어야 함. 즉, 서버가 각각의 Session들을 어딘가에 저장하고 있어야 함.
