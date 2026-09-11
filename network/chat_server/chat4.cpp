@@ -91,17 +91,27 @@ void broadcast(
     const std::string& message,
     std::shared_ptr<Session>
         sender) {  // 보내야 할 메시지와 메시지를 보낸 Client의 Session
-  // sessions를 읽는 동안 다른 Thread가 수정하지 못하도록 잠금
-  std::lock_guard<std::mutex> lock(sessions_mutex);
-  // sessions을 사용하는 동안 Main Thread가 mutex를 획득하지 못하게 함
 
-  for (auto& session : sessions) {
-    // 메시지를 보낸 Client는 제외
-    if (session != sender) {
-      session->send(message);
+  std::vector<std::shared_ptr<Session>> targets;
+
+  {
+    // sessions를 읽는 동안 다른 Thread가 수정하지 못하도록 잠금
+    std::lock_guard<std::mutex> lock(sessions_mutex);
+    // sessions을 사용하는 동안 Main Thread가 mutex를 획득하지 못하게 함
+
+    for (auto& session : sessions) {
+      // 메시지를 보낸 Client는 제외
+      if (session != sender) {
+        targets.push_back(session);
+      }
     }
+  }  // 여기서 lock_guard 자동으로 unlock
+
+  // mutex를 잡지 않은 상태에서 네트워크 전송
+  for (auto& session : targets) {
+    session->send(message);
   }
-}  // 여기서 lock_guard 자동으로 unlock
+}
 
 int main() {
   try {
