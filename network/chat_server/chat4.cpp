@@ -96,8 +96,8 @@ void broadcast(
 
   {
     // sessions를 읽는 동안 다른 Thread가 수정하지 못하도록 잠금
+    // 다른 Thread가 같은 mutex를 획득하지 못하도록 잠금
     std::lock_guard<std::mutex> lock(sessions_mutex);
-    // sessions을 사용하는 동안 Main Thread가 mutex를 획득하지 못하게 함
 
     for (auto& session : sessions) {
       // 메시지를 보낸 Client는 제외
@@ -142,8 +142,9 @@ int main() {
 
       // Server의 Session 목록에 추가
       {
+        // sessions에 접근하는 동안
+        // 다른 Thread가 같은 mutex를 획득하지 못하도록 함
         std::lock_guard<std::mutex> lock(sessions_mutex);
-        // sessions를 사용하는 동안 Thread가 mutex를 획득하지 못하게 함
 
         sessions.push_back(session);
       }  // 여기서 lock_guard 자동으로 unlock
