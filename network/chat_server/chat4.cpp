@@ -77,6 +77,7 @@ class Session : public std::enable_shared_from_this<Session> {
 
         // 나를 제외한 모든 Client에게 전송
         broadcast(message, shared_from_this());
+        // shared_from_this()가 현재 실행 중인 Session 자신을 반환
       }
 
     } catch (const std::exception& e) {
@@ -86,9 +87,13 @@ class Session : public std::enable_shared_from_this<Session> {
 };
 
 // Broadcast
-void broadcast(const std::string& message, std::shared_ptr<Session> sender) {
+void broadcast(
+    const std::string& message,
+    std::shared_ptr<Session>
+        sender) {  // 보내야 할 메시지와 메시지를 보낸 Client의 Session
   // sessions를 읽는 동안 다른 Thread가 수정하지 못하도록 잠금
   std::lock_guard<std::mutex> lock(sessions_mutex);
+  // sessions을 사용하는 동안 Main Thread가 mutex를 획득하지 못하게 함
 
   for (auto& session : sessions) {
     // 메시지를 보낸 Client는 제외
@@ -96,7 +101,7 @@ void broadcast(const std::string& message, std::shared_ptr<Session> sender) {
       session->send(message);
     }
   }
-}
+}  // 여기서 lock_guard 자동으로 unlock
 
 int main() {
   try {
@@ -128,9 +133,10 @@ int main() {
       // Server의 Session 목록에 추가
       {
         std::lock_guard<std::mutex> lock(sessions_mutex);
+        // sessions를 사용하는 동안 Thread가 mutex를 획득하지 못하게 함
 
         sessions.push_back(session);
-      }
+      }  // 여기서 lock_guard 자동으로 unlock
 
       // Session을 별도의 Thread에서 실행
       std::thread client_thread(&Session::run, session);
