@@ -27,7 +27,7 @@ socket 종료
 Session 정리
 */
 
-#include <algorithm>
+#include <algorithm>  // std::find()
 #include <boost/asio.hpp>
 #include <iostream>
 #include <memory>
