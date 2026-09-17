@@ -103,111 +103,111 @@ class Session : public std::enable_shared_from_this<Session> {
 
       std::cout << "Session disconnected\n";
     }
-
-    // Client와 통신
-    void run() {
-      try {
-        std::cout << "Client connected\n";
-
-        for (;;) {
-          char buffer[1024];
-
-          boost::system::error_code ec;
-
-          std::size_t length =
-              socket.read_some(boost::asio::buffer(buffer), ec);
-
-          if (ec == boost::asio::error::eof) {
-            std::cout << "Client disconnected\n";
-            break;
-          }
-
-          if (ec) {
-            std::cerr << "Read error: " << ec.message() << '\n';
-            break;
-          }
-
-          std::string message(buffer, length);
-
-          std::cout << "Client: " << message;
-
-          // 나를 제외한 모든 Client에게 전송
-          broadcast(message, shared_from_this());
-        }
-
-      } catch (const std::exception& e) {
-        std::cerr << "Session error: " << e.what() << '\n';
-      }
-
-      // 정상 종료든 오류 종료든
-      // run()이 끝나면 연결 종료 처리
-      disconnect();
-    }
-  };
-
-  // Broadcast
-  void broadcast(const std::string& message, std::shared_ptr<Session> sender) {
-    std::vector<std::shared_ptr<Session>> targets;
-
-    {
-      // sessions를 읽는 동안 다른 Thread가 수정하지 못하도록 잠금
-      std::lock_guard<std::mutex> lock(sessions_mutex);
-
-      for (auto& session : sessions) {
-        // 메시지를 보낸 Session은 제외
-        if (session != sender) {
-          targets.push_back(session);
-        }
-      }
-    }  // 여기서 mutex 자동 해제
-
-    // mutex를 잡지 않은 상태에서 네트워크 전송
-    for (auto& session : targets) {
-      session->send(message);
-    }
   }
 
-  int main() {
+  // Client와 통신
+  void run() {
     try {
-      boost::asio::io_context io_context;
-
-      tcp::endpoint endpoint(tcp::v4(), 13);
-
-      tcp::acceptor acceptor(io_context, endpoint);
-
-      std::cout << "Server started\n";
+      std::cout << "Client connected\n";
 
       for (;;) {
-        std::cout << "Waiting for client...\n";
-
-        tcp::socket socket(io_context);
+        char buffer[1024];
 
         boost::system::error_code ec;
 
-        acceptor.accept(socket, ec);
+        std::size_t length = socket.read_some(boost::asio::buffer(buffer), ec);
 
-        if (ec) {
-          std::cerr << "Accept error: " << ec.message() << '\n';
-          continue;
+        if (ec == boost::asio::error::eof) {
+          std::cout << "Client disconnected\n";
+          break;
         }
 
-        // 새로운 Session 생성
-        auto session = std::make_shared<Session>(std::move(socket));
+        if (ec) {
+          std::cerr << "Read error: " << ec.message() << '\n';
+          break;
+        }
 
-        // Server의 Session 목록에 추가
-        {
-          std::lock_guard<std::mutex> lock(sessions_mutex);
+        std::string message(buffer, length);
 
-          sessions.push_back(session);
-        }  // 여기서 mutex 자동 해제
+        std::cout << "Client: " << message;
 
-        // Session을 별도 Thread에서 실행
-        std::thread client_thread(&Session::run, session);
-
-        client_thread.detach();
+        // 나를 제외한 모든 Client에게 전송
+        broadcast(message, shared_from_this());
       }
 
     } catch (const std::exception& e) {
-      std::cerr << "Server error: " << e.what() << '\n';
+      std::cerr << "Session error: " << e.what() << '\n';
     }
+
+    // 정상 종료든 오류 종료든
+    // run()이 끝나면 연결 종료 처리
+    disconnect();
   }
+};
+
+// Broadcast
+void broadcast(const std::string& message, std::shared_ptr<Session> sender) {
+  std::vector<std::shared_ptr<Session>> targets;
+
+  {
+    // sessions를 읽는 동안 다른 Thread가 수정하지 못하도록 잠금
+    std::lock_guard<std::mutex> lock(sessions_mutex);
+
+    for (auto& session : sessions) {
+      // 메시지를 보낸 Session은 제외
+      if (session != sender) {
+        targets.push_back(session);
+      }
+    }
+  }  // 여기서 mutex 자동 해제
+
+  // mutex를 잡지 않은 상태에서 네트워크 전송
+  for (auto& session : targets) {
+    session->send(message);
+  }
+}
+
+int main() {
+  try {
+    boost::asio::io_context io_context;
+
+    tcp::endpoint endpoint(tcp::v4(), 13);
+
+    tcp::acceptor acceptor(io_context, endpoint);
+
+    std::cout << "Server started\n";
+
+    for (;;) {
+      std::cout << "Waiting for client...\n";
+
+      tcp::socket socket(io_context);
+
+      boost::system::error_code ec;
+
+      acceptor.accept(socket, ec);
+
+      if (ec) {
+        std::cerr << "Accept error: " << ec.message() << '\n';
+        continue;
+      }
+
+      // 새로운 Session 생성
+      auto session = std::make_shared<Session>(std::move(socket));
+
+      // Server의 Session 목록에 추가
+      {
+        std::lock_guard<std::mutex> lock(sessions_mutex);
+
+        sessions.push_back(session);
+      }  // 여기서 mutex 자동 해제
+
+      // Session을 별도 Thread에서 실행
+      std::thread client_thread(&Session::run, session);
+
+      client_thread.detach();
+    }
+
+  } catch (const std::exception& e) {
+    std::cerr << "Server error: " << e.what() << '\n';
+  }
+}

@@ -1304,13 +1304,9 @@ int main() {
 
   // sessions에서 현재 Session과 같은 객체를 찾음
   auto it = std::find(sessions.begin(), sessions.end(), self);
-  // 반환 받은 it은 '해당 객체의 위치'
-  // std::find()는 sessions 안에서 self를 찾고, 찾았다면 그 위치를 가리키는 iterator를 반환
-  // 하지만 찾지 못했다면 sessions.end() → sessions의 마지막 원소가 아닌 마지막 원소의 다음 위치를 반환
 
   // 찾았다면 sessions에서 제거
   if (it != sessions.end()) {
-  // sessions.end() → 마지막 원소의 다음 위치 → 만약 원소를 찾지 못했다면 sessions에서 해당 session을 제거
   sessions.erase(it);
   }
   ```
