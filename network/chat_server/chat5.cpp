@@ -46,21 +46,27 @@ std::vector<std::shared_ptr<Session>> sessions;
 std::mutex sessions_mutex;
 
 // broadcast 전방 선언
-void broadcast(const std::string& message, std::shared_ptr<Session> sender);
+void broadcast(const std::string& name, const std::string& message,
+               std::shared_ptr<Session> sender);
 
 // Session
 class Session : public std::enable_shared_from_this<Session> {
  private:
   tcp::socket socket;
+  std::string name;
 
  public:
-  Session(tcp::socket socket) : socket(std::move(socket)) {}
+  Session(tcp::socket socket, std::string name)
+      : socket(std::move(socket)), name(std::move(name)) {}
 
   // 메시지를 이 Session의 Client에게 전송
-  void send(const std::string& message) {
+  void send(const std::string& name, const std::string& message) {
     boost::system::error_code ec;
 
-    boost::asio::write(socket, boost::asio::buffer(message), ec);
+    std::string formatted_message = name + ": " + message;
+    // name: message 형태로 formatting
+
+    boost::asio::write(socket, boost::asio::buffer(formatted_message), ec);
 
     if (ec) {
       std::cerr << "Write error: " << ec.message() << '\n';
@@ -108,7 +114,7 @@ class Session : public std::enable_shared_from_this<Session> {
   // Client와 통신
   void run() {
     try {
-      std::cout << "Client connected\n";
+      std::cout << name << " connected\n";
 
       for (;;) {
         char buffer[1024];
@@ -118,7 +124,7 @@ class Session : public std::enable_shared_from_this<Session> {
         std::size_t length = socket.read_some(boost::asio::buffer(buffer), ec);
 
         if (ec == boost::asio::error::eof) {
-          std::cout << "Client disconnected\n";
+          std::cout << name << " disconnected\n";
           break;
         }
 
@@ -129,10 +135,10 @@ class Session : public std::enable_shared_from_this<Session> {
 
         std::string message(buffer, length);
 
-        std::cout << "Client: " << message;
+        std::cout << name << " " << message;
 
         // 나를 제외한 모든 Client에게 전송
-        broadcast(message, shared_from_this());
+        broadcast(name, message, shared_from_this());
       }
 
     } catch (const std::exception& e) {
@@ -146,7 +152,8 @@ class Session : public std::enable_shared_from_this<Session> {
 };
 
 // Broadcast
-void broadcast(const std::string& message, std::shared_ptr<Session> sender) {
+void broadcast(const std::string& name, const std::string& message,
+               std::shared_ptr<Session> sender) {
   std::vector<std::shared_ptr<Session>> targets;
 
   {
@@ -163,7 +170,7 @@ void broadcast(const std::string& message, std::shared_ptr<Session> sender) {
 
   // mutex를 잡지 않은 상태에서 네트워크 전송
   for (auto& session : targets) {
-    session->send(message);
+    session->send(name, message);
   }
 }
 
@@ -176,6 +183,8 @@ int main() {
     tcp::acceptor acceptor(io_context, endpoint);
 
     std::cout << "Server started\n";
+
+    int client_number = 1;
 
     for (;;) {
       std::cout << "Waiting for client...\n";
@@ -192,7 +201,8 @@ int main() {
       }
 
       // 새로운 Session 생성
-      auto session = std::make_shared<Session>(std::move(socket));
+      auto session = std::make_shared<Session>(
+          std::move(socket), "Client" + std::to_string(client_number++));
 
       // Server의 Session 목록에 추가
       {
