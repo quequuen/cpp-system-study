@@ -1314,4 +1314,50 @@ int main() {
   - `std::find()`: `sessions` 안에서 `self`를 찾고, 찾았다면 그 위치를 가리키는 iterator를 반환. 찾지 못했다면 sessions.end() → sessions의 마지막 원소가 아닌 마지막 원소의 다음 위치를 반환.
   - `if(it != sessions.end())`: `it`이 만약 마지막 원소의 다음 위치, 다시 말해 원소를 찾지 못했다면 `sessions.erase(it)` 실행 → sessions에서 해당 session을 제거.
 
-6. 최종 Chat Server
+6. `data framing`
+
+현재 TCP 입장에서는 전달되는 메시지가 그저 '바이트 덩어리'. `JSON`, `HTML`, 이미지, 문자열, 게임 데이터 등과 데이터의 종류를 구분하지 못함. 또한 TCP는 개발자가 `send()`한 단위대로 `recv()`하게 해주지 않음. → 이게 바로 프레이밍이 필요한 이유. TCP가 보장하는 것은 단지 **바이트의 순서와 전달**.
+해당 코드에서는 데이터를 `JSON` 형태로 전달 및 newline framing을 할 예정.
+
+```
+TCP
+│
+├─ JSON인지 모름
+├─ 메시지 경계도 모름
+│
+└─ 바이트를 순서대로 전달
+         ↓
+   우리가 프로토콜을 정의
+         ↓
+      프레이밍
+         ↓
+    메시지 하나 추출
+         ↓
+      JSON 파싱
+         ↓
+ sender / message / timestamp ...
+         ↓
+       UI에 표시 (현재 코드에서 UI는 미구현)
+```
+
+해당 과정에서 수신자 측 버퍼에 계속적으로 축적.
+
+```
+{"sender":"Client1","message":"hi"}\n{"sender":"Client2","message":"hello"}\n
+```
+
+버퍼에 이런 형태로 붙어있을 수 있는 데이터를
+
+```
+read_some()
+      ↓
+receive_buffer에 계속 붙임
+      ↓
+\n 찾기
+      ↓
+\n 이전까지 = 완성된 메시지
+      ↓
+JSON 파싱
+```
+
+이런 과정으로 프레이밍. 여기서 중요한 개념은 받은 데이터를 전부 모은 다음 프레이밍 하는 것이 아닌, **TCP에서 조금씩 받은 데이터를 버퍼에 누적하면서, 완성된 프레임이 생길 때마다 꺼내서 처리**. → TCP 프레이밍에서 `receive_buffer`가 존재하는 이유.
