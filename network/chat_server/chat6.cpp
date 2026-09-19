@@ -32,6 +32,49 @@ receive_buffer에 계속 붙임
 \n 이전까지 = 완성된 메시지
       ↓
 JSON 파싱
+
+통신 구조:
+Client 1
+   │
+   │ "hello" 입력
+   ↓
+Server의 Session 1
+   │
+   │ run()
+   ↓
+socket.read_some()
+   ↓
+receive_buffer
+   ↓
+프레이밍
+   ↓
+JSON 파싱
+   ↓
+message = "hello"
+   ↓
+broadcast()
+   │
+   ├──────────────→ Session 2
+   │                    │
+   │                    ↓
+   │                  send()
+   │                    │
+   │                    ↓
+   │                 socket
+   │                    │
+   │                    ↓
+   │                 Client 2
+   │                    │
+   │                    ↓
+   │                화면에 표시
+   │
+   └──────────────→ Session 3
+                        │
+                        ↓
+                      send()
+                        │
+                        ↓
+                     Client 3
 */
 
 #include <algorithm>
@@ -39,11 +82,13 @@ JSON 파싱
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <nlohmann/json.hpp>  // json 사용
 #include <string>
 #include <thread>
 #include <vector>
 
 using boost::asio::ip::tcp;
+using json = nlohmann::json;
 
 // 전방 선언
 class Session;
@@ -61,6 +106,7 @@ class Session : public std::enable_shared_from_this<Session> {
  private:
   tcp::socket socket;
   std::string name;
+  std::string receive_buffer;
 
  public:
   Session(tcp::socket socket, std::string name)
@@ -68,10 +114,14 @@ class Session : public std::enable_shared_from_this<Session> {
 
   // 메시지를 이 Session의 Client에게 전송
   void send(const std::string& name, const std::string& message) {
-    boost::system::error_code ec;
+    json data;
 
-    std::string formatted_message = name + ": " + message;
-    // name: message 형태로 formatting
+    data["sender"] = name;
+    data["message"] = message;
+
+    std::string formatted_message = data.dump() + "\n";
+
+    boost::system::error_code ec;
 
     boost::asio::write(socket, boost::asio::buffer(formatted_message), ec);
 
@@ -91,15 +141,8 @@ class Session : public std::enable_shared_from_this<Session> {
 
       // sessions에서 현재 Session과 같은 객체를 찾음
       auto it = std::find(sessions.begin(), sessions.end(), self);
-      // 반환 받은 it은 '해당 객체의 위치'
-      // std::find()는 sessions 안에서 self를 찾고, 찾았다면 그 위치를 가리키는
-      // iterator를 반환 하지만 찾지 못했다면 sessions.end() → sessions의 마지막
-      // 원소가 아닌 마지막 원소의 다음 위치를 반환
 
-      // 찾았다면 sessions에서 제거
       if (it != sessions.end()) {
-        // sessions.end() → 마지막 원소의 다음 위치 → 만약 원소를 찾지 못했다면
-        // sessions에서 해당 session을 제거
         sessions.erase(it);
       }  // 여기서 lock_guard 자동 unlock
 
@@ -140,12 +183,28 @@ class Session : public std::enable_shared_from_this<Session> {
           break;
         }
 
-        std::string message(buffer, length);
+        receive_buffer.append(buffer, length);
 
-        std::cout << name << " " << message;
+        // buffer에 들어온 프레이밍된 데이터 json으로 복구 후 broadcast
+        while (true) {
+          auto pos = receive_buffer.find('\n');
 
-        // 나를 제외한 모든 Client에게 전송
-        broadcast(name, message, shared_from_this());
+          if (pos == std::string::npos) {
+            break;
+          }
+
+          std::string frame = receive_buffer.substr(0, pos);
+
+          receive_buffer.erase(0, pos + 1);
+
+          // frame = JSON 하나
+
+          json data = json::parse(frame);
+
+          std std::string message = data["message"];
+
+          broadcast(name, message, shared_from_this());
+        }
       }
 
     } catch (const std::exception& e) {

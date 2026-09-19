@@ -13,6 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 find_package(fmt CONFIG REQUIRED)
 find_package(Boost REQUIRED)
 find_package(Threads REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 
 # 각 학습 프로그램 추가
@@ -183,3 +184,5 @@ add_executable(tcp_chat_04 network/chat_server/chat4.cpp)
 target_link_libraries(tcp_chat_04 PRIVATE Boost::boost Threads::Threads)
 add_executable(tcp_chat_05 network/chat_server/chat5.cpp)
 target_link_libraries(tcp_chat_05 PRIVATE Boost::boost Threads::Threads)
+add_executable(tcp_chat_06 network/chat_server/chat6.cpp)
+target_link_libraries(tcp_chat_06 PRIVATE Boost::boost Threads::Threads nlohmann_json::nlohmann_json)
