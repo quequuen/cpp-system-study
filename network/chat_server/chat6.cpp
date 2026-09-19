@@ -112,7 +112,7 @@ class Session : public std::enable_shared_from_this<Session> {
   Session(tcp::socket socket, std::string name)
       : socket(std::move(socket)), name(std::move(name)) {}
 
-  // 메시지를 이 Session의 Client에게 전송
+  // 특정 클라이언트에게 실제로 데이터를 보내는 역할
   void send(const std::string& name, const std::string& message) {
     json data;
 
@@ -161,7 +161,7 @@ class Session : public std::enable_shared_from_this<Session> {
     }
   }
 
-  // Client와 통신
+  // 이 Client와 통신하는 역할
   void run() {
     try {
       std::cout << name << " connected\n";
@@ -217,7 +217,7 @@ class Session : public std::enable_shared_from_this<Session> {
   }
 };
 
-// Broadcast
+// 받은 메시지를 누구에게 보낼지 결정하는 역할
 void broadcast(const std::string& name, const std::string& message,
                std::shared_ptr<Session> sender) {
   std::vector<std::shared_ptr<Session>> targets;
