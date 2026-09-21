@@ -113,6 +113,28 @@ class Session : public std::enable_shared_from_this<Session> {
       : socket(std::move(socket)), name(std::move(name)) {}
 
   // 특정 클라이언트에게 실제로 데이터를 보내는 역할
+  /*
+    Client1
+    │
+    │ sender
+    ↓
+    JSON 생성
+    │
+    ↓
+    {"sender":"Client1","message":"hello"}
+    │
+    ↓
+    \n 붙이기
+    │
+    ↓
+    boost::asio::write()
+    │
+    ↓
+    Session2의 socket
+    │
+    ↓
+    Client2
+  */
   void send(const std::string& name, const std::string& message) {
     json data;
 
@@ -162,6 +184,22 @@ class Session : public std::enable_shared_from_this<Session> {
   }
 
   // 이 Client와 통신하는 역할
+  /*
+  Session(Client1)
+         │
+         ↓
+       run()
+         │
+         ├── Client1에게서 데이터 받기
+         │
+         ├── receive_buffer에 누적
+         │
+         ├── framing
+         │
+         ├── JSON parsing
+         │
+         └── broadcast() 호출
+  */
   void run() {
     try {
       std::cout << name << " connected\n";
@@ -218,6 +256,15 @@ class Session : public std::enable_shared_from_this<Session> {
 };
 
 // 받은 메시지를 누구에게 보낼지 결정하는 역할
+/*
+Client1
+   │
+   ↓
+Session1.run()
+   │
+   ↓
+broadcast()
+*/
 void broadcast(const std::string& name, const std::string& message,
                std::shared_ptr<Session> sender) {
   std::vector<std::shared_ptr<Session>> targets;
