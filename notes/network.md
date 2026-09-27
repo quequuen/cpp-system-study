@@ -1634,3 +1634,40 @@ int main() {
   ↓
   Client2
   ```
+
+스레드를 분리하면 여러 작업을 동시에 실행할 수 있음.
+
+하지만 여러 스레드가 **같은 공유 자원**에 접근할 경우에는
+동시 접근을 안전하게 관리해야 함.
+
+현재 서버에서 대표적인 공유 자원은 두 가지.
+
+- `sessions`
+
+여러 스레드가 `sessions vector`를 동시에 접근할 수 있음.
+
+```
+Thread A ──┐
+Thread B ──┼──→ sessions vector
+Thread C ──┘
+```
+
+따라서 `sessions_mutex`로 접근을 보호함.
+
+```cpp
+std::lock_guard<std::mutex> lock(sessions_mutex);
+```
+
+- 같은 Session의 `socket`
+
+여러 클라이언트의 Thread가 동시에 같은 Session으로 메시지를 보내려고 할 수 있음.
+
+```
+Thread A ──→ Session C
+Thread B ──→ Session C
+                 │
+              Socket C
+```
+
+특히 비동기I/O에서는 여러 `write` 작업이 같은 socket에 동시에 outstanding 상태가 되지 않도록 write를 직렬화하는 구조가 필요함.
+이를 위해 `write mutex` 또는 `write queue`를 사용할 수 있음.
