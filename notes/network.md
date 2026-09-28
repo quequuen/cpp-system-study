@@ -1644,30 +1644,61 @@ int main() {
 
 - `sessions`
 
-여러 스레드가 `sessions vector`를 동시에 접근할 수 있음.
+  여러 스레드가 `sessions vector`를 동시에 접근할 수 있음.
 
-```
-Thread A ──┐
-Thread B ──┼──→ sessions vector
-Thread C ──┘
-```
+  ```
+  Thread A ──┐
+  Thread B ──┼──→ sessions vector
+  Thread C ──┘
+  ```
 
-따라서 `sessions_mutex`로 접근을 보호함.
+  따라서 `sessions_mutex`로 접근을 보호함.
 
-```cpp
-std::lock_guard<std::mutex> lock(sessions_mutex);
-```
+  ```cpp
+  std::lock_guard<std::mutex> lock(sessions_mutex);
+  ```
 
 - 같은 Session의 `socket`
 
-여러 클라이언트의 Thread가 동시에 같은 Session으로 메시지를 보내려고 할 수 있음.
+  여러 클라이언트의 Thread가 동시에 같은 Session으로 메시지를 보내려고 할 수 있음.
 
-```
-Thread A ──→ Session C
-Thread B ──→ Session C
-                 │
+  ```
+  Thread A ──→ Session C
+  Thread B ──→ Session C
+                  │
               Socket C
-```
+  ```
 
-특히 비동기I/O에서는 여러 `write` 작업이 같은 socket에 동시에 outstanding 상태가 되지 않도록 write를 직렬화하는 구조가 필요함.
-이를 위해 `write mutex` 또는 `write queue`를 사용할 수 있음.
+  특히 비동기I/O에서는 여러 `write` 작업이 같은 socket에 동시에 outstanding 상태가 되지 않도록 write를 직렬화하는 구조가 필요함.
+  이를 위해 `write mutex` 또는 `write queue`를 사용할 수 있음.
+  - `Write Queue`
+    각 Session이 자신에게 보낼 메시지를 queue에 저장하고, 한 번에 하나의 write만 진해하도록 만듦.
+
+    ```cpp
+                        Session C
+                            │
+    Thread A ── "hello" ──→ │
+    Thread B ── "world" ──→ │
+    Thread D ── "nice!" ──→ │
+                            ↓
+                    ┌─────────────┐
+                    │ Write Queue │
+                    ├─────────────┤
+                    │ "hello"     │
+                    │ "world"     │
+                    │ "nice!"     │
+                    └─────────────┘
+                            │
+                            ↓
+                        Socket C
+
+    hello write 완료
+        ↓
+    world write
+        ↓
+    nice! write
+    ```
+
+    - `sessions_mutex` → Session 목록에 대한 동시 접근 보호
+    - `write_mutex` → 같은 Session의 write에 대한 동시 접근 보호
+    - `write queue` → 여러 메시지의 write를 순서대로 처리
