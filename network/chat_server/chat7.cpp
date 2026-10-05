@@ -29,7 +29,9 @@ class Session : public std::enable_shared_from_this<Session> {
   std::string name;
   std::string receive_buffer;
 
-  std::mutex write_mutex;
+  std::mutex write_mutex;  // 각 Session이 가지고 있는 socket의 write 보호
+  // sessions_mutex처럼 전역으로 하나를 만드는 게 아닌 Session마다 하나씩 가지고
+  // 있어야 함
 
  public:
   Session(tcp::socket socket, std::string name)
@@ -38,6 +40,10 @@ class Session : public std::enable_shared_from_this<Session> {
   // 특정 클라이언트에게 실제로 데이터를 보내는 역할
   void send(const std::string& name, const std::string& message) {
     std::lock_guard<std::mutex> lock(write_mutex);
+    // 여러 스레드가 동시에 동일 Session의 같은 socket에 write하려고 해도, 실제
+    // socket write 부분은 한 번에 하나의 스레드만 들어가게 됨
+    // 지금의 wirte_mutex는 동시에 write하지 못하게 하는 것이지 메시지를
+    // 저장해두고 나중에 순서대로 보내는 write queue와는 기능이 다름
 
     json data;
 
