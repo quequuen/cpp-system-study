@@ -1,3 +1,82 @@
+/*
+TCP
+│
+├─ JSON인지 모름
+├─ 메시지 경계도 모름
+│
+└─ 바이트를 순서대로 전달
+         ↓
+   우리가 프로토콜을 정의
+         ↓
+      프레이밍
+         ↓
+    메시지 하나 추출
+         ↓
+      JSON 파싱
+         ↓
+ sender / message / timestamp ...
+         ↓
+       UI에 표시 (현재 코드에서 UI는 미구현)
+
+서버가 보내는 실제 데이터:
+{"sender":"Client1","message":"hi"}\n
+{"sender":"Client2","message":"hello"}\n
+
+data framing:
+TCP에서 받은 조각
+      ↓
+receive_buffer에 계속 붙임
+      ↓
+\n 찾기
+      ↓
+\n 이전까지 = 완성된 메시지
+      ↓
+JSON 파싱
+
+통신 구조:
+Client 1
+   │
+   │ "hello" 입력
+   ↓
+Server의 Session 1
+   │
+   │ run()
+   ↓
+socket.read_some()
+   ↓
+receive_buffer
+   ↓
+프레이밍
+   ↓
+JSON 파싱
+   ↓
+message = "hello"
+   ↓
+broadcast()
+   │
+   ├──────────────→ Session 2
+   │                    │
+   │                    ↓
+   │                  send()
+   │                    │
+   │                    ↓
+   │                 socket
+   │                    │
+   │                    ↓
+   │                 Client 2
+   │                    │
+   │                    ↓
+   │                화면에 표시
+   │
+   └──────────────→ Session 3
+                        │
+                        ↓
+                      send()
+                        │
+                        ↓
+                     Client 3
+*/
+
 #include <algorithm>
 #include <boost/asio.hpp>
 #include <iostream>
@@ -29,22 +108,34 @@ class Session : public std::enable_shared_from_this<Session> {
   std::string name;
   std::string receive_buffer;
 
-  std::mutex write_mutex;  // 각 Session이 가지고 있는 socket의 write 보호
-  // sessions_mutex처럼 전역으로 하나를 만드는 게 아닌 Session마다 하나씩 가지고
-  // 있어야 함
-
  public:
   Session(tcp::socket socket, std::string name)
       : socket(std::move(socket)), name(std::move(name)) {}
 
   // 특정 클라이언트에게 실제로 데이터를 보내는 역할
+  /*
+    Client1
+    │
+    │ sender
+    ↓
+    JSON 생성
+    │
+    ↓
+    {"sender":"Client1","message":"hello"}
+    │
+    ↓
+    \n 붙이기
+    │
+    ↓
+    boost::asio::write()
+    │
+    ↓
+    Session2의 socket
+    │
+    ↓
+    Client2
+  */
   void send(const std::string& name, const std::string& message) {
-    std::lock_guard<std::mutex> lock(write_mutex);
-    // 여러 스레드가 동시에 동일 Session의 같은 socket에 write하려고 해도, 실제
-    // socket write 부분은 한 번에 하나의 스레드만 들어가게 됨
-    // 지금의 wirte_mutex는 동시에 write하지 못하게 하는 것이지 메시지를
-    // 저장해두고 나중에 순서대로 보내는 write queue와는 기능이 다름
-
     json data;
 
     data["sender"] = name;
@@ -93,6 +184,22 @@ class Session : public std::enable_shared_from_this<Session> {
   }
 
   // 이 Client와 통신하는 역할
+  /*
+  Session(Client1)
+         │
+         ↓
+       run()
+         │
+         ├── Client1에게서 데이터 받기
+         │
+         ├── receive_buffer에 누적
+         │
+         ├── framing
+         │
+         ├── JSON parsing
+         │
+         └── broadcast() 호출
+  */
   void run() {
     try {
       std::cout << name << " connected\n";
@@ -132,7 +239,7 @@ class Session : public std::enable_shared_from_this<Session> {
 
           json data = json::parse(frame);
 
-          std std::string message = data["message"];
+          std::string message = data["message"];
 
           broadcast(name, message, shared_from_this());
         }
@@ -149,6 +256,15 @@ class Session : public std::enable_shared_from_this<Session> {
 };
 
 // 받은 메시지를 누구에게 보낼지 결정하는 역할
+/*
+Client1
+   │
+   ↓
+Session1.run()
+   │
+   ↓
+broadcast()
+*/
 void broadcast(const std::string& name, const std::string& message,
                std::shared_ptr<Session> sender) {
   std::vector<std::shared_ptr<Session>> targets;
