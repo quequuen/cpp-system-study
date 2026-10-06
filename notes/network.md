@@ -1702,3 +1702,5 @@ int main() {
     - `sessions_mutex` → Session 목록에 대한 동시 접근 보호
     - `write_mutex` → 같은 Session의 write에 대한 동시 접근 보호
     - `write queue` → 여러 메시지의 write를 순서대로 처리
+
+**[Boost.Asio](/notes/boost-asio.md)**
