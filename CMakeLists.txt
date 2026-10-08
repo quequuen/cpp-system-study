@@ -171,7 +171,7 @@ add_executable(lock concurrency/lock/lock.cpp)
 add_executable(scoped_lock concurrency/lock/scoped_lock.cpp)
 add_executable(lock_guard concurrency/lock/lock_guard.cpp)
 
-# network
+# network/tcp
 add_executable(tcp_basic network/tcp/tcp_basic.cpp)
 target_link_libraries(tcp_basic PRIVATE Boost::boost)
 add_executable(tcp_chat_read network/chat_server/read.cpp)
@@ -188,3 +188,7 @@ add_executable(tcp_chat_data_frame network/chat_server/data_frame.cpp)
 target_link_libraries(tcp_chat_data_frame PRIVATE Boost::boost Threads::Threads nlohmann_json::nlohmann_json)
 add_executable(tcp_chat_write_mutex network/chat_server/write_mutex.cpp)
 target_link_libraries(tcp_chat_write_mutex PRIVATE Boost::boost Threads::Threads nlohmann_json::nlohmann_json)
+
+# network/udp
+add_executable(udp_server network/udp/udp_server.cpp)
+add_executable(udp_client network/udp/udp_client.cpp)
