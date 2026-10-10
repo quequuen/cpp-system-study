@@ -1,3 +1,4 @@
+// UDP 에코 서버(Echo Server)
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -73,6 +74,11 @@ int main() {
     // 받은 데이터그램을 그대로 다시 전송
     sendto(server_socket, buffer, length, 0,
            reinterpret_cast<sockaddr*>(&client_address), client_address_length);
+    // sendto()가 응답을 보낼 때 새로운 소켓을 만들지 않음
+    // 서버는 기존 UDP 소켓을 사용해서 응답을 보내고, 목적지 주소로 수신한
+    // 클라이언트의 주소를 지정.
+    // TCP와 달리 UDP는 연결을 수립하지 않아도 됨. 클라이언트가 서버 주소와
+    // 포트를 지정해서 데이터그램을 보내는 개념.
   }
 
   close(server_socket);
