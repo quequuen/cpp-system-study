@@ -22,6 +22,7 @@ int main() {
   server_address.sin_port = htons(9000);
 
   inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
+  // 서버와 다르게 데이터를 어디로 보낼지 지정
 
   std::string message;
 
