@@ -1810,152 +1810,138 @@ UDP는 데이터그램 전달을 보장하지 않으므로, 실제 서비스에�
 
 - `udp_server`
 
-```cpp
-// UDP 에코 서버(Echo Server)
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
+  ```cpp
+  // UDP 에코 서버(Echo Server)
+  #include <arpa/inet.h>
+  #include <netinet/in.h>
+  #include <sys/socket.h>
+  #include <unistd.h>
 
-#include <cstring>
-#include <iostream>
+  #include <cstring>
+  #include <iostream>
 
-int main() {
-  // UDP socket 생성
-  int server_socket = socket(AF_INET, SOCK_DGRAM, 0);
+  int main() {
+    // UDP socket 생성
+    int server_socket = socket(AF_INET, SOCK_DGRAM, 0);
 
-  if (server_socket == -1) {
-    std::cerr << "socket() failed\n";
-    return 1;
-  }
+    if (server_socket == -1) {
+      std::cerr << "socket() failed\n";
+      return 1;
+    }
 
-  // 서버 주소 설정
-  sockaddr_in server_address{};  // IPv4 주소 정보를 담는 구조체
+    // 서버 주소 설정
+    sockaddr_in server_address{};  // IPv4 주소 정보를 담는 구조체
 
-  server_address.sin_family = AF_INET;  // IPv4 주소 체계 사용, AF_INET6 = IPv6
-  server_address.sin_addr.s_addr = INADDR_ANY;
-  // 서버가 특정 IP 하나에만 묶이지 않고, 사용가능한 모든 로컬
-  // IPv4 인터페이스의 주소에서 요청을 받도록 하겠다는 의미
-  // 컴퓨터 한 대는 여러 IP주소를 가지고 있을 수 있음. 예를 들어, Wi-Fi로
-  // 네트워크에 연결하는 IP, Ethernet 케이블로 연결하는 IP, 127.0.0.1이라는 자기
-  // 자신을 가리키는 루프백 주소. INADDR_ANY로 하면 밑에 설정한 포트 번호에서
-  // 로컬 IPv4 인터페이스의 주소를 대상으로 수신하도록 소켓을 설정.
-  // INADDR_ANY는 정확하게 말하자면 소켓 주소 설정에 사용하는 특별한 상수.
-  // 클라이언트의 접속 주소로 쓰는 게 아닌, 서버가 어디에서 수신할지 설정할 때
-  // 사용한다고 보면 됨.
-  server_address.sin_port = htons(9000);
-  // 서버가 사용할 포트 번호를 9000으로 설정
+    server_address.sin_family = AF_INET;
+    server_address.sin_addr.s_addr = INADDR_ANY;
+    // 서버가 특정 IP 하나에만 묶이지 않고, 사용가능한 모든 로컬 IPv4 인터페이스의 주소에서 요청을 받도록 하겠다는 의미
+    server_address.sin_port = htons(9000);
+    // 서버가 사용할 포트 번호를 9000으로 설정
 
-  // 주소와 socket 연결
-  if (bind(server_socket, reinterpret_cast<sockaddr*>(&server_address),
-           // reinterpret_cast: 서로 다른 타입의 포인터를 다른 타입으로 변환할
-           // 때 사용하는 형변환 연산자
-           // 구조체의 실제 데이터가 다른 구조체로 변환되는 게 아님
-           // server_address{} 객체는 여전히 sockaddr_in 타입.
-           // reinterpret_cast는 객체 자체를 새로 만들거나 데이터를 복사지 않음.
-           // 여기서는 그 객체를 가리키는 포인터의 타입을 바꾸는 것.
+    // 주소와 socket 연결
+    if (bind(server_socket, reinterpret_cast<sockaddr*>(&server_address),
+            // reinterpret_cast: 서로 다른 타입의 포인터를 다른 타입으로 변환할 때 사용하는 형변환 연산자
+            sizeof(server_address)) == -1) {
+      std::cerr << "bind() failed\n";
+      close(server_socket);
+      return 1;
+    }
 
-           sizeof(server_address)) == -1) {
-    std::cerr << "bind() failed\n";
+    std::cout << "UDP Echo Server started\n";
+
+    for (;;) {
+      char buffer[1024];
+
+      // 클라이언트 주소
+      sockaddr_in client_address{};
+      socklen_t client_address_length = sizeof(client_address);
+
+      // 데이터그램 수신
+      ssize_t length = recvfrom(server_socket, buffer, sizeof(buffer) - 1, 0,
+                                reinterpret_cast<sockaddr*>(&client_address),
+                                &client_address_length);
+
+      if (length == -1) {
+        std::cerr << "recvfrom() failed\n";
+        break;
+      }
+
+      buffer[length] = '\0';
+
+      std::cout << "Client: " << buffer << '\n';
+
+      // 받은 데이터그램을 그대로 다시 전송
+      sendto(server_socket, buffer, length, 0,
+            reinterpret_cast<sockaddr*>(&client_address), client_address_length);
+    }
+
     close(server_socket);
-    return 1;
   }
+  ```
 
-  std::cout << "UDP Echo Server started\n";
+  - `server_address.sin_family = AF_INET;`: IPv4 주소 체계 사용, AF_INET6 = IPv6
+  - `server_address.sin_addr.s_addr = INADDR_ANY;`: 서버가 특정 IP 하나에만 묶이지 않고, 사용가능한 모든 로컬 IPv4 인터페이스의 주소에서 요청을 받도록 하겠다는 의미. 컴퓨터 한 대는 여러 IP주소를 가지고 있을 수 있음. 예를 들어, Wi-Fi로 네트워크에 연결하는 IP, Ethernet 케이블로 연결하는 IP, 127.0.0.1이라는 자기 자신을 가리키는 루프백 주소. INADDR_ANY로 하면 밑에 설정한 포트 번호에서 로컬 IPv4 인터페이스의 주소를 대상으로 수신하도록 소켓을 설정. INADDR_ANY는 정확하게 말하자면 소켓 주소 설정에 사용하는 특별한 상수. 클라이언트의 접속 주소로 쓰는 게 아닌, 서버가 어디에서 수신할지 설정할 때 사용한다고 보면 됨.
+  - `if`문 안의 `bind(server_socket, reinterpret_cast<sockaddr*>(&server_address), sizeof(server_address))`: 주소와 `socket`을 연결. 구조체의 실제 데이터가 다른 구조체로 변환되는 게 아님. `server_address{}` 객체는 여전히 `sockaddr_in` 타입. `reinterpret_cast`는 객체 자체를 새로 만들거나 데이터를 복사하지 않음. 여기서는 그 객체를 가리키는 포인터의 타입을 바꾸는 것.
+  - `sendto(server_socket, buffer, length, 0, reinterpret_cast<sockaddr*>(&client_address), client_address_length);`: 받은 데이터그램을 그대로 다시 전송. sendto()가 응답을 보낼 때 새로운 소켓을 만들지 않음. 서버는 기존 UDP 소켓을 사용해서 응답을 보내고, 목적지 주소로 수신한 클라이언트의 주소를 지정. TCP와 달리 UDP는 연결을 수립하지 않아도 됨. 클라이언트가 서버 주소와 포트를 지정해서 데이터그램을 보내는 개념.
 
-  for (;;) {
+- `udp_client`
+
+  ```cpp
+  #include <arpa/inet.h>
+  #include <netinet/in.h>
+  #include <sys/socket.h>
+  #include <unistd.h>
+
+  #include <cstring>
+  #include <iostream>
+
+  int main() {
+    // UDP socket 생성
+    int client_socket = socket(AF_INET, SOCK_DGRAM, 0);
+
+    if (client_socket == -1) {
+      std::cerr << "socket() failed\n";
+      return 1;
+    }
+
+    // 서버 주소 설정
+    sockaddr_in server_address{};
+
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(9000);
+
+    inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
+    // 서버와 다르게 데이터를 어디로 보낼지 지정
+
+    std::string message;
+
+    std::cout << "Message: ";
+    std::getline(std::cin, message);
+
+    // 서버로 데이터그램 전송
+    sendto(client_socket, message.data(), message.size(), 0,
+          reinterpret_cast<sockaddr*>(&server_address), sizeof(server_address));
+
+    // 서버의 응답 수신
     char buffer[1024];
 
-    // 클라이언트 주소
-    sockaddr_in client_address{};
-    socklen_t client_address_length = sizeof(client_address);
+    sockaddr_in from_address{};
+    socklen_t from_address_length = sizeof(from_address);
 
-    // 데이터그램 수신
-    ssize_t length = recvfrom(server_socket, buffer, sizeof(buffer) - 1, 0,
-                              reinterpret_cast<sockaddr*>(&client_address),
-                              &client_address_length);
+    ssize_t length = recvfrom(client_socket, buffer, sizeof(buffer) - 1, 0,
+                              reinterpret_cast<sockaddr*>(&from_address),
+                              &from_address_length);
 
     if (length == -1) {
       std::cerr << "recvfrom() failed\n";
-      break;
+      close(client_socket);
+      return 1;
     }
 
     buffer[length] = '\0';
 
-    std::cout << "Client: " << buffer << '\n';
+    std::cout << "Server: " << buffer << '\n';
 
-    // 받은 데이터그램을 그대로 다시 전송
-    sendto(server_socket, buffer, length, 0,
-           reinterpret_cast<sockaddr*>(&client_address), client_address_length);
-    // sendto()가 응답을 보낼 때 새로운 소켓을 만들지 않음
-    // 서버는 기존 UDP 소켓을 사용해서 응답을 보내고, 목적지 주소로 수신한
-    // 클라이언트의 주소를 지정.
-    // TCP와 달리 UDP는 연결을 수립하지 않아도 됨. 클라이언트가 서버 주소와
-    // 포트를 지정해서 데이터그램을 보내는 개념.
-  }
-
-  close(server_socket);
-}
-```
-
-- `udp_client`
-
-```cpp
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
-#include <cstring>
-#include <iostream>
-
-int main() {
-  // UDP socket 생성
-  int client_socket = socket(AF_INET, SOCK_DGRAM, 0);
-
-  if (client_socket == -1) {
-    std::cerr << "socket() failed\n";
-    return 1;
-  }
-
-  // 서버 주소 설정
-  sockaddr_in server_address{};
-
-  server_address.sin_family = AF_INET;
-  server_address.sin_port = htons(9000);
-
-  inet_pton(AF_INET, "127.0.0.1", &server_address.sin_addr);
-  // 서버와 다르게 데이터를 어디로 보낼지 지정
-
-  std::string message;
-
-  std::cout << "Message: ";
-  std::getline(std::cin, message);
-
-  // 서버로 데이터그램 전송
-  sendto(client_socket, message.data(), message.size(), 0,
-         reinterpret_cast<sockaddr*>(&server_address), sizeof(server_address));
-
-  // 서버의 응답 수신
-  char buffer[1024];
-
-  sockaddr_in from_address{};
-  socklen_t from_address_length = sizeof(from_address);
-
-  ssize_t length = recvfrom(client_socket, buffer, sizeof(buffer) - 1, 0,
-                            reinterpret_cast<sockaddr*>(&from_address),
-                            &from_address_length);
-
-  if (length == -1) {
-    std::cerr << "recvfrom() failed\n";
     close(client_socket);
-    return 1;
   }
-
-  buffer[length] = '\0';
-
-  std::cout << "Server: " << buffer << '\n';
-
-  close(client_socket);
-}
-```
+  ```
