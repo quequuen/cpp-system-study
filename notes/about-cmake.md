@@ -19,9 +19,10 @@ CMake는 크로스 플랫폼 빌드 시스템, 소프트웨어 프로젝트의 �
 
 ### 주의사항
 
-- 폴더 구조를 수정하거나 파일을 이동할 경우, CMakeLists.txt 파일 내의 경로도 함께 수정해야 함.
+- 폴더 구조를 수정하거나 파일을 이동할 경우, `CMakeLists.txt` 파일 내의 경로도 함께 수정해야 함.
 - 빌드 디렉토리를 삭제하고 다시 생성하는 것이 때때로 필요할 수 있음.
-- CMakeLists.txt 파일에 실행 파일을 만들라고 등록은 했는데, 정작 main 함수가 들어있는 소스 파일을 리스트에 포함하지 않을 때(혹은 main.cpp 내 main 함수가 누락되거나 오타가 났을 때) Undefined symbos for architecture arm64: "\_main", referenced from: <initial-undefines> 에러 발생.
+- `CMakeLists.txt` 파일에 실행 파일을 만들라고 등록은 했는데, 정작 main 함수가 들어있는 소스 파일을 리스트에 포함하지 않을 때(혹은 main.cpp 내 main 함수가 누락되거나 오타가 났을 때) `Undefined symbos for architecture arm64: "\_main", referenced from: <initial-undefines>` 에러 발생.
+- 하나의 `add_executable()`에 `main()` 함수가 정의된 소스 파일을 여러 개 포함하면 `main()` 중복 정의로 링커 오류가 발생할 수 있음. 각 소스 파일을 독립적으로 실행해야 한다면 `add_executable()`을 각각 작성하여 별도의 실행 파일로 빌드해야 함. → 하나의 빌드 단위에 하나의 `main()`만 있으면 됨.
 
 # `CMakeLists.txt` 작성법
 
