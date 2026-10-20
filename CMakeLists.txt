@@ -190,5 +190,12 @@ add_executable(tcp_chat_write_mutex network/chat_server/write_mutex.cpp)
 target_link_libraries(tcp_chat_write_mutex PRIVATE Boost::boost Threads::Threads nlohmann_json::nlohmann_json)
 
 # network/udp/posix
-add_executable(posix_udp_server network/udp/posix/udp_server.cpp)
-add_executable(posix_udp_client network/udp/posix/udp_client.cpp)
+add_executable(posix_udp_server network/udp/posix/udp_echo_server.cpp)
+add_executable(posix_udp_client network/udp/posix/udp_echo_client.cpp)
+
+
+# network/udp/boost_asio
+add_executable(boost_asio_udp_server network/udp/boost_asio/udp_echo_server.cpp)
+target_link_libraries(boost_asio_udp_server PRIVATE Boost::boost)
+add_executable(boost_asio_udp_client network/udp/boost_asio/udp_echo_client.cpp)
+target_link_libraries(boost_asio_udp_client PRIVATE Boost::boost)
