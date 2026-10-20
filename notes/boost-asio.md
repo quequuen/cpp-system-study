@@ -86,3 +86,17 @@ tcp::acceptor acceptor(io, tcp::endpoint(tcp::v4(), 9000));
 tcp::socket socket(io);
 acceptor.accept(socket);
 ```
+
+### 동기식 I/O
+
+- 동기식 I/O의 의미
+- UDP 데이터 송수신
+  - `send_to()`
+  - `receive_from()`
+- TCP 데이터 송수신
+  - `connect()`
+  - `accept()`
+  - `read_some()`
+  - `write()`
+- `asio::buffer()`의 역할
+- POSIX 소켓 API와 Boost.Asio 비교

@@ -189,6 +189,6 @@ target_link_libraries(tcp_chat_data_frame PRIVATE Boost::boost Threads::Threads 
 add_executable(tcp_chat_write_mutex network/chat_server/write_mutex.cpp)
 target_link_libraries(tcp_chat_write_mutex PRIVATE Boost::boost Threads::Threads nlohmann_json::nlohmann_json)
 
-# network/udp
-add_executable(udp_server network/udp/udp_server.cpp)
-add_executable(udp_client network/udp/udp_client.cpp)
+# network/udp/posix
+add_executable(posix_udp_server network/udp/posix/udp_server.cpp)
+add_executable(posix_udp_client network/udp/posix/udp_client.cpp)
