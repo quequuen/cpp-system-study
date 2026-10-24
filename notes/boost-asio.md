@@ -112,13 +112,40 @@ acceptor.accept(socket);
           << '\n';
   ```
 
-  receive_from()은 수신할 데이터가 도착하거나 오류가 발생할 때까지 기다릴 수 있음. 따라서 데이터 수신이 완료된 뒤 다음 코드가 실행됨.
+  `receive_from()`은 수신할 데이터가 도착하거나 오류가 발생할 때까지 기다릴 수 있음. 따라서 데이터 수신이 완료된 뒤 다음 코드가 실행됨.
 
   비동기식 I/O와의 차이: 동기식은 호출한 흐름에서 작업 결과를 기다리는 반면, 비동기식은 작업을 요청한 뒤 완료 핸들러 등을 통해 결과를 처리할 수 있음.
 
 - UDP 데이터 송수신
-  - `send_to()`
-  - `receive_from()`
+  - `send_to()` - UDP 데이터 전송
+    `send_to()`는 지정한 목적지의 IP 주소와 포트로 UDP 데이터그램을 전송하는 함수.
+
+    ```cpp
+    std::string message = "Hello";
+
+    udp::endpoint server_endpoint(
+        asio::ip::make_address("127.0.0.1"),
+        9000
+    );
+
+    socket.send_to(
+        asio::buffer(message),
+        server_endpoint
+    );
+    ```
+
+    - `asio::buffer(message)`: 전송할 데이터가 저장된 메모리를 나타내는 버퍼.
+    - `server_endpoint`: 데이터를 보낼 목적지의 IP 주소와 포트.
+
+    ```
+    1. message에 전송할 데이터를 저장.
+    2. asio::buffer()로 해당 데이터의 메모리를 Asio가 사용할 수 있도록 나타냄. → 예를 들어 프로그램 메모리 상에 'H, e, l, l, o'라는 데이터가 저장되어 있을 때, 이 데이터를 UDP로 보내고 싶으면 socket.send_to()는 어디에 있는 데이터를 보낼지, 데이터가 몇 바이트인지를 알아야 함. 그리고 asio.::buffer()는 메모리를 가리키는 정보를 만들어 주는 역할을 함. 여기서 asio::buffer(message)는 문자열을 새로 복사해서 만드는 게 아닌, 기존 문자열의 데이터에 접근할 수 있도록 시작 위치와 크기 같은 정보를 제공함.
+    3. send_to()가 지정된 목적지로 데이터그램을 전송함.
+    ```
+
+    여기서 `asio::buffer()`는 데이터를 복사하거나 소유하는 객체가 아님. 기존 메모리를 가리키는 뷰를 제공함. 또한 `send_to`가 성공적으로 반환됐다고 해서 상대방이 데이터를 실제로 받았다는 뜻이 아님. UDP는 데이터 전달을 보장하지 않기 때문.
+
+- `receive_from()`
 - TCP 데이터 송수신
   - `connect()`
   - `accept()`
@@ -126,3 +153,7 @@ acceptor.accept(socket);
   - `write()`
 - `asio::buffer()`의 역할
 - POSIX 소켓 API와 Boost.Asio 비교
+
+```
+
+```
