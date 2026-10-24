@@ -89,7 +89,33 @@ acceptor.accept(socket);
 
 ### 동기식 I/O
 
-- 동기식 I/O의 의미
+- 동기식 I/O의 의미 (Synchronous I/O)
+  동기식 I/O는 I/O 작업의 결과를 기다린 후 다음 작업을 진행하는 방식. 함수가 호출되면 작업이 완료되거나 오류가 발생할 때까지 해당 호출 흐름이 기다릴 수 있음.
+  - 블로킹(Blocking): 데이터 수신처럼 작업이 완료될 때까지 호출한 스레드가 대기할 수 있음.
+
+  - 순차적 실행: 앞선 작업이 끝난 뒤 다음 코드를 실행하므로 실행 흐름을 이해하기 쉬움.
+
+  - 단점: 응답을 기다리는 동안 해당 스레드는 다른 작업을 수행하지 못할 수 있음.
+
+  ```cpp
+  std::array<char, 1024> buffer{};
+  udp::endpoint sender;
+
+  std::size_t length = socket.receive_from(
+      asio::buffer(buffer),
+      sender
+  );
+
+  // 데이터 수신이 완료된 뒤 실행됨
+  std::cout << "Received: "
+          << std::string(buffer.data(), length)
+          << '\n';
+  ```
+
+  receive_from()은 수신할 데이터가 도착하거나 오류가 발생할 때까지 기다릴 수 있음. 따라서 데이터 수신이 완료된 뒤 다음 코드가 실행됨.
+
+  비동기식 I/O와의 차이: 동기식은 호출한 흐름에서 작업 결과를 기다리는 반면, 비동기식은 작업을 요청한 뒤 완료 핸들러 등을 통해 결과를 처리할 수 있음.
+
 - UDP 데이터 송수신
   - `send_to()`
   - `receive_from()`
