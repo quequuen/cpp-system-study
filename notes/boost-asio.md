@@ -145,7 +145,38 @@ acceptor.accept(socket);
 
     여기서 `asio::buffer()`는 데이터를 복사하거나 소유하는 객체가 아님. 기존 메모리를 가리키는 뷰를 제공함. 또한 `send_to`가 성공적으로 반환됐다고 해서 상대방이 데이터를 실제로 받았다는 뜻이 아님. UDP는 데이터 전달을 보장하지 않기 때문.
 
-- `receive_from()`
+  - `receive_from()` - UDP 데이터 수신
+    `recieve_from()`은 UDP 데이터그램을 수신하고, 데이터를 보낸 상대방의 주소 정보를 함께 얻는 함수.
+
+    ```cpp
+    std::array<char, 1024> buffer{};
+    udp::endpoint sender_endpoint;
+
+    std::size_t length = socket.receive_from(
+        asio::buffer(buffer),
+        sender_endpoint
+    );
+
+    std::string message(buffer.data(), length);
+
+    std::cout << "Received: " << message << '\n';
+    ```
+
+    - `asio::buffer(buffer)`: 수신한 데이터를 저장할 메모리.
+    - `sender_endpoint`: 데이터를 보낸 상대방의 IP 주소와 포트가 기록되는 객체.
+    - `length`: 실제로 수신한 데이터의 바이트 수.
+
+    UDP 서버는 미리 어떤 클라이언트가 메시지를 보낼지 알 필요가 없음. `receive_from()` 이 데이터를 수신하면서 송신자의 주소를 `sender_endpoint`에 기록해 줌. 수신한 데이터를 다시 보내고 싶다면 아래처럼 사용.
+
+    ```cpp
+    socket.send_to(
+        asio::buffer(buffer.data(), length),
+        sender_endpoint
+    );
+    ```
+
+    이게 UDP Echo Server의 핵심 동작. 참고로 동기식 `receive_from()`은 기본적인 블로킹 소켓에서 데이터그램이 도착하거나 오류가 발생할 때까지 기다릴 수 있음.
+
 - TCP 데이터 송수신
   - `connect()`
   - `accept()`
@@ -153,7 +184,3 @@ acceptor.accept(socket);
   - `write()`
 - `asio::buffer()`의 역할
 - POSIX 소켓 API와 Boost.Asio 비교
-
-```
-
-```
