@@ -177,10 +177,26 @@ acceptor.accept(socket);
 
     이게 UDP Echo Server의 핵심 동작. 참고로 동기식 `receive_from()`은 기본적인 블로킹 소켓에서 데이터그램이 도착하거나 오류가 발생할 때까지 기다릴 수 있음.
 
-- TCP 데이터 송수신
-  - `connect()`
-  - `accept()`
-  - `read_some()`
-  - `write()`
 - `asio::buffer()`의 역할
+
+  `asio::buffer()`는 기존 데이터가 저장된 메모리의 위치와 크기를 나타내는 버퍼 객체를 생성하는 함수. 데이터를 새로 복사하거나 소유하지 않고, Boost.Asio가 해당 메모리에 접근할 수 있도록 정보를 제공함.
+
+  ```cpp
+  std::string message = "Hello";
+
+  auto buf = asio::buffer(message);
+
+  socket.send_to(buf, server_endpoint);
+  ```
+
+  - `message`: 실제 데이터가 저장된 문자열 객체.
+  - `asio::buffer(message)`: 문자열 데이터의 메모리 위치와 크기를 나타내는 버퍼 객체 생성.
+  - `send_to()`: 버퍼가 가리키는 데이터를 네트워크로 전송.
+
+  포인터와 비슷하게 기존 메모리를 가리키지만, 버퍼 객체는 데이터의 크기 정보도 함께 제공함.
+  - **전송 시**: 데이터를 읽어 올 메모리 영역을 나타냄.
+  - **수신 시**: 데이터를 기록할 메모리 영역을 나타냄.
+
+  버퍼 객체는 원본 데이터를 소유하지 않으므로, 원본 메모리가 유효하게 유지되어야 함. 특히 비동기 I/O에서는 작업이 완료될 때까지 원본 데이터와 버퍼가 참조하는 메모리가 유효해야 함.
+
 - POSIX 소켓 API와 Boost.Asio 비교
