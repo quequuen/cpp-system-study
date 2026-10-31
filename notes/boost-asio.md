@@ -200,3 +200,12 @@ acceptor.accept(socket);
   버퍼 객체는 원본 데이터를 소유하지 않으므로, 원본 메모리가 유효하게 유지되어야 함. 특히 비동기 I/O에서는 작업이 완료될 때까지 원본 데이터와 버퍼가 참조하는 메모리가 유효해야 함.
 
 - POSIX 소켓 API와 Boost.Asio 비교
+
+| POSIX API     | Boost.Asio              | 의미                                |
+| ------------- | ----------------------- | ----------------------------------- |
+| `socket()`    | `udp::socket` 생성      | UDP 소켓 생성                       |
+| `sockaddr_in` | `udp::endpoint`         | 주소 정보 표현                      |
+| `bind()`      | `socket.bind()`         | 로컬 주소와 포트 지정               |
+| `sendto()`    | `socket.send_to()`      | 데이터그램 전송                     |
+| `recvfrom()`  | `socket.receive_from()` | 데이터그램 수신 및 송신자 주소 확인 |
+| `close()`     | 소켓 객체의 소멸        | 소켓 자원 정리                      |
