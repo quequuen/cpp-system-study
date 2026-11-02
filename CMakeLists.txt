@@ -155,6 +155,9 @@ add_executable(unordered_map_01 stl/unordered_map/unordered_map_basic.cpp)
 # stl
 add_executable(iterator_01 stl/iterator.cpp)
 
+# concurrency/lock_free
+add_executable(atomic_01 concurrency/lock_free/atomic_counter.cpp)
+
 # concurrency/thread
 add_executable(thread_01 concurrency/thread/01_thread_basic.cpp)
 add_executable(thread_02 concurrency/thread/02_thread_basic.cpp)
